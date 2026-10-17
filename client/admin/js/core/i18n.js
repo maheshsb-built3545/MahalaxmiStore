@@ -138,6 +138,16 @@ const DICTIONARY = {
   reports_stock_valuation: 'साठा मूल्य / Stock Valuation',
   gross_profit: 'एकूण नफा / Gross Profit',
   revenue: 'एकूण विक्री / Net Revenue',
+  reports_cogs: 'विक्री खर्चाचे मूल्य (COGS) / Cost of Goods Sold',
+  reports_margin_pct: 'नफा टक्केवारी / Gross Margin %',
+  reports_avg_order_value: 'सरासरी ऑर्डर मूल्य (AOV) / Average Order Value',
+  reports_udhar_aging: 'उधारी वयोमान / Udhar Aging',
+  reports_daily_trend: 'दैनिक विक्री कल / Daily Sales Trend',
+  reports_slot_load: 'वेळनिहाय भार / Slot Breakdown',
+  reports_category_profit: 'वर्गनिहाय नफा / Category Profit Breakdown',
+  reports_export_orders: 'ऑर्डर्स CSV / Orders CSV',
+  reports_export_stock: 'स्टॉक नोंद CSV / Stock Log CSV',
+  reports_export_udhar: 'उधारी CSV / Udhar CSV',
 
   // ── Empty States & Alerts ──
   no_orders_found: 'कोणतीही नवीन ऑर्डर नाही / No orders found',

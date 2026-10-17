@@ -1681,7 +1681,94 @@ const getReports = async (req, res, next) => {
       channelSplit[c._id || 'website'] = c.count;
     });
 
-    // 4. Top 10 selling products
+    // 4. Sales by Slot
+    const slotAgg = await Order.aggregate([
+      { $match: { ...matchDate, status: { $ne: 'cancelled' } } },
+      {
+        $group: {
+          _id: { $ifNull: ['$deliverySlot', '$slot'] },
+          count: { $sum: 1 },
+          revenue: { $sum: '$total' },
+        },
+      },
+      { $sort: { revenue: -1 } },
+    ]);
+    const slotBreakdown = slotAgg.map((s) => ({
+      slot: s._id || 'Standard Delivery',
+      count: s.count,
+      revenue: s.revenue,
+    }));
+
+    // 5. Daily timeline breakdown (IST) for real SVG line charts
+    const dailyAgg = await Order.aggregate([
+      { $match: { ...matchDate, status: { $ne: 'cancelled' } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Kolkata' } },
+          revenue: { $sum: '$total' },
+          orders: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    const dailyStats = dailyAgg.map((d) => ({
+      date: d._id,
+      revenue: d.revenue,
+      orders: d.orders,
+    }));
+
+    // 6. Real Profit Math: Sold COGS, Gross Profit & Margins via Product.costPrice
+    const soldItemsAgg = await Order.aggregate([
+      { $match: { ...matchDate, status: { $ne: 'cancelled' } } },
+      { $unwind: '$items' },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'items.productId',
+          foreignField: '_id',
+          as: 'productDoc',
+        },
+      },
+      {
+        $project: {
+          qty: '$items.qty',
+          price: '$items.price',
+          costPrice: { $ifNull: [{ $arrayElemAt: ['$productDoc.costPrice', 0] }, 0] },
+          category: { $ifNull: [{ $arrayElemAt: ['$productDoc.category', 0] }, 'General'] },
+          nameEn: '$items.nameEn',
+          nameMr: '$items.nameMr',
+        },
+      },
+    ]);
+
+    let totalCogs = 0;
+    let missingCostItemsCount = 0;
+    const categoryProfitMap = new Map();
+
+    soldItemsAgg.forEach((it) => {
+      const revenue = it.qty * it.price;
+      const cost = it.qty * it.costPrice;
+      totalCogs += cost;
+      if (!it.costPrice || it.costPrice === 0) missingCostItemsCount++;
+
+      const catKey = it.category.toString();
+      const prev = categoryProfitMap.get(catKey) || { category: catKey, revenue: 0, cost: 0, units: 0 };
+      prev.revenue += revenue;
+      prev.cost += cost;
+      prev.units += it.qty;
+      categoryProfitMap.set(catKey, prev);
+    });
+
+    const grossProfit = Math.max(0, netRevenue - totalCogs);
+    const grossMarginPercent = netRevenue > 0 ? Math.round((grossProfit / netRevenue) * 100) : 0;
+
+    const categoryBreakdown = Array.from(categoryProfitMap.values()).map((cp) => ({
+      ...cp,
+      profit: Math.max(0, cp.revenue - cp.cost),
+      marginPercent: cp.revenue > 0 ? Math.round(((cp.revenue - cp.cost) / cp.revenue) * 100) : 0,
+    })).sort((a, b) => b.revenue - a.revenue);
+
+    // 7. Top 10 selling products
     const topProductsAgg = await Order.aggregate([
       { $match: { ...matchDate, status: { $ne: 'cancelled' } } },
       { $unwind: '$items' },
@@ -1698,7 +1785,7 @@ const getReports = async (req, res, next) => {
       { $limit: 10 },
     ]);
 
-    // 5. Slow-moving products (active products with 0 orders in range)
+    // 8. Slow-moving products
     const soldProductIds = await Order.distinct('items.productId', {
       ...matchDate,
       status: { $ne: 'cancelled' },
@@ -1711,7 +1798,7 @@ const getReports = async (req, res, next) => {
       .limit(10)
       .lean();
 
-    // 6. Current warehouse stock inventory valuation (Rule: at real cost, not selling price)
+    // 9. Current warehouse stock inventory valuation (at real cost)
     const stockValuationAgg = await Product.aggregate([
       { $match: { active: true } },
       {
@@ -1737,6 +1824,32 @@ const getReports = async (req, res, next) => {
       missingCostCount: 0,
     };
 
+    // 10. Udhar Aging
+    const udharAccounts = await UdharAccount.find({ status: { $in: ['active', 'paused'] }, balance: { $gt: 0 } }).lean();
+    let agingUnder30 = 0;
+    let aging30to60 = 0;
+    let agingOver60 = 0;
+    const nowTs = Date.now();
+    udharAccounts.forEach((u) => {
+      const ageDays = (nowTs - new Date(u.updatedAt || u.createdAt).getTime()) / (24 * 60 * 60 * 1000);
+      if (ageDays <= 30) agingUnder30 += (u.balance || 0);
+      else if (ageDays <= 60) aging30to60 += (u.balance || 0);
+      else agingOver60 += (u.balance || 0);
+    });
+
+    // 11. Comparison with previous period
+    const durationMs = endDate.getTime() - startDate.getTime();
+    const prevStart = new Date(startDate.getTime() - durationMs);
+    const prevEnd = new Date(startDate.getTime() - 1);
+    const prevOrdersAgg = await Order.aggregate([
+      { $match: { createdAt: { $gte: prevStart, $lte: prevEnd }, status: { $ne: 'cancelled' } } },
+      { $group: { _id: null, revenue: { $sum: '$total' }, count: { $sum: 1 } } },
+    ]);
+    const prevRevenue = prevOrdersAgg.length > 0 ? prevOrdersAgg[0].revenue : 0;
+    const prevOrders = prevOrdersAgg.length > 0 ? prevOrdersAgg[0].count : 0;
+    const revenueGrowthPercent = prevRevenue > 0 ? Math.round(((netRevenue - prevRevenue) / prevRevenue) * 100) : 0;
+    const ordersGrowthPercent = prevOrders > 0 ? Math.round(((totalOrders - prevOrders) / prevOrders) * 100) : 0;
+
     res.status(200).json({
       success: true,
       data: {
@@ -1749,6 +1862,27 @@ const getReports = async (req, res, next) => {
         statusCounts,
         paymentSplit,
         channelSplit,
+        slotBreakdown,
+        dailyStats,
+        profitMetrics: {
+          grossProfit,
+          totalCogs,
+          grossMarginPercent,
+          missingCostItemsCount,
+          categoryBreakdown,
+        },
+        udharAging: {
+          totalOutstanding: agingUnder30 + aging30to60 + agingOver60,
+          under30Days: agingUnder30,
+          between30and60Days: aging30to60,
+          over60Days: agingOver60,
+        },
+        comparison: {
+          prevRevenue,
+          prevOrders,
+          revenueGrowthPercent,
+          ordersGrowthPercent,
+        },
         topProducts: topProductsAgg,
         slowProducts,
         inventoryValuation: {
