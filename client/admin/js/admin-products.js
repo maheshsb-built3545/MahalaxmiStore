@@ -159,7 +159,10 @@ async function toggleStock(id, newStatus) {
   try {
     await adminFetch(`/admin/products/${id}/toggle-stock`, {
       method: 'PATCH',
-      body: JSON.stringify({ inStock: newStatus }),
+      body: JSON.stringify({
+        unavailableFlag: !newStatus,
+        inStock: Boolean(newStatus),
+      }),
     });
   } catch (err) {
     alert(`Failed to update stock: ${err.message}`);

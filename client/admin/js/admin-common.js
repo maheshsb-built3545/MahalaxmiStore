@@ -5,15 +5,15 @@
 
 'use strict';
 
-// ─── 1. STRICT CLIENT ROLE GUARD ─────────────────────────────────────────────
+// ─── 1. CLIENT ROLE GUARD (Owner & Staff Allowed) ────────────────────────────
 (function enforceAdminAuth() {
   if (typeof auth === 'undefined' || !auth.isLoggedIn()) {
     window.location.href = '../login.html?redirect=admin/dashboard.html';
     return;
   }
   const user = auth.getUser();
-  if (!user || user.role !== 'owner') {
-    alert('Access restricted to store owner only / केवळ दुकानदारासाठी परवानगी आहे.');
+  if (!user || !['owner', 'staff'].includes(user.role)) {
+    alert('Access restricted to store staff and owner / केवळ दुकान कर्मचारी व मालकासाठी परवानगी आहे.');
     window.location.href = '../index.html';
   }
 })();
@@ -217,6 +217,47 @@ async function adminFetch(path, options = {}) {
   }
 
   return data;
+}
+
+// ─── 6b. AUTHENTICATED BLOB CSV/FILE DOWNLOADER ──────────────────────────────
+async function downloadAuthed(url, filename) {
+  try {
+    const token = auth.getToken();
+    let fullUrl = url;
+    if (!url.startsWith('http')) {
+      if (url.startsWith('/api')) {
+        fullUrl = `${CONFIG.API_BASE}${url.replace('/api', '')}`;
+      } else if (url.startsWith('/')) {
+        fullUrl = `${CONFIG.API_BASE}${url}`;
+      } else {
+        fullUrl = `${CONFIG.API_BASE}/${url}`;
+      }
+    }
+
+    const res = await fetch(fullUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'File download failed / फाईल डाऊनलोड अपयशी.');
+    }
+
+    const blob = await res.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(blobUrl);
+    document.body.removeChild(a);
+  } catch (err) {
+    alert(`Download error / डाऊनलोड त्रुटी: ${err.message}`);
+  }
 }
 
 // ─── 7. SHARED NAVIGATION BUILDER ────────────────────────────────────────────

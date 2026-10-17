@@ -173,7 +173,7 @@ async function loadAdminTestimonials() {
             <button onclick="toggleTestimonialVisible('${item._id}', ${isVisible})" class="btn-action ${isVisible ? 'btn-outline' : 'btn-primary'}" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
               ${isVisible ? '👁️ Visible (Hide)' : '🙈 Hidden (Show)'}
             </button>
-            <button onclick="deleteTestimonialItem('${item._id}')", style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; text-decoration: underline;">
+            <button onclick="deleteTestimonialItem('${item._id}')" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; text-decoration: underline;">
               Delete
             </button>
           </div>

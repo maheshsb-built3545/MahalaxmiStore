@@ -141,8 +141,8 @@
             📋 आजचा दैनिक हishob (Settlement)
           </button>
           <div class="dropdown-export" style="display:inline-flex;gap:0.35rem;">
-            <a href="/api/admin/export/orders.csv" class="btn btn-secondary btn-sm" target="_blank" download>📥 Orders CSV</a>
-            <a href="/api/admin/export/stock-log.csv" class="btn btn-secondary btn-sm" target="_blank" download>📥 Stock CSV</a>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="downloadAuthed('/admin/export/orders.csv', 'orders.csv')">📥 Orders CSV</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="downloadAuthed('/admin/export/stock-log.csv', 'stock-log.csv')">📥 Stock CSV</button>
           </div>
         </div>
       </div>

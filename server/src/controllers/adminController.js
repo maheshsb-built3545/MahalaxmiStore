@@ -829,10 +829,17 @@ const toggleStock = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
 
-    // Toggle or explicitly set unavailableFlag
-    product.unavailableFlag = req.body.unavailableFlag !== undefined
-      ? Boolean(req.body.unavailableFlag)
-      : !product.unavailableFlag;
+    // Toggle or explicitly set unavailableFlag (idempotent when parameter is provided)
+    let newFlag;
+    if (req.body.unavailableFlag !== undefined) {
+      newFlag = Boolean(req.body.unavailableFlag);
+    } else if (req.body.inStock !== undefined) {
+      newFlag = !Boolean(req.body.inStock);
+    } else {
+      newFlag = !product.unavailableFlag;
+    }
+
+    product.unavailableFlag = newFlag;
     await product.save();
 
     res.status(200).json({ success: true, data: product });

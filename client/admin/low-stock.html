@@ -168,17 +168,17 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="../js/config.js"></script>
+<script src="../js/auth.js"></script>
+<script src="js/admin-common.js"></script>
 <script>
-  const API    = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:5000/api' : '/api';
-  const token  = localStorage.getItem('mk_token');
-  const role   = localStorage.getItem('mk_role');
+  const token  = auth.getToken();
+  const user   = auth.getUser();
+  const role   = user ? user.role : null;
 
   if (!token || !['owner', 'staff'].includes(role)) {
-    window.location.href = '../login.html';
+    window.location.href = '../login.html?redirect=admin/low-stock.html';
   }
-
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
   let allProducts     = [];
   let nearExpiryList  = [];
@@ -186,7 +186,8 @@
   let modalProductId  = null;
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear(); window.location.href = '../login.html';
+    auth.clearSession();
+    window.location.href = '../login.html';
   });
 
   function showToast(msg, type = '') {
@@ -198,15 +199,13 @@
   // ── Fetch & render ─────────────────────────────────────────────────────────
   async function loadLowStock() {
     try {
-      const res  = await fetch(`${API}/inventory/low-stock`, { headers });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-      allProducts = data.data;
-      document.getElementById('totalCount').textContent = data.count;
+      const data = await adminFetch('/inventory/low-stock');
+      allProducts = data.data || [];
+      document.getElementById('totalCount').textContent = data.count || 0;
       renderList();
     } catch (err) {
       document.getElementById('stockList').innerHTML =
-        `<p style="text-align:center;color:#dc2626;">Error: ${err.message}</p>`;
+        `<p style="text-align:center;color:#dc2626;">Error: ${escapeHtml(err.message)}</p>`;
     }
   }
 
@@ -214,15 +213,13 @@
     try {
       const container = document.getElementById('stockList');
       container.innerHTML = '<p style="text-align:center;padding:2rem;color:#9ca3af;">मुदत संपत आलेला साठा तपासत आहे...</p>';
-      const res = await fetch(`${API}/inventory/near-expiry`, { headers });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
+      const data = await adminFetch('/inventory/near-expiry');
       nearExpiryList = data.data || [];
-      document.getElementById('totalCount').textContent = data.count;
+      document.getElementById('totalCount').textContent = data.count || 0;
       renderNearExpiryList();
     } catch (err) {
       document.getElementById('stockList').innerHTML =
-        `<p style="text-align:center;color:#dc2626;">Error: ${err.message}</p>`;
+        `<p style="text-align:center;color:#dc2626;">Error: ${escapeHtml(err.message)}</p>`;
     }
   }
 
@@ -364,12 +361,10 @@
     const btn = document.getElementById('modalConfirmBtn');
     btn.disabled = true;
     try {
-      const res  = await fetch(`${API}/inventory/stock-in`, {
-        method: 'POST', headers,
+      const data = await adminFetch('/inventory/stock-in', {
+        method: 'POST',
         body: JSON.stringify({ productId: modalProductId, quantity: qty, note }),
       });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
       showToast('✅ ' + data.message, 'success');
       closeModal();
       loadLowStock(); // refresh
@@ -383,12 +378,10 @@
   // ── Toggle unavailable ─────────────────────────────────────────────────────
   async function toggleUnavail(productId, currentFlag) {
     try {
-      const res  = await fetch(`${API}/inventory/unavailable/${productId}`, {
-        method: 'PATCH', headers,
+      const data = await adminFetch(`/inventory/unavailable/${productId}`, {
+        method: 'PATCH',
         body: JSON.stringify({ unavailable: !currentFlag }),
       });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
       showToast(data.message, 'success');
       loadLowStock();
     } catch (err) {

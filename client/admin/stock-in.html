@@ -208,28 +208,26 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="../js/config.js"></script>
+<script src="../js/auth.js"></script>
+<script src="js/admin-common.js"></script>
 <script>
-  const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:5000/api'
-    : '/api';
+  const token = auth.getToken();
+  const user  = auth.getUser();
+  const role  = user ? user.role : null;
 
-  const token = localStorage.getItem('mk_token');
-  const role  = localStorage.getItem('mk_role');
-
-  // Auth guard
+  // Auth guard (also enforced by admin-common.js)
   if (!token || !['owner', 'staff'].includes(role)) {
-    window.location.href = '../login.html';
+    window.location.href = '../login.html?redirect=admin/stock-in.html';
   }
-
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
   let selectedProduct = null;
   let debounceTimer   = null;
   const currentProductsMap = new Map();
 
-  // ── Logout ────────────────────────────────────────────────────────────────
+  // ── Logout (preserve cart) ────────────────────────────────────────────────
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    auth.clearSession();
     window.location.href = '../login.html';
   });
 
@@ -255,10 +253,8 @@
 
   async function searchProducts(q) {
     try {
-      const res  = await fetch(`${API}/admin/products?search=${encodeURIComponent(q)}&limit=8`, { headers });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-      renderResults(data.data);
+      const data = await adminFetch(`/admin/products?search=${encodeURIComponent(q)}&limit=8`);
+      renderResults(data.data || []);
     } catch (err) {
       showToast('Error: ' + err.message, 'error');
     }
@@ -345,14 +341,10 @@
     btn.textContent = '⏳ Saving...';
 
     try {
-      const res  = await fetch(`${API}/inventory/stock-in`, {
+      const data = await adminFetch('/inventory/stock-in', {
         method: 'POST',
-        headers,
         body: JSON.stringify({ productId: selectedProduct._id, quantity: qty, note, expiryDate }),
       });
-      const data = await res.json();
-
-      if (!data.success) throw new Error(data.message);
 
       showToast(`✅ ${data.message}`, 'success');
       // Clear and reset
@@ -373,8 +365,7 @@
   // ── Low-stock list ────────────────────────────────────────────────────────
   async function loadLowStock() {
     try {
-      const res  = await fetch(`${API}/inventory/low-stock`, { headers });
-      const data = await res.json();
+      const data = await adminFetch('/inventory/low-stock');
       if (!data.success) return;
 
       const container = document.getElementById('lowStockList');
