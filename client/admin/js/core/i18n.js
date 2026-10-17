@@ -153,6 +153,12 @@ const DICTIONARY = {
   ai_ignore_phrase: 'दुर्लक्ष करा / Ignore Phrase',
   ai_alias_success: 'पर्यायी नाव यशस्वीरीत्या जोडले / Alias added successfully',
   no_ai_misses: 'कोणतेही न सापडलेले शब्द नाहीत / No missed search phrases',
+  inbox_mark_all_read: 'सर्व वाचल्याची खूण करा / Mark All Read',
+  inbox_push_toggle: 'पुश सूचना / Push Alerts',
+  inbox_today: 'आज / Today',
+  inbox_yesterday: 'काल / Yesterday',
+  inbox_earlier: 'मागील सूचना / Earlier',
+  no_notifications: 'कोणत्याही सूचना नाहीत / No notifications found',
 
   // ── Empty States & Alerts ──
   no_orders_found: 'कोणतीही नवीन ऑर्डर नाही / No orders found',
