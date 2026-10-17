@@ -45,6 +45,7 @@ router.put('/settings', requireOwnerOnly, validateSettings, admin.updateSettings
 
 // ─── Customers ────────────────────────────────────────────────────────────────
 router.get('/customers', admin.getCustomers);
+router.get('/customers/:id/orders', admin.getCustomerOrders);
 router.patch('/customers/:id/block', admin.toggleBlockCustomer);
 
 // ─── Staff Management (Owner Only — ADM-01) ───────────────────────────────────

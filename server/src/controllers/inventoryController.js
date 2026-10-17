@@ -122,8 +122,15 @@ const stockIn = async (req, res, next) => {
     }
 
     const updateOps = { $inc: { stockQuantity: quantity } };
+    const setOps = {};
     if (req.body.expiryDate) {
-      updateOps.$set = { expiryDate: new Date(req.body.expiryDate) };
+      setOps.expiryDate = new Date(req.body.expiryDate);
+    }
+    if (req.body.costPrice !== undefined && !isNaN(Number(req.body.costPrice)) && Number(req.body.costPrice) >= 0) {
+      setOps.costPrice = Number(req.body.costPrice);
+    }
+    if (Object.keys(setOps).length > 0) {
+      updateOps.$set = setOps;
     }
 
     const product = await Product.findOneAndUpdate(
@@ -138,12 +145,19 @@ const stockIn = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
 
+    const metaParts = [];
+    if (req.body.supplier) metaParts.push(`पुरवठादार: ${req.body.supplier}`);
+    if (req.body.invoiceNo) metaParts.push(`बिल क्र.: ${req.body.invoiceNo}`);
+    if (req.body.costPrice) metaParts.push(`दर: ₹${req.body.costPrice}`);
+    const metaNote = metaParts.length > 0 ? metaParts.join(' | ') : '';
+    const fullNote = note ? (metaNote ? `${note} (${metaNote})` : note) : (metaNote || `Stock added by ${req.user.name}`);
+
     await writeStockLog({
       productId: product._id,
       type: 'in',
       quantity: +quantity,
       balanceAfter: product.stockQuantity,
-      note: note || `Stock added by ${req.user.name}`,
+      note: fullNote,
       actor: req.user.name,
       actorId: req.user._id,
       session,

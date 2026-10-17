@@ -47,6 +47,23 @@ const settingsSchema = new mongoose.Schema(
       type: String,
       default: '919860924504',
     },
+    isStoreOpen: {
+      type: Boolean,
+      default: true,
+    },
+    closureReason: {
+      type: String,
+      default: '',
+    },
+    reopenAt: {
+      type: Date,
+      default: null,
+    },
+    slotCapacity: {
+      type: Map,
+      of: Number,
+      default: {},
+    },
   },
   {
     timestamps: true,

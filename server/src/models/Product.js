@@ -32,6 +32,7 @@ const productSchema = new mongoose.Schema(
     },
     price:           { type: Number, required: true, min: 0 },
     mrp:             { type: Number, required: true, min: 0 },
+    costPrice:       { type: Number, default: 0, min: 0 },
     imageUrl:        { type: String, default: '' },
     offerPercent:    { type: Number, default: 0, min: 0, max: 100 },
     offerEndTime:    { type: Date, default: null }, // R2: optional end time for deals (CAT-06)

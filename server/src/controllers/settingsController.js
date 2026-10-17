@@ -29,6 +29,9 @@ const getPublicSettings = async (req, res, next) => {
         upiMobile: settings.upiMobile,
         upiQrImage: settings.upiQrImage,
         storeWhatsapp: settings.storeWhatsapp,
+        isStoreOpen: settings.isStoreOpen !== false,
+        closureReason: settings.closureReason || '',
+        reopenAt: settings.reopenAt || null,
       },
     });
   } catch (err) {

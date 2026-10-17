@@ -602,6 +602,8 @@ const getProducts = async (req, res, next) => {
       filter.$or = [
         { nameEn: { $regex: safeSearch, $options: 'i' } },
         { nameMr: { $regex: safeSearch, $options: 'i' } },
+        { nameHi: { $regex: safeSearch, $options: 'i' } },
+        { aliases: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 
@@ -640,6 +642,7 @@ const createProduct = async (req, res, next) => {
     const imageUrl        = ensureString(req.body.imageUrl) || '';
     const price           = Number(req.body.price);
     const mrp             = Number(req.body.mrp);
+    const costPrice       = req.body.costPrice !== undefined && !isNaN(Number(req.body.costPrice)) && Number(req.body.costPrice) >= 0 ? Number(req.body.costPrice) : 0;
     const offerPercent    = Number(req.body.offerPercent) || 0;
     const sortOrder       = Number(req.body.sortOrder) || 0;
     const stockQuantity   = req.body.stockQuantity !== undefined && !isNaN(Number(req.body.stockQuantity)) ? Number(req.body.stockQuantity) : 0;
@@ -700,6 +703,7 @@ const createProduct = async (req, res, next) => {
       imageUrl,
       price,
       mrp,
+      costPrice,
       offerPercent,
       stockQuantity,
       reorderLevel,
@@ -789,6 +793,9 @@ const updateProduct = async (req, res, next) => {
     }
     if (unitType)              updateFields.unitType = unitType;
     if (!isNaN(offerPercent))  updateFields.offerPercent = Math.max(0, Math.min(100, offerPercent));
+    if (req.body.costPrice !== undefined && !isNaN(Number(req.body.costPrice)) && Number(req.body.costPrice) >= 0) {
+      updateFields.costPrice = Number(req.body.costPrice);
+    }
     if (imageUrl !== undefined) updateFields.imageUrl = imageUrl;
     if (req.body.active    !== undefined) updateFields.active    = Boolean(req.body.active);
     if (req.body.unavailableFlag !== undefined) updateFields.unavailableFlag = Boolean(req.body.unavailableFlag);
@@ -1109,25 +1116,105 @@ const updateSettings = async (req, res, next) => {
 
 /**
  * GET /api/admin/customers
+ * Supports search, pagination, segment filters, and lifetime metrics.
  */
 const getCustomers = async (req, res, next) => {
   try {
-    const customers = await User.find({ role: 'customer' })
-      .select('-passwordHash')
-      .sort({ createdAt: -1 });
+    const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+    const segment = typeof req.query.segment === 'string' ? req.query.segment.trim() : '';
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const skip = (page - 1) * limit;
 
-    // Aggregate order counts for each customer
-    const orderCounts = await Order.aggregate([
-      { $group: { _id: '$userId', count: { $sum: 1 } } },
+    const filter = { role: 'customer' };
+
+    if (search) {
+      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      filter.$or = [
+        { name: { $regex: escaped, $options: 'i' } },
+        { phone: { $regex: escaped, $options: 'i' } },
+      ];
+    }
+
+    if (segment === 'blocked') {
+      filter.blocked = true;
+    }
+
+    const [total, customers] = await Promise.all([
+      User.countDocuments(filter),
+      User.find(filter)
+        .select('-passwordHash')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
     ]);
-    const orderCountMap = new Map(orderCounts.map((o) => [o._id.toString(), o.count]));
 
-    const result = customers.map((c) => ({
-      ...c.toObject(),
-      orderCount: orderCountMap.get(c._id.toString()) || 0,
-    }));
+    const customerIds = customers.map((c) => c._id);
 
-    res.status(200).json({ success: true, data: result });
+    // Aggregate lifetime stats from non-cancelled orders
+    const orderStats = await Order.aggregate([
+      { $match: { userId: { $in: customerIds }, status: { $ne: 'cancelled' } } },
+      {
+        $group: {
+          _id: '$userId',
+          orderCount: { $sum: 1 },
+          lifetimeSpend: { $sum: '$total' },
+          lastOrderDate: { $max: '$createdAt' },
+        },
+      },
+    ]);
+    const statsMap = new Map(orderStats.map((s) => [s._id.toString(), s]));
+
+    // Fetch active udhar accounts if any
+    const udharAccounts = await UdharAccount.find({ customer: { $in: customerIds } }).lean();
+    const udharMap = new Map(udharAccounts.map((u) => [u.customer.toString(), u]));
+
+    const result = customers.map((c) => {
+      const cid = c._id.toString();
+      const st = statsMap.get(cid) || { orderCount: 0, lifetimeSpend: 0, lastOrderDate: null };
+      const udhar = udharMap.get(cid) || null;
+      return {
+        ...c,
+        orderCount: st.orderCount,
+        lifetimeSpend: st.lifetimeSpend,
+        lastOrderDate: st.lastOrderDate,
+        udharAccount: udhar ? { balance: udhar.balance, creditLimit: udhar.creditLimit, status: udhar.status } : null,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit) || 1,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * GET /api/admin/customers/:id/orders
+ * Returns recent order history for customer profile drawer.
+ */
+const getCustomerOrders = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid customer ID.' });
+    }
+
+    const orders = await Order.find({ userId: id })
+      .sort({ createdAt: -1 })
+      .limit(30)
+      .lean();
+
+    res.status(200).json({ success: true, data: orders });
   } catch (err) {
     next(err);
   }
@@ -1548,22 +1635,30 @@ const getReports = async (req, res, next) => {
       .limit(10)
       .lean();
 
-    // 6. Current warehouse stock inventory valuation
+    // 6. Current warehouse stock inventory valuation (Rule: at real cost, not selling price)
     const stockValuationAgg = await Product.aggregate([
       { $match: { active: true } },
       {
         $group: {
           _id: null,
           totalStockUnits: { $sum: '$stockQuantity' },
-          totalCostValuation: { $sum: { $multiply: ['$stockQuantity', '$price'] } },
+          totalCostValuation: { $sum: { $multiply: ['$stockQuantity', { $ifNull: ['$costPrice', 0] }] } },
+          totalSellingValuation: { $sum: { $multiply: ['$stockQuantity', '$price'] } },
           totalMrpValuation: { $sum: { $multiply: ['$stockQuantity', '$mrp'] } },
+          missingCostCount: {
+            $sum: {
+              $cond: [{ $or: [{ $eq: ['$costPrice', null] }, { $eq: ['$costPrice', 0] }] }, 1, 0],
+            },
+          },
         },
       },
     ]);
     const stockValuation = stockValuationAgg.length > 0 ? stockValuationAgg[0] : {
       totalStockUnits: 0,
       totalCostValuation: 0,
+      totalSellingValuation: 0,
       totalMrpValuation: 0,
+      missingCostCount: 0,
     };
 
     res.status(200).json({
@@ -1583,8 +1678,11 @@ const getReports = async (req, res, next) => {
         inventoryValuation: {
           totalStockUnits: stockValuation.totalStockUnits,
           costValuation: stockValuation.totalCostValuation,
+          sellingValuation: stockValuation.totalSellingValuation,
           mrpValuation: stockValuation.totalMrpValuation,
-          potentialMargin: Math.max(0, stockValuation.totalMrpValuation - stockValuation.totalCostValuation),
+          potentialMargin: Math.max(0, stockValuation.totalSellingValuation - stockValuation.totalCostValuation),
+          customerSavings: Math.max(0, stockValuation.totalMrpValuation - stockValuation.totalSellingValuation),
+          missingCostCount: stockValuation.missingCostCount,
         },
       },
     });
@@ -2023,6 +2121,7 @@ module.exports = {
   getSettings,
   updateSettings,
   getCustomers,
+  getCustomerOrders,
   toggleBlockCustomer,
   uploadImage,
   // R4: Staff & Power Tools

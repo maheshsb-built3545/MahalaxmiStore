@@ -126,6 +126,18 @@ const createOrder = async (req, res, next) => {
     let settings = await Settings.findOne().session(session);
     if (!settings) settings = new Settings();
 
+    // 4b. Enforce store open status
+    if (settings.isStoreOpen === false) {
+      await session.abortTransaction();
+      session.endSession();
+      const reason = settings.closureReason ? ` (${settings.closureReason})` : '';
+      return res.status(400).json({
+        success: false,
+        message: `दुकान सध्या बंद आहे${reason} / Store is currently closed${reason}. नवीन ऑर्डर्स तात्पुरत्या बंद आहेत.`,
+        code: 'STORE_CLOSED',
+      });
+    }
+
     // 5. Validate service pincode
     if (!settings.servicePincodes.includes(address.pincode)) {
       await session.abortTransaction();
