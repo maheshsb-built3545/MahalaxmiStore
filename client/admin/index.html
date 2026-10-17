@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mahalaxmi Kirana Store — Admin</title>
+  <script>
+    (function() {
+      try {
+        const token = localStorage.getItem('kirana_token');
+        const user = localStorage.getItem('kirana_user');
+        if (token && user) {
+          window.location.replace('dashboard.html');
+        } else {
+          window.location.replace('../login.html?redirect=admin/dashboard.html');
+        }
+      } catch (_) {
+        window.location.replace('../login.html');
+      }
+    })();
+  </script>
+</head>
+<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f8fafc;">
+  <p style="color:#64748b;font-size:0.9rem;">लोड होत आहे / Redirecting to Admin Dashboard...</p>
+</body>
+</html>
