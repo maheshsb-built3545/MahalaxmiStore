@@ -159,6 +159,12 @@ const DICTIONARY = {
   inbox_yesterday: 'काल / Yesterday',
   inbox_earlier: 'मागील सूचना / Earlier',
   no_notifications: 'कोणत्याही सूचना नाहीत / No notifications found',
+  settings_saved: 'सेटिंग्ज यशस्वीरीत्या जतन केल्या! / Settings saved successfully!',
+  settings_unsaved_changes: 'काही बदल जतन केलेले नाहीत. तुम्हाला खरंच पान सोडायचे आहे का? / You have unsaved changes. Are you sure you want to leave?',
+  settings_backup_downloaded: 'डेटा बॅकअप डाऊनलोड सुरू झाले / Backup download started',
+  settings_cleanup_success: 'जुन्या सूचना यशस्वीरित्या हटवल्या / Old notifications cleaned up',
+  settings_pincodes: 'सेवा देणारे पिनकोड / Serviceable Pincodes',
+  settings_delivery_rules: 'डिलिव्हरी नियम व फी / Delivery Rules & Fees',
 
   // ── Empty States & Alerts ──
   no_orders_found: 'कोणतीही नवीन ऑर्डर नाही / No orders found',

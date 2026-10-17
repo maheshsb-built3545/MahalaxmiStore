@@ -1094,6 +1094,13 @@ const updateSettings = async (req, res, next) => {
     let settings = await Settings.findOne();
     if (!settings) settings = new Settings();
 
+    const beforeState = {
+      minOrder: settings.minOrder,
+      deliveryCharge: settings.deliveryCharge,
+      freeDeliveryAbove: settings.freeDeliveryAbove,
+      isStoreOpen: settings.isStoreOpen,
+    };
+
     settings.minOrder = minOrder;
     settings.deliveryCharge = deliveryCharge;
     settings.freeDeliveryAbove = freeDeliveryAbove;
@@ -1101,12 +1108,41 @@ const updateSettings = async (req, res, next) => {
     settings.slots = cleanSlots;
     if (storeHours) settings.storeHours = storeHours;
     settings.upiMobile = upiMobile.replace(/[^0-9]/g, '').slice(-10);
+    if (req.body.upiId) settings.upiId = String(req.body.upiId).trim();
     settings.storeWhatsapp = cleanWhatsapp;
     if (upiQrImage) settings.upiQrImage = upiQrImage;
 
+    if (typeof req.body.isStoreOpen === 'boolean') {
+      settings.isStoreOpen = req.body.isStoreOpen;
+    }
+    if (req.body.closureReason !== undefined) {
+      settings.closureReason = String(req.body.closureReason).trim();
+    }
+    if (req.body.reopenAt !== undefined) {
+      settings.reopenAt = req.body.reopenAt ? new Date(req.body.reopenAt) : null;
+    }
+    if (req.body.slotCapacity && typeof req.body.slotCapacity === 'object') {
+      settings.slotCapacity = req.body.slotCapacity;
+    }
+
     await settings.save();
 
-    res.status(200).json({ success: true, data: settings });
+    // Log to AuditLog (Rule ADM-02)
+    await AuditLog.create({
+      actor: { id: req.user._id, name: req.user.name, role: req.user.role },
+      action: 'store_settings_updated',
+      target: { collection: 'Settings', id: settings._id, name: 'Store Settings' },
+      before: beforeState,
+      after: {
+        minOrder: settings.minOrder,
+        deliveryCharge: settings.deliveryCharge,
+        freeDeliveryAbove: settings.freeDeliveryAbove,
+        isStoreOpen: settings.isStoreOpen,
+      },
+      note: 'Updated store rules, delivery thresholds or operating status',
+    });
+
+    res.status(200).json({ success: true, data: settings, message: 'Settings saved successfully!' });
   } catch (err) {
     next(err);
   }

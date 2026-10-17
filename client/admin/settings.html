@@ -2,189 +2,43 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Store Settings — महालक्ष्मी किराणा Admin</title>
-  <link rel="stylesheet" href="css/admin.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>दुकान सेटिंग्ज (Store Settings) — Mahalaxmi Kirana Store</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
 </head>
-<body>
+<body data-page="settings">
+  <div id="app-shell">
+    <main class="page-container" id="settings-page-root" role="main" aria-label="दुकान सेटिंग्ज (Store Settings)">
+      <!-- Rendered dynamically by settings.js -->
+    </main>
+  </div>
 
-  <!-- Top Navbar -->
-  <header class="admin-navbar" id="adminNavbar"></header>
-
-  <!-- Main Content -->
-  <main class="admin-container">
-
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">⚙️ Store Settings / दुकान सेटिंग्ज</h1>
-        <p class="page-subtitle">Changes update the storefront and checkout immediately.</p>
-      </div>
-    </div>
-
-    <div id="settingsSuccessAlert" style="display: none; background: #dcfce7; color: #166534; padding: 0.75rem 1rem; border-radius: var(--admin-radius); margin-bottom: 1rem; font-weight: 600;">
-      ✅ Settings saved successfully! Changes are live on the customer storefront.
-    </div>
-
-    <form id="settingsForm" style="background: #ffffff; border: 1px solid var(--admin-border); border-radius: var(--admin-radius); padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); max-width: 700px;">
-
-      <h2 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem;">
-        🚚 Delivery Rules & Thresholds
-      </h2>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-        <div class="form-group">
-          <label class="form-label">Min Order (₹) *</label>
-          <input type="number" id="setMinOrder" class="form-control" min="0" required>
-          <div class="form-help">Orders below this cannot checkout.</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Delivery Fee (₹) *</label>
-          <input type="number" id="setDeliveryCharge" class="form-control" min="0" required>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Free Delivery Threshold (₹) *</label>
-        <input type="number" id="setFreeDeliveryAbove" class="form-control" min="0" required>
-        <div class="form-help">Orders equal to or above this amount get free delivery.</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Serviceable Pincodes (comma separated) *</label>
-        <input type="text" id="setPincodes" class="form-control" required placeholder="423602, 423601">
-        <div class="form-help">Only addresses with these 6-digit pincodes can place orders.</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Delivery Slots (one per line) *</label>
-        <textarea id="setSlots" class="form-control" rows="3" required placeholder="Morning (7:00 AM – 11:00 AM)&#10;Evening (5:00 PM – 9:00 PM)"></textarea>
-      </div>
-
-      <h2 style="font-size: 1.05rem; font-weight: 700; margin: 1.5rem 0 1rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem;">
-        💳 UPI & Contact Details
-      </h2>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-        <div class="form-group">
-          <label class="form-label">UPI Mobile Number (10 digits) *</label>
-          <input type="text" id="setUpiMobile" class="form-control" required placeholder="9860924504">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Store WhatsApp Number *</label>
-          <input type="text" id="setStoreWhatsapp" class="form-control" required placeholder="919860924504">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Store Hours (Display text)</label>
-        <input type="text" id="setStoreHours" class="form-control" placeholder="Daily 7:00 AM – 10:00 PM">
-      </div>
-
-      <!-- Cloudinary UPI QR Image Upload -->
-      <div class="form-group">
-        <label class="form-label">UPI QR Code Image</label>
-        <input type="hidden" id="setUpiQrImageUrl">
-        <input type="file" id="qrImageFile" accept="image/jpeg,image/png,image/webp" class="form-control">
-        <div class="form-help" id="qrUploadStatus">Upload your shop's official PhonePe / GooglePay / Paytm QR code.</div>
-        <div id="qrPreviewWrap" style="margin-top: 0.75rem; display: none;">
-          <img id="qrPreview" src="" alt="QR Preview" style="max-width: 140px; border-radius: 8px; border: 1px solid var(--admin-border); padding: 4px; background: #ffffff;">
-        </div>
-      </div>
-
-      <div style="margin-top: 1.5rem;">
-        <button type="submit" class="btn-action btn-primary" id="saveSettingsBtn" style="width: 100%; min-height: 48px; font-size: 1rem;">
-          Save All Settings / सर्व सेटिंग्ज जतन करा
-        </button>
-      </div>
-
-    </form>
-
-    <!-- ── Testimonials Management (ADM-06, D11) ─────────────────────── -->
-    <div style="background: #ffffff; border: 1px solid var(--admin-border); border-radius: var(--admin-radius); padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); max-width: 700px; margin-top: 2rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem;">
-        <h2 style="font-size: 1.05rem; font-weight: 700; margin: 0;">
-          💬 Customer Reviews / ग्राहकांचे मनोगत (ADM-06)
-        </h2>
-        <span style="font-size: 0.75rem; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
-          Sample Tag Labeled
-        </span>
-      </div>
-      <p style="font-size: 0.85rem; color: #64748b; margin-top: 0; margin-bottom: 1rem;">
-        Add authentic customer experiences or manage sample testimonials shown on the storefront.
-      </p>
-
-      <!-- Add New Testimonial Form -->
-      <form id="addTestimonialForm" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
-        <h3 style="font-size: 0.92rem; font-weight: 700; margin: 0 0 0.75rem; color: #1e293b;">+ Add Review / नवीन अभिप्राय जोडा</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
-          <div class="form-group" style="margin: 0;">
-            <label class="form-label" style="font-size: 0.8rem;">Customer Name *</label>
-            <input type="text" id="testiName" class="form-control" required placeholder="उदा. रमेश शिंदे">
-          </div>
-          <div class="form-group" style="margin: 0;">
-            <label class="form-label" style="font-size: 0.8rem;">Village / Area</label>
-            <input type="text" id="testiArea" class="form-control" placeholder="उदा. येसगाव, कोपरगाव">
-          </div>
-        </div>
-        <div class="form-group" style="margin-bottom: 0.75rem;">
-          <label class="form-label" style="font-size: 0.8rem;">Review in Marathi *</label>
-          <textarea id="testiTextMr" class="form-control" rows="2" required placeholder="उदा. माल नेहमी ताजा आणि चांगल्या दर्जाचा असतो."></textarea>
-        </div>
-        <div class="form-group" style="margin-bottom: 0.75rem;">
-          <label class="form-label" style="font-size: 0.8rem;">Review in English (Optional)</label>
-          <input type="text" id="testiTextEn" class="form-control" placeholder="e.g. Items are always fresh and delivered fast.">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-          <label style="font-size: 0.82rem; color: #475569; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
-            <input type="checkbox" id="testiSampleFlag" checked>
-            Mark as Sample Content (नमुना अभिप्राय)
-          </label>
-          <button type="submit" class="btn-action btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">
-            Save Review / अभिप्राय जतन करा
-          </button>
-        </div>
-      </form>
-
-      <!-- Existing Reviews List -->
-      <div id="testimonialsAdminList">
-        <div style="text-align: center; color: #64748b; padding: 1rem;">Loading reviews…</div>
-      </div>
-    </div>
-
-    <!-- ── System Backup & Maintenance (R6 / SYS-01) ─────────────────────── -->
-    <div style="background: #ffffff; border: 1px solid var(--admin-border); border-radius: var(--admin-radius); padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); max-width: 700px; margin-top: 2rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem;">
-        <h2 style="font-size: 1.05rem; font-weight: 700; margin: 0; color: #04251a;">
-          💾 Full Database Backup & Maintenance / डेटाबेस बॅकअप (R6)
-        </h2>
-        <span style="font-size: 0.75rem; background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
-          Owner Only
-        </span>
-      </div>
-      <p style="font-size: 0.85rem; color: #64748b; margin-top: 0; margin-bottom: 1rem;">
-        Download an offline JSON snapshot of the entire store catalog, orders, Udhar credit ledger, customer accounts, and audit logs.
-      </p>
-
-      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-        <button type="button" class="btn-action btn-primary" id="btnDownloadBackup" style="display:flex;align-items:center;gap:6px;">
-          📥 Download Full Database Backup (.json)
-        </button>
-        <button type="button" class="btn-action btn-outline" id="btnCleanupNotifications" style="display:flex;align-items:center;gap:6px;">
-          🧹 Archive Notifications (>90 Days)
-        </button>
-      </div>
-      <div id="backupStatusMsg" style="margin-top: 0.75rem; font-size: 0.85rem; display: none;"></div>
-    </div>
-
-  </main>
-
-  <!-- Mobile Bottom Bar -->
-  <nav class="mobile-bottom-bar" id="mobileBottomBar"></nav>
-
-  <!-- Scripts -->
+  <!-- Core Scripts -->
   <script src="../js/config.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="js/admin-common.js"></script>
-  <script src="js/admin-settings.js"></script>
+  <script src="js/core/net.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/router-guard.js"></script>
+  <script src="js/core/i18n.js"></script>
+  <script src="js/core/format.js"></script>
+  <script src="js/core/dom.js"></script>
+  <script src="js/core/toast.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/core/api.js"></script>
+
+  <!-- Components -->
+  <script src="js/components/shell.js"></script>
+  <script src="js/components/bottom-sheet.js"></script>
+  <script src="js/components/confirm.js"></script>
+  <script src="js/components/stat-card.js"></script>
+  <script src="js/components/badge.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/empty-state.js"></script>
+
+  <!-- Page Logic -->
+  <script src="js/pages/settings.js"></script>
 </body>
 </html>
