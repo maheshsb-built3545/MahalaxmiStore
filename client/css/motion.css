@@ -1,0 +1,174 @@
+/* ============================================================
+   Mahalaxmi Kirana Store — motion.css
+   Elevated design tokens, scroll-driven reveals, and micro-interactions.
+   Vanilla CSS only (no external libraries).
+   ============================================================ */
+
+/* ── 1. Elevated Design Tokens ──────────────────────────────── */
+:root {
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-pill: 999px;
+
+  --shadow-1: 0 2px 8px -2px rgba(4, 37, 26, 0.08), 0 1px 3px 0 rgba(4, 37, 26, 0.04);
+  --shadow-2: 0 12px 28px -6px rgba(4, 37, 26, 0.14), 0 4px 10px -2px rgba(4, 37, 26, 0.06);
+  --shadow-3: 0 24px 50px -12px rgba(4, 37, 26, 0.28), 0 8px 20px -4px rgba(4, 37, 26, 0.12);
+
+  --ease-out:    cubic-bezier(.22, .61, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+
+  --dur-fast: 160ms;
+  --dur:      280ms;
+  --dur-slow: 520ms;
+
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+}
+
+/* ── 2. Scroll-Driven Reveal System ────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  will-change: opacity, transform;
+}
+
+[data-reveal="scale"] {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+}
+
+[data-reveal].is-revealed,
+[data-reveal="scale"].is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  will-change: auto;
+}
+
+/* Stagger parent & children */
+[data-reveal="stagger"] {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal="stagger"] > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  transition-delay: calc(var(--stagger-i, 0) * 60ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal="stagger"].is-revealed > *,
+[data-reveal="stagger"] > *.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: auto;
+}
+
+/* ── 3. Keyframe Animations ─────────────────────────────────── */
+@keyframes heroEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dealPulse {
+  0%, 100% {
+    opacity: 0.92;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes badgePop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fabFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+@keyframes bounceCue {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(5px); }
+}
+
+@keyframes btnPop {
+  0%   { transform: scale(0.96); }
+  50%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* ── 4. Staggered Hero Entrances ────────────────────────────── */
+.hero-animate-1 { animation: heroEntrance 0.7s var(--ease-out) 0.08s both; }
+.hero-animate-2 { animation: heroEntrance 0.7s var(--ease-out) 0.16s both; }
+.hero-animate-3 { animation: heroEntrance 0.7s var(--ease-out) 0.24s both; }
+.hero-animate-4 { animation: heroEntrance 0.7s var(--ease-out) 0.32s both; }
+.hero-animate-5 { animation: heroEntrance 0.7s var(--ease-out) 0.40s both; }
+
+/* ── 5. Scroll Cue Indicator ────────────────────────────────── */
+.scroll-cue {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  z-index: 2;
+  transition: opacity var(--dur) var(--ease-out);
+  pointer-events: auto;
+}
+.scroll-cue:hover {
+  color: #ffffff;
+}
+.scroll-cue.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.scroll-cue-icon {
+  animation: bounceCue 2s infinite ease-in-out;
+}
+
+/* ── 6. Accessibility: Reduced Motion Override ──────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal],
+  [data-reveal="scale"],
+  [data-reveal="stagger"] > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .scroll-cue-icon,
+  .fab,
+  .save,
+  .badge.badge-pop {
+    animation: none !important;
+  }
+}

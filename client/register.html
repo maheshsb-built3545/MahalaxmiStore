@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Register • नवीन ग्राहक नोंदणी • Mahalaxmi Kirana Store</title>
+<meta name="description" content="Create a new customer account at Mahalaxmi Kirana Store, Yesgaon to enjoy 30-minute grocery delivery.">
+<meta name="theme-color" content="#064e3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mahalaxmi Kirana">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="images/icon-192.svg">
+<link rel="apple-touch-icon" href="images/icon-192.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+
+<!-- Announcement Bar -->
+<div class="announce">
+  <div class="wrap">
+    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="wrap hdr-row">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <span class="en">Mahalaxmi Kirana</span>
+        <span class="mr">महालक्ष्मी किराणा दुकान</span>
+      </div>
+    </a>
+    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div style="flex:1"></div>
+    <a href="index.html" class="navlink">← Back to Store</a>
+  </div>
+</header>
+
+<!-- Main Auth Container -->
+<main class="auth-main">
+  <div class="auth-card">
+    <div class="auth-card-head">
+      <span class="auth-icon">📝</span>
+      <h1>Customer Register <span class="mr">नवीन ग्राहक नोंदणी</span></h1>
+      <p>Create an account to save your delivery addresses and reorder easily.</p>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div id="errorAlert" class="alert-box" style="display:none" role="alert"></div>
+
+    <form id="registerForm" novalidate>
+      <div class="form-group">
+        <label for="name">
+          Full Name <span class="mr">पूर्ण नाव</span>
+          <span class="req">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          placeholder="e.g. Suresh Patil" 
+          minlength="2" 
+          maxlength="100" 
+          required 
+          autocomplete="name"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="phone">
+          Mobile Number <span class="mr">मोबाईल नंबर</span>
+          <span class="req">*</span>
+        </label>
+        <div class="input-with-prefix">
+          <span class="prefix">+91</span>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            placeholder="9860924504" 
+            maxlength="14" 
+            required 
+            autocomplete="tel" 
+            aria-describedby="phoneHelp"
+          >
+        </div>
+        <small id="phoneHelp" class="form-hint">Must be a valid 10-digit Indian mobile number</small>
+      </div>
+
+      <div class="form-group">
+        <label for="password">
+          Password <span class="mr">पासवर्ड</span>
+          <span class="req">*</span>
+        </label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="Minimum 8 characters" 
+          minlength="8" 
+          maxlength="72" 
+          required 
+          autocomplete="new-password"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">
+          Confirm Password <span class="mr">पासवर्ड पुन्हा टाका</span>
+          <span class="req">*</span>
+        </label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          name="confirmPassword" 
+          placeholder="Repeat your password" 
+          minlength="8" 
+          maxlength="72" 
+          required 
+          autocomplete="new-password"
+        >
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
+        Create Account <span class="mr">खाते तयार करा</span>
+      </button>
+    </form>
+
+    <div class="auth-card-foot">
+      <p>Already have an account? <a id="loginLink" href="login.html">Log in here <span class="mr">येथे लॉगिन करा</span></a></p>
+    </div>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pwa.js"></script>
+<script>
+  const redirectTarget = auth.getSafeRedirect();
+  document.getElementById('loginLink').href = `login.html?redirect=${encodeURIComponent(redirectTarget)}`;
+
+  if (auth.isLoggedIn()) {
+    window.location.href = redirectTarget;
+  }
+
+  const form = document.getElementById('registerForm');
+  const errorAlert = document.getElementById('errorAlert');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function showError(msg) {
+    errorAlert.textContent = msg;
+    errorAlert.style.display = 'block';
+  }
+
+  function clearError() {
+    errorAlert.textContent = '';
+    errorAlert.style.display = 'none';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    const rawName = document.getElementById('name').value.trim();
+    const rawPhone = document.getElementById('phone').value.trim();
+    const rawPass = document.getElementById('password').value;
+    const rawConfirm = document.getElementById('confirmPassword').value;
+
+    if (rawName.length < 2 || rawName.length > 100) {
+      showError('Please enter your full name (at least 2 letters) / कृपया तुमचे पूर्ण नाव टाका.');
+      return;
+    }
+
+    const digits = rawPhone.replace(/\D/g, '').slice(-10);
+    if (!/^[6-9]\d{9}$/.test(digits)) {
+      showError('Please enter a valid 10-digit Indian mobile number / कृपया वैध १० अंकी मोबाईल नंबर टाका.');
+      return;
+    }
+
+    if (rawPass.length < 8 || rawPass.length > 72) {
+      showError('Password must be between 8 and 72 characters / पासवर्ड ८ ते ७२ अक्षरांचा असावा.');
+      return;
+    }
+
+    if (rawPass !== rawConfirm) {
+      showError('Passwords do not match / दोन्ही पासवर्ड जुळत नाहीत.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Creating account…';
+
+    try {
+      const res = await fetch(`${CONFIG.API_BASE}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: rawName,
+          phone: digits,
+          password: rawPass,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        showError(data.message || 'Registration failed. Please check your inputs.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+        return;
+      }
+
+      // Save token and user safely in localStorage
+      auth.setSession(data.token, data.user);
+
+      // Redirect to safe target (e.g. checkout.html)
+      window.location.href = redirectTarget;
+    } catch (err) {
+      showError('Network error. Is the server running? Please try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account';
+    }
+  });
+</script>
+</body>
+</html>

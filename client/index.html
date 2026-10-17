@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mahalaxmi Kirana Store • महालक्ष्मी किराणा दुकान</title>
+<meta name="description" content="Order fresh groceries online from Mahalaxmi Kirana Store, Yesgaon, Kopargaon. 500+ items, 30-minute delivery. Order on WhatsApp.">
+<meta name="keywords" content="grocery, kirana store, Yesgaon, Kopargaon, online grocery, daily essentials, atta, dal, oil, spices, fresh delivery">
+<link rel="canonical" href="https://mahalaxmikirana.in/">
+
+<!-- Open Graph / Facebook / WhatsApp -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mahalaxmikirana.in/">
+<meta property="og:title" content="Mahalaxmi Kirana Store • महालक्ष्मी किराणा दुकान">
+<meta property="og:description" content="Order fresh groceries online from Mahalaxmi Kirana Store, Yesgaon, Kopargaon. 500+ items, 30-minute delivery.">
+<meta property="og:locale" content="mr_IN">
+<meta property="og:site_name" content="Mahalaxmi Kirana Store">
+
+<!-- LocalBusiness Schema (Playbook 4.3) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "GroceryStore",
+  "name": "Mahalaxmi Kirana Store",
+  "alternateName": "महालक्ष्मी किराणा दुकान",
+  "description": "Trusted neighbourhood grocery store in Yesgaon, Kopargaon. 500+ daily grocery items with 30-min delivery, UPI payments, and WhatsApp ordering.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Post Yesgaon",
+    "addressLocality": "Kopargaon",
+    "addressRegion": "Maharashtra",
+    "postalCode": "423602",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "19.8856",
+    "longitude": "74.4789"
+  },
+  "telephone": "+919860924504",
+  "priceRange": "₹₹",
+  "currenciesAccepted": "INR",
+  "paymentAccepted": "Cash, UPI, Credit (Udhar)",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "07:00",
+      "closes": "22:00"
+    }
+  ],
+  "areaServed": ["Yesgaon", "Kopargaon", "423602", "423601"]
+}
+</script>
+
+<meta name="theme-color" content="#064e3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mahalaxmi Kirana">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="images/icon-192.svg">
+<link rel="apple-touch-icon" href="images/icon-192.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ── Announcement bar ──────────────────────────────────────── -->
+<div class="announce">
+  <div class="wrap">
+    <span id="statusLine">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Store status</span>
+    </span>
+    <span>⚡ 30-min delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+  </div>
+</div>
+
+<!-- ── Header ────────────────────────────────────────────────── -->
+<header>
+  <div class="wrap hdr-row">
+    <a href="#top" class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <span class="en">Mahalaxmi Kirana</span>
+        <span class="mr">महालक्ष्मी किराणा दुकान</span>
+      </div>
+    </a>
+
+    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+
+    <div class="search">
+      <input type="search" id="searchInput" placeholder="Search atta, oil, dal…" aria-label="Search products">
+      <span class="kbd">⌘K</span>
+    </div>
+
+    <nav class="hide-mobile">
+      <a href="#catalog" class="navlink">Catalog</a>
+      <a href="#deals"   class="navlink">Deals</a>
+      <a href="#store"   class="navlink">Store</a>
+    </nav>
+
+    <div class="hdr-actions">
+      <div id="userHeaderArea"></div>
+
+      <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+        🛒 Cart<span class="badge" id="cartBadge">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ── Hero ──────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg-layer" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-content">
+      <div class="trust hero-animate-1">🤝 Trusted by 2,500+ local families</div>
+      <h1 class="hero-animate-2">Fresh groceries from your neighbourhood dukan
+        <span class="mr">तुमच्या शेजारच्या दुकानातून ताजा किराणा</span>
+      </h1>
+      <p class="lede hero-animate-3">Order atta, dal, oil and daily essentials online — packed fresh at our Yesgaon store and delivered to your door in 30 minutes.</p>
+      <div class="cta-row hero-animate-4">
+        <a href="#catalog" class="btn btn-gold">Browse Catalog</a>
+        <a id="heroWaLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-white">Order on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+  <a href="#store" class="scroll-cue" id="scrollCue" aria-label="Scroll to store section">
+    <span>Scroll</span>
+    <svg class="scroll-cue-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </a>
+</section>
+
+<!-- ── Photo-list banner ──────────────────────────────────────── -->
+<section class="snap" data-reveal>
+  <div class="wrap">
+    <p>📸 Got a handwritten list? Snap a photo and send it — we'll pack it for you.</p>
+    <a id="snapWaLink" href="#" target="_blank" rel="noopener" class="btn">Send list on WhatsApp</a>
+  </div>
+</section>
+
+<!-- ── R3: AI Order Box (AI-01 .. AI-09, ORD-05, ORD-08) ──────── -->
+<section class="section ai-order-section" id="aiOrderBox">
+  <div class="wrap">
+    <div class="ai-box-card" data-reveal>
+      <div class="ai-box-header">
+        <div class="ai-badge-row">
+          <span class="ai-smart-badge">✨ AI Kirana Assistant</span>
+          <span class="ai-tagline">मराठी / Hindi / Hinglish / English</span>
+        </div>
+        <h2 class="ai-box-title">
+          किराणा यादी येथे लिहा किंवा पेस्ट करा
+          <span class="ai-box-sub">— Instant Grocery List to Cart</span>
+        </h2>
+        <p class="ai-box-desc">
+          व्हॉट्सॲप मेसेज किंवा घरची यादी जशी आहे तशी येथे पेस्ट करा. आमचे AI कॅटलॉगमधून वस्तू, वजन आणि चालू भाव आपोआप शोधेल.
+        </p>
+      </div>
+
+      <!-- Quick sample pills -->
+      <div class="ai-sample-pills">
+        <span class="ai-pills-label">💡 उदाहरणे (क्लिक करा):</span>
+        <button type="button" class="ai-pill-btn" data-text="२ किलो साखर, १ लिटर गोडे तेल, १ साबण">२ किलो साखर, १ लिटर गोडे तेल, १ साबण</button>
+        <button type="button" class="ai-pill-btn" data-text="5kg wheat flour, 2kg basmati rice, 1 packet tea">5kg wheat flour, 2kg basmati rice, 1 packet tea</button>
+        <button type="button" class="ai-pill-btn" data-text="१ किलो तूर डाळ, अर्धा किलो पोहे, १०० ग्रॅम जिरे">१ किलो तूर डाळ, अर्धा किलो पोहे, १०० ग्रॅम जिरे</button>
+      </div>
+
+      <!-- Input controls -->
+      <div class="ai-input-wrapper">
+        <textarea
+          id="aiListInput"
+          class="ai-textarea"
+          rows="4"
+          placeholder="उदा. २ किलो साखर, १ लिटर तेल, १ डेटॉल साबण, अर्धा किलो चहा पावडर...&#10;Type or paste items separated by commas or newlines..."
+          maxlength="2000"
+          aria-label="Grocery list text"
+        ></textarea>
+        
+        <div class="ai-input-footer">
+          <div class="ai-input-left">
+            <button type="button" id="aiVoiceBtn" class="btn btn-voice" title="बोलून यादी सांगा (Voice Typing)">
+              <span class="voice-icon">🎙️</span>
+              <span class="voice-text">बोलून सांगा (Voice)</span>
+            </button>
+            <span id="aiCharCount" class="ai-char-counter">0 / 2000</span>
+          </div>
+          <div class="ai-input-right">
+            <button type="button" id="aiClearBtn" class="btn btn-secondary ai-btn-clear" style="display:none">Clear</button>
+            <button type="button" id="aiParseBtn" class="btn btn-primary ai-btn-submit">
+              <span class="ai-btn-text">यादी तपासा • Build Cart ✨</span>
+              <span class="ai-btn-spinner" style="display:none">
+                <span class="spinner-dot"></span><span class="spinner-dot"></span><span class="spinner-dot"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Voice Status Notice -->
+      <div id="aiVoiceStatus" class="ai-voice-status" style="display:none">
+        <span class="pulse-indicator"></span>
+        <span id="aiVoiceStatusText">तुमचा आवाज ऐकत आहे... (Listening... speak clearly)</span>
+      </div>
+
+      <!-- Parse Results Review Container (AI-02, AI-03, AI-04, ORD-05) -->
+      <div id="aiResultsTray" class="ai-results-tray" style="display:none">
+        <!-- Result header -->
+        <div class="ai-tray-summary">
+          <div class="ai-tray-title-group">
+            <h3 id="aiTrayTitle">यादीतील वस्तू तपासणी (Review Items)</h3>
+            <span id="aiFallbackBadge" class="badge-fallback" style="display:none">⚡ Local Catalog Match</span>
+          </div>
+          <p id="aiTraySub">खालील वस्तू तपासून एका क्लिकवर तुमच्या कार्टमध्ये टाका.</p>
+        </div>
+
+        <!-- Matched Items List -->
+        <div id="aiMatchedSection" class="ai-section-group">
+          <h4 class="ai-group-heading">✅ ओळखलेल्या वस्तू (<span id="aiMatchedCount">0</span>)</h4>
+          <div id="aiMatchedList" class="ai-item-cards"></div>
+        </div>
+
+        <!-- Ambiguous Items (AI-03) -->
+        <div id="aiAmbiguousSection" class="ai-section-group" style="display:none">
+          <h4 class="ai-group-heading amber">⚠️ नक्की कोणती वस्तू हवी आहे? (<span id="aiAmbiguousCount">0</span>)</h4>
+          <div id="aiAmbiguousList" class="ai-ambiguous-cards"></div>
+        </div>
+
+        <!-- Unmatched Items (AI-08) -->
+        <div id="aiUnmatchedSection" class="ai-section-group" style="display:none">
+          <h4 class="ai-group-heading gray">❓ कॅटलॉगमध्ये थेट न सापडलेल्या वस्तू (<span id="aiUnmatchedCount">0</span>)</h4>
+          <div id="aiUnmatchedList" class="ai-unmatched-pills"></div>
+          <p class="ai-unmatched-hint">टीप: हे आयटम तुम्ही चेकआउटवेळी "ऑर्डर टीप (Order Note)" मध्ये लिहू शकता किंवा दुकानदाराला व्हॉट्सॲपवर सांगू शकता.</p>
+        </div>
+
+        <!-- Confirm and Add to Cart Bar (AI-04, ORD-08) -->
+        <div class="ai-action-bar">
+          <div class="ai-total-box">
+            <span class="ai-total-label">एकूण अंदाजे रक्कम (Total):</span>
+            <span id="aiTotalPreview" class="ai-total-val">₹0</span>
+          </div>
+          <button type="button" id="aiAddToCartBtn" class="btn btn-gold btn-add-all-cart">
+            🛒 सर्व वस्तू कार्टमध्ये जोडा (Add All to Cart) →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Store info & GPS ───────────────────────────────────────── -->
+<section class="section" id="store">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <h2>आमचे दुकान <span style="color:#5b7a6f;font-weight:500;font-size:16px">— our store &amp; location</span></h2>
+      <p>Visit us in person or find us on the map — open daily 7 AM to 10 PM.</p>
+    </div>
+    <div class="store-grid">
+      <div class="store-col-left">
+        <div class="photo-row">
+          <div class="photo" data-reveal="scale">
+            <img
+              src="images/store-exterior.jpg"
+              alt="Mahalaxmi Kirana Store Front in Yesgaon"
+              loading="lazy"
+              decoding="async"
+              onerror="this.src='images/placeholder-store.svg'"
+            >
+            <span class="photo-tag">🏪 Store front</span>
+          </div>
+          <div class="photo" data-reveal="scale">
+            <img
+              src="images/store-interior.jpg"
+              alt="Mahalaxmi Kirana Store Interior Shelves and Products"
+              loading="lazy"
+              decoding="async"
+              onerror="this.src='images/placeholder-store.svg'"
+            >
+            <span class="photo-tag">📦 Inside</span>
+          </div>
+        </div>
+        <div class="dept-row" id="deptRow" data-reveal></div>
+        <div class="owner-card" data-reveal>
+          <img
+            src="images/owner-kiran.jpg"
+            alt="Kiran Gaikwad - Proprietor"
+            class="owner-photo"
+            loading="lazy"
+            decoding="async"
+            onerror="this.src='images/placeholder-store.svg'"
+          >
+          <div class="owner-info">
+            <div class="owner-role">Proprietor, Mahalaxmi Kirana Store / मालक</div>
+            <h3 class="owner-name">Kiran Gaikwad</h3>
+            <p class="owner-note">
+              <span class="mr">"आपल्या हक्काचे किराणा दुकान — ताजी धान्ये आणि आपुलकीची सेवा."</span>
+              <span class="en">Welcome to our neighbourhood store — fresh stock, fair prices, and personal service always.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="store-col-right">
+        <div class="info-card" data-reveal>
+          <div>
+            <div class="info-row"><span class="ic">📍</span><div><b>Address</b><span>Post Yesgaon, Kopargaon, Maharashtra 423602</span></div></div>
+            <div class="info-row"><span class="ic">⏰</span><div><b>Hours</b><span>Daily 7 AM – 10 PM · दररोज सकाळी ७ ते रात्री १०</span></div></div>
+            <div class="info-row"><span class="ic">📞</span><div><b>Phone</b><span><a href="tel:+919860924504">98609 24504</a> / <a href="tel:+918788210084">87882 10084</a></span></div></div>
+            <div class="info-row"><span class="ic">🛵</span><div><b>Delivery</b><span>Yesgaon &amp; Kopargaon · 30 min</span></div></div>
+            <div class="info-row"><span class="ic">💳</span><div><b>Payment</b><span>UPI (GPay / PhonePe / Paytm), Cash, Udhar</span></div></div>
+          </div>
+          <div class="store-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=19.902565,74.495572" target="_blank" rel="noopener" class="btn btn-primary store-btn">📍 Get Directions</a>
+            <a href="tel:+919860924504" class="btn btn-gold store-btn">📞 Call Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Categories ─────────────────────────────────────────────── -->
+<section class="section" id="categories">
+  <div class="wrap">
+    <div class="section-head" data-reveal><h2>Shop by category</h2><p>Ten aisles, everything you need for the week.</p></div>
+    <div class="cat-grid" id="catGrid" data-reveal="stagger"></div>
+  </div>
+</section>
+
+<!-- ── Best Sellers (CAT-07) ─────────────────────────────────── -->
+<section class="section best-sellers-section" id="bestSellers">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <h2>🔥 सर्वाधिक पसंतीची उत्पादने <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Best Sellers</span></h2>
+      <p>Popular grocery items frequently ordered by families in Yesgaon this month.</p>
+    </div>
+    <div class="prod-grid" id="bestSellerGrid"></div>
+  </div>
+</section>
+
+<!-- ── Product catalog ────────────────────────────────────────── -->
+<section class="section" id="catalog">
+  <div class="wrap">
+    <div class="section-head" data-reveal><h2>Product catalog</h2><p>Fresh stock, updated daily.</p></div>
+    <div class="filters" id="filterRow" data-reveal></div>
+    <div class="prod-grid" id="prodGrid"></div>
+  </div>
+</section>
+
+<!-- ── Deals ──────────────────────────────────────────────────── -->
+<section class="section deals" id="deals">
+  <div class="wrap">
+    <div class="section-head" data-reveal><h2>Today's mega deals</h2><p>Grab these before the clock runs out.</p></div>
+    <div class="deal-grid" id="dealGrid"></div>
+  </div>
+</section>
+
+<!-- ── Customer Testimonials (ADM-06, D11) ─────────────────────── -->
+<section class="section testimonials-section" id="testimonials">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <h2>💬 ग्राहकांचे मनोगत <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Customer Reviews</span></h2>
+      <p>What our neighbours in Yesgaon &amp; Kopargaon say about Mahalaxmi Kirana Store.</p>
+    </div>
+    <div class="testimonials-grid" id="testimonialGrid"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────────── -->
+<footer data-reveal>
+  <div class="wrap">
+    Mahalaxmi Kirana Store • Post Yesgaon, Kopargaon 423602 ·
+    <a href="tel:+919860924504">98609 24504</a> ·
+    <a href="tel:+918788210084">87882 10084</a> ·
+    <a href="privacy.html" style="color:inherit;text-decoration:underline;font-weight:600;">🔒 गोपनीयता धोरण (Privacy Policy)</a>
+  </div>
+</footer>
+
+<!-- ── Cart drawer ────────────────────────────────────────────── -->
+<div class="overlay" id="overlay"></div>
+<div class="drawer"  id="drawer" role="dialog" aria-label="Your cart" aria-modal="true">
+  <div class="drawer-head">
+    <div>
+      <h3>Your cart</h3>
+      <a href="#aiOrderBox" class="drawer-ai-link" onclick="ui.closeCart();">✨ यादी पेस्ट करा (AI Box)</a>
+    </div>
+    <button id="closeCartBtn" aria-label="Close cart">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot" style="display:none">
+    <div class="total-row"><span>Total</span><span id="totalAmt">₹0</span></div>
+    <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout • पुढे जा →</button>
+  </div>
+</div>
+
+<!-- ── Sticky Bottom Cart Bar (Playbook 3.1) ────────────────────── -->
+<div id="stickyCartBar" role="button" aria-label="View shopping cart">
+  <div class="scb-left">
+    <span class="scb-count" id="scbCount">0 items (0 वस्तू)</span>
+    <span class="scb-total" id="scbTotal">₹0</span>
+  </div>
+  <button class="scb-btn" type="button" id="scbBtn">View Cart • कार्ट पहा →</button>
+</div>
+
+<!-- ── Floating WA button ─────────────────────────────────────── -->
+<a class="fab" id="fabWa" href="#" target="_blank" rel="noopener" aria-label="Order on WhatsApp">💬</a>
+
+<!-- ── Toast container ───────────────────────────────────────── -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<!-- ── Scripts (load order matters) ─────────────────────────── -->
+<script src="js/config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ai-order.js"></script>
+<script src="js/catalog.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pwa.js"></script>
+<script>
+  // Wire up remaining inline event handlers safely
+  document.getElementById('cartBtn')    .addEventListener('click', () => ui.openCart());
+  document.getElementById('closeCartBtn').addEventListener('click', () => ui.closeCart());
+  document.getElementById('overlay')   .addEventListener('click', () => ui.closeCart());
+  document.getElementById('checkoutBtn').addEventListener('click', () => window.checkout());
+
+  // Boot sequence: init cart (validates via API), then boot UI and catalog
+  cart.init(() => {
+    ui.init();
+    catalog.init();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="mr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>कमी स्टॉक — महालक्ष्मी किराणा</title>
+  <meta name="description" content="Low stock alert list for Mahalaxmi Kirana admin dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <style>
+    .low-stock-page { max-width: 700px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+    .page-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .page-header h1 { font-size: 1.25rem; font-weight: 700; margin: 0; }
+    .badge-count {
+      background: #fee2e2; color: #991b1b; border-radius: 20px;
+      padding: 0.15rem 0.7rem; font-size: 0.85rem; font-weight: 700;
+    }
+
+    .filter-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 0.45rem 0.9rem; border-radius: 20px; border: 2px solid var(--color-border, #e5e7eb);
+      background: var(--color-surface, #fff); cursor: pointer; font-size: 0.85rem;
+      font-weight: 600; transition: all 0.2s;
+    }
+    .filter-btn.active { background: #fee2e2; border-color: #f87171; color: #991b1b; }
+
+    /* Product row */
+    .stock-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.9rem 1rem; border-radius: 12px;
+      background: var(--color-surface, #fff);
+      border: 2px solid var(--color-border, #e5e7eb);
+      margin-bottom: 0.6rem; transition: border-color 0.2s;
+    }
+    .stock-row:hover { border-color: var(--color-primary, #7c3aed); }
+    .stock-row img {
+      width: 52px; height: 52px; border-radius: 8px; object-fit: cover;
+      background: #f3f4f6; flex-shrink: 0;
+    }
+    .stock-row .info { flex: 1; min-width: 0; }
+    .stock-row .info .name-mr { font-size: 0.95rem; font-weight: 700; }
+    .stock-row .info .name-en { font-size: 0.8rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stock-row .qty-info { text-align: right; flex-shrink: 0; }
+    .stock-row .qty-info .qty-val {
+      font-size: 1.1rem; font-weight: 800;
+    }
+    .qty-val.zero { color: #dc2626; }
+    .qty-val.low  { color: #d97706; }
+    .stock-row .qty-info .reorder { font-size: 0.7rem; color: #9ca3af; }
+
+    .action-row { display: flex; gap: 0.5rem; margin-top: 0.4rem; }
+    .btn-stock-in {
+      padding: 0.35rem 0.8rem; border-radius: 8px;
+      background: #7c3aed; color: #fff; border: none;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-stock-in:hover { opacity: 0.88; }
+    .btn-unavail {
+      padding: 0.35rem 0.8rem; border-radius: 8px;
+      background: #fee2e2; color: #991b1b; border: none;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-unavail:hover { opacity: 0.88; }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #9ca3af; }
+    .empty-state .icon { font-size: 3rem; display: block; margin-bottom: 0.75rem; }
+
+    /* Quick stock-in modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      background: #fff; width: 100%; border-radius: 20px 20px 0 0;
+      padding: 1.5rem; max-width: 500px; margin: 0 auto;
+    }
+    .modal-sheet h3 { margin: 0 0 1rem; font-size: 1rem; font-weight: 700; }
+    .modal-input {
+      width: 100%; padding: 0.85rem 1rem; border: 2px solid #e5e7eb;
+      border-radius: 10px; font-size: 1.2rem; font-weight: 700;
+      text-align: center; outline: none; transition: border-color 0.2s; margin-bottom: 0.75rem;
+    }
+    .modal-input:focus { border-color: #7c3aed; }
+    .modal-note {
+      width: 100%; padding: 0.75rem 1rem; border: 2px solid #e5e7eb;
+      border-radius: 10px; font-size: 0.9rem; outline: none;
+      font-family: 'Noto Sans Devanagari', Inter, sans-serif;
+      resize: none; transition: border-color 0.2s; margin-bottom: 0.75rem;
+    }
+    .modal-note:focus { border-color: #7c3aed; }
+    .modal-btns { display: flex; gap: 0.5rem; }
+    .btn-confirm {
+      flex: 1; padding: 0.85rem; background: #7c3aed; color: #fff;
+      border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; font-family: 'Noto Sans Devanagari', Inter, sans-serif;
+    }
+    .btn-cancel-modal {
+      padding: 0.85rem 1.25rem; background: #f3f4f6; color: #374151;
+      border: none; border-radius: 10px; font-size: 0.95rem; cursor: pointer;
+    }
+
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: #1f2937; color: #fff; padding: 0.75rem 1.5rem;
+      border-radius: 10px; font-size: 0.9rem; z-index: 999;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+    .toast.success { background: #065f46; }
+    .toast.error   { background: #991b1b; }
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🏪</span>
+      <span class="logo-text">Mahalaxmi</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+      <a href="orders.html"    class="nav-item">📦 Orders</a>
+      <a href="packing.html"   class="nav-item">📋 Packing</a>
+      <a href="products.html"  class="nav-item">🛍️ Products</a>
+      <a href="stock-in.html"  class="nav-item">📥 Stock In</a>
+      <a href="low-stock.html" class="nav-item active">⚠️ Low Stock</a>
+      <a href="categories.html" class="nav-item">🗂️ Categories</a>
+      <a href="customers.html" class="nav-item">👥 Customers</a>
+      <a href="settings.html"  class="nav-item">⚙️ Settings</a>
+    </nav>
+    <button class="btn-logout" id="logoutBtn">🚪 Logout</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="low-stock-page">
+      <div class="page-header">
+        <h1>⚠️ कमी स्टॉक</h1>
+        <span class="badge-count" id="totalCount">—</span>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all"   onclick="setFilter('all', this)">सर्व / All</button>
+        <button class="filter-btn" data-filter="zero"  onclick="setFilter('zero', this)">स्टॉक संपला / 0</button>
+        <button class="filter-btn" data-filter="low"   onclick="setFilter('low', this)">कमी आहे / Low</button>
+        <button class="filter-btn" data-filter="expiry" onclick="setFilter('expiry', this)" style="border-color:#f59e0b;color:#b45309;">📅 मुदत संपत आलेला साठा / Near Expiry</button>
+      </div>
+
+      <div id="stockList"><p style="text-align:center;padding:2rem;color:#9ca3af;">लोड होत आहे...</p></div>
+    </div>
+  </main>
+</div>
+
+<!-- Quick stock-in modal sheet -->
+<div class="modal-overlay" id="stockModal">
+  <div class="modal-sheet">
+    <h3 id="modalTitle">—</h3>
+    <input type="number" class="modal-input" id="modalQty" min="0.1" step="0.1" value="1" placeholder="Quantity" />
+    <textarea class="modal-note" id="modalNote" rows="2" placeholder="Note (optional)"></textarea>
+    <div class="modal-btns">
+      <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" id="modalConfirmBtn" onclick="saveStockFromModal()">✅ Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const API    = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000/api' : '/api';
+  const token  = localStorage.getItem('mk_token');
+  const role   = localStorage.getItem('mk_role');
+
+  if (!token || !['owner', 'staff'].includes(role)) {
+    window.location.href = '../login.html';
+  }
+
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+  let allProducts     = [];
+  let nearExpiryList  = [];
+  let activeFilter    = 'all';
+  let modalProductId  = null;
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.clear(); window.location.href = '../login.html';
+  });
+
+  function showToast(msg, type = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.className = 'toast show ' + type;
+    setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  // ── Fetch & render ─────────────────────────────────────────────────────────
+  async function loadLowStock() {
+    try {
+      const res  = await fetch(`${API}/inventory/low-stock`, { headers });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      allProducts = data.data;
+      document.getElementById('totalCount').textContent = data.count;
+      renderList();
+    } catch (err) {
+      document.getElementById('stockList').innerHTML =
+        `<p style="text-align:center;color:#dc2626;">Error: ${err.message}</p>`;
+    }
+  }
+
+  async function loadNearExpiry() {
+    try {
+      const container = document.getElementById('stockList');
+      container.innerHTML = '<p style="text-align:center;padding:2rem;color:#9ca3af;">मुदत संपत आलेला साठा तपासत आहे...</p>';
+      const res = await fetch(`${API}/inventory/near-expiry`, { headers });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      nearExpiryList = data.data || [];
+      document.getElementById('totalCount').textContent = data.count;
+      renderNearExpiryList();
+    } catch (err) {
+      document.getElementById('stockList').innerHTML =
+        `<p style="text-align:center;color:#dc2626;">Error: ${err.message}</p>`;
+    }
+  }
+
+  function setFilter(filter, btn) {
+    activeFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (filter === 'expiry') {
+      loadNearExpiry();
+    } else {
+      renderList();
+    }
+  }
+
+  function renderNearExpiryList() {
+    const container = document.getElementById('stockList');
+    if (!nearExpiryList.length) {
+      container.innerHTML = `<div class="empty-state"><span class="icon">✅</span>उत्तम! पुढील ३० दिवसात कोणत्याही वस्तूची मुदत संपत नाही. (No near-expiry items within 30 days)</div>`;
+      return;
+    }
+
+    container.innerHTML = nearExpiryList.map((p) => {
+      const expDate = new Date(p.expiryDate).toLocaleDateString('mr-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric' });
+      const isExp = p.isExpired;
+      const days = p.daysUntilExpiry;
+
+      let badgeHtml = '';
+      if (isExp) {
+        badgeHtml = `<span style="background:#fee2e2;color:#991b1b;font-weight:700;font-size:0.75rem;padding:3px 8px;border-radius:12px;">⚠️ मुदत संपली (Expired!)</span>`;
+      } else if (days <= 7) {
+        badgeHtml = `<span style="background:#ffedd5;color:#c2410c;font-weight:700;font-size:0.75rem;padding:3px 8px;border-radius:12px;">🚨 ${days} दिवस शिल्लक (${days} days left)</span>`;
+      } else {
+        badgeHtml = `<span style="background:#fef9c3;color:#854d0e;font-weight:700;font-size:0.75rem;padding:3px 8px;border-radius:12px;">📅 ${days} दिवस शिल्लक</span>`;
+      }
+
+      return `
+        <div class="stock-row" style="${isExp ? 'border-color:#fca5a5;background:#fff5f5;' : ''}">
+          <div class="info">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span class="name-mr">${escapeHtml(p.nameMr)}</span>
+              ${badgeHtml}
+            </div>
+            <div class="name-en">${escapeHtml(p.nameEn)} — ${escapeHtml(p.packSize)}</div>
+            <div style="font-size:0.78rem;color:#475569;margin-top:2px;">
+              <strong>मुदत समाप्ती:</strong> ${escapeHtml(expDate)} | <strong>किंमत:</strong> ₹${p.price} (MRP: ₹${p.mrp})
+            </div>
+            <div class="action-row">
+              <button class="btn-stock-in" data-id="${p._id}" data-name="${escapeHtml(p.nameMr)} / ${escapeHtml(p.nameEn)}" data-unit="${escapeHtml(p.unitType || 'pcs')}">📥 Update Stock</button>
+              <button class="btn-unavail" data-id="${p._id}" data-flag="${Boolean(p.unavailableFlag)}">${p.unavailableFlag ? '✅ Mark Available' : '🚫 Mark Unavailable'}</button>
+            </div>
+          </div>
+          <div class="qty-info">
+            <div class="qty-val ${p.stockQuantity === 0 ? 'zero' : 'low'}">${p.stockQuantity} <small>${escapeHtml(p.unitType || '')}</small></div>
+            <div class="reorder">Stock</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderList() {
+    const container = document.getElementById('stockList');
+    let filtered = allProducts;
+
+    if (activeFilter === 'zero') {
+      filtered = allProducts.filter((p) => (p.stockQuantity ?? 0) === 0);
+    } else if (activeFilter === 'low') {
+      filtered = allProducts.filter((p) => (p.stockQuantity ?? 0) > 0);
+    }
+
+    if (!filtered.length) {
+      container.innerHTML = `<div class="empty-state"><span class="icon">✅</span>All good! No items in this filter.</div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map((p) => {
+      const stock  = p.stockQuantity ?? 0;
+      const qtyClass = stock === 0 ? 'zero' : 'low';
+      const img    = p.imageUrl || '/images/placeholder.png';
+      const cat    = p.categoryId ? (p.categoryId.nameMr || p.categoryId.nameEn) : '';
+
+      return `
+        <div class="stock-row">
+          <img src="${img}" alt="${escapeHtml(p.nameEn)}" loading="lazy" onerror="this.src='/images/placeholder.png'" />
+          <div class="info">
+            <div class="name-mr">${escapeHtml(p.nameMr)} ${cat ? `<small style="color:#9ca3af">(${escapeHtml(cat)})</small>` : ''}</div>
+            <div class="name-en">${escapeHtml(p.nameEn)} — ${escapeHtml(p.packSize)}</div>
+            <div class="action-row">
+              <button class="btn-stock-in" data-id="${p._id}" data-name="${escapeHtml(p.nameMr)} / ${escapeHtml(p.nameEn)}" data-unit="${escapeHtml(p.unitType || 'pcs')}">📥 Stock In</button>
+              <button class="btn-unavail" data-id="${p._id}" data-flag="${Boolean(p.unavailableFlag)}">${p.unavailableFlag ? '✅ Mark Available' : '🚫 Mark Unavailable'}</button>
+            </div>
+          </div>
+          <div class="qty-info">
+            <div class="qty-val ${qtyClass}">${stock} <small>${escapeHtml(p.unitType || '')}</small></div>
+            <div class="reorder">Reorder: ${p.reorderLevel ?? 5}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // Event delegation on stockList to replace inline onclicks
+  const stockListEl = document.getElementById('stockList');
+  if (stockListEl && !stockListEl.dataset.listenerAttached) {
+    stockListEl.addEventListener('click', (e) => {
+      const stockInBtn = e.target.closest('.btn-stock-in');
+      if (stockInBtn) {
+        openModal(stockInBtn.dataset.id, stockInBtn.dataset.name, stockInBtn.dataset.unit);
+        return;
+      }
+      const unavailBtn = e.target.closest('.btn-unavail');
+      if (unavailBtn) {
+        toggleUnavail(unavailBtn.dataset.id, unavailBtn.dataset.flag === 'true');
+      }
+    });
+    stockListEl.dataset.listenerAttached = 'true';
+  }
+
+  // ── Modal ─────────────────────────────────────────────────────────────────
+  function openModal(productId, name, unit) {
+    modalProductId = productId;
+    document.getElementById('modalTitle').textContent = `📥 ${name}`;
+    document.getElementById('modalQty').value = 1;
+    document.getElementById('modalNote').value = '';
+    document.getElementById('stockModal').classList.add('open');
+    document.getElementById('modalQty').focus();
+  }
+
+  function closeModal() {
+    modalProductId = null;
+    document.getElementById('stockModal').classList.remove('open');
+  }
+
+  async function saveStockFromModal() {
+    if (!modalProductId) return;
+    const qty  = parseFloat(document.getElementById('modalQty').value);
+    const note = document.getElementById('modalNote').value.trim();
+    if (isNaN(qty) || qty <= 0) {
+      showToast('Enter a valid quantity.', 'error'); return;
+    }
+    const btn = document.getElementById('modalConfirmBtn');
+    btn.disabled = true;
+    try {
+      const res  = await fetch(`${API}/inventory/stock-in`, {
+        method: 'POST', headers,
+        body: JSON.stringify({ productId: modalProductId, quantity: qty, note }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      showToast('✅ ' + data.message, 'success');
+      closeModal();
+      loadLowStock(); // refresh
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ── Toggle unavailable ─────────────────────────────────────────────────────
+  async function toggleUnavail(productId, currentFlag) {
+    try {
+      const res  = await fetch(`${API}/inventory/unavailable/${productId}`, {
+        method: 'PATCH', headers,
+        body: JSON.stringify({ unavailable: !currentFlag }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      showToast(data.message, 'success');
+      loadLowStock();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    }
+  }
+
+  // Close modal on overlay click
+  document.getElementById('stockModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('stockModal')) closeModal();
+  });
+
+  loadLowStock();
+</script>
+</body>
+</html>

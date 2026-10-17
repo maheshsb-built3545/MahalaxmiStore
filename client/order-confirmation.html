@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Order Confirmed • ऑर्डर यशस्वी • Mahalaxmi Kirana Store</title>
+<meta name="description" content="Your grocery order has been successfully placed at Mahalaxmi Kirana Store, Yesgaon.">
+<meta name="theme-color" content="#064e3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mahalaxmi Kirana">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="images/icon-192.svg">
+<link rel="apple-touch-icon" href="images/icon-192.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="confirm-page">
+
+<!-- Announcement bar -->
+<div class="announce">
+  <div class="wrap">
+    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="wrap hdr-row">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <span class="en">Mahalaxmi Kirana</span>
+        <span class="mr">महालक्ष्मी किराणा दुकान</span>
+      </div>
+    </a>
+    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div style="flex:1"></div>
+    <div id="userHeaderArea"></div>
+  </div>
+</header>
+
+<main class="confirm-main">
+  <div class="wrap">
+    <div class="confirm-card">
+      <div class="confirm-icon">🎉</div>
+      <h1>Order Received! <span class="mr">ऑर्डर यशस्वीरीत्या नोंदवली!</span></h1>
+      <p class="confirm-subtitle">
+        Thank you for shopping with Mahalaxmi Kirana Store. Your order is registered in our system and will be delivered shortly.
+      </p>
+
+      <div class="order-id-badge">
+        <span>Order Number / ऑर्डर क्रमांक:</span>
+        <strong id="displayOrderNumber">MK-Loading…</strong>
+      </div>
+
+      <!-- Receipt summary box -->
+      <div id="orderDetailsBox" class="receipt-box">
+        <div class="receipt-row">
+          <span>Status / स्थिती:</span>
+          <b id="displayStatus" class="status-pill status-new">New / नवीन</b>
+        </div>
+        <div class="receipt-row">
+          <span>Delivery Timing / वेळ:</span>
+          <b id="displaySlot">—</b>
+        </div>
+        <div class="receipt-row">
+          <span>Payment / पेमेंट:</span>
+          <b id="displayPayment">—</b>
+        </div>
+        <div class="receipt-row">
+          <span>Delivery Address / पत्ता:</span>
+          <span id="displayAddress">—</span>
+        </div>
+        <div class="receipt-row" id="displayNoteRow" style="display:none;">
+          <span>Special Note / विशेष सूचना:</span>
+          <span id="displayNote" style="color: #b45309; font-weight: 600;">—</span>
+        </div>
+        <div class="receipt-row" id="displayMapRow" style="display:none;">
+          <span>Village Map / नकाशा:</span>
+          <a id="displayMapLink" href="#" target="_blank" rel="noopener" style="color: var(--brand-primary); font-weight: 600;">📍 View Location Map</a>
+        </div>
+        <div class="receipt-row grand-row">
+          <span>Total Amount / एकूण रक्कम:</span>
+          <strong id="displayTotal">₹0</strong>
+        </div>
+      </div>
+
+      <!-- WhatsApp Action -->
+      <div class="wa-action-box">
+        <p>
+          📲 <b>Send a copy of this order to our WhatsApp:</b>
+          <span class="mr" style="display:block;margin-top:2px;">सोप्या संपर्कासाठी ही ऑर्डर थेट दुकानदाराला व्हॉट्सॲपवर पाठवा:</span>
+        </p>
+        <a id="waSendBtn" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-block btn-lg">
+          💬 Send on WhatsApp / व्हॉट्सॲपवर पाठवा
+        </a>
+        <small class="wa-safe-note">
+          ✅ <b>Note:</b> Your order is already saved in our system! Sending on WhatsApp is an optional fast way to stay in touch with the store owner.
+        </small>
+      </div>
+
+      <div class="confirm-actions">
+        <a href="orders.html" class="btn btn-outline">View Order History / माझ्या ऑर्डर्स</a>
+        <a href="index.html" class="btn btn-primary">Back to Store / मुख्य पृष्ठ</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pwa.js"></script>
+<script>
+  auth.renderAuthHeader();
+
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('orderId');
+  const orderNumFromParam = params.get('orderNumber');
+
+  if (orderNumFromParam) {
+    document.getElementById('displayOrderNumber').textContent = orderNumFromParam;
+  }
+
+  async function loadOrder() {
+    if (!orderId) {
+      document.getElementById('displayOrderNumber').textContent = 'Order Placed';
+      return;
+    }
+
+    try {
+      const res = await authFetch(`${CONFIG.API_BASE}/orders/${encodeURIComponent(orderId)}`);
+      const data = await res.json();
+
+      if (!data.success || !data.data) return;
+
+      const order = data.data;
+      document.getElementById('displayOrderNumber').textContent = order.orderNumber;
+      document.getElementById('displaySlot').textContent = order.slot;
+      document.getElementById('displayPayment').textContent = order.paymentMethod === 'upi_qr' ? 'UPI QR Code' : 'Cash on Delivery';
+      document.getElementById('displayTotal').textContent = '₹' + order.total;
+
+      const addr = order.address;
+      document.getElementById('displayAddress').textContent = `${addr.line}${addr.landmark ? ', ' + addr.landmark : ''} (PIN: ${addr.pincode})`;
+
+      // R2: Display order note and map link if present (ORD-07)
+      if (order.note) {
+        document.getElementById('displayNote').textContent = order.note;
+        document.getElementById('displayNoteRow').style.display = 'flex';
+      }
+
+      // Generate or use existing map link (WA-01)
+      const mapUrl = order.locationPin && order.locationPin.startsWith('http')
+        ? order.locationPin
+        : `https://maps.google.com/?q=${encodeURIComponent(addr.line + (addr.landmark ? ', ' + addr.landmark : '') + ', Yesgaon, ' + addr.pincode)}`;
+
+      document.getElementById('displayMapLink').href = mapUrl;
+      document.getElementById('displayMapRow').style.display = 'flex';
+
+      // Prepare WhatsApp message (WA-01)
+      const lines = [
+        `*Order Placed — Mahalaxmi Kirana Store*`,
+        `Order Number: *${order.orderNumber}*`,
+        `Customer: ${order.customerName} (${order.customerPhone})`,
+        `Timing: ${order.slot}`,
+        `Payment: ${order.paymentMethod === 'upi_qr' ? 'UPI QR (Online)' : order.paymentMethod === 'udhar' ? 'Udhar (Credit)' : 'Cash on Delivery'}`,
+        ``,
+        `*Items:*`,
+      ];
+
+      order.items.forEach((item) => {
+        lines.push(`• ${item.nameEn} (${item.packSize}) × ${item.qty} = ₹${item.price * item.qty}`);
+      });
+
+      lines.push(``, `Subtotal: ₹${order.subtotal}`);
+      lines.push(`Delivery: ₹${order.deliveryCharge}`);
+      lines.push(`*Total Amount: ₹${order.total}*`);
+      lines.push(``, `Delivery to: ${addr.line}${addr.landmark ? ', ' + addr.landmark : ''}, ${addr.pincode}`);
+      if (order.note) {
+        lines.push(`Note: ${order.note}`);
+      }
+      lines.push(`Map Link: ${mapUrl}`);
+
+      const encoded = encodeURIComponent(lines.join('\n'));
+      document.getElementById('waSendBtn').href = `https://wa.me/${CONFIG.STORE_NUM}?text=${encoded}`;
+    } catch (err) {
+      console.error('Could not fetch order details:', err);
+    }
+  }
+
+  loadOrder();
+</script>
+</body>
+</html>

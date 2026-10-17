@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="mr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>स्टॉक भरा — महालक्ष्मी किराणा</title>
+  <meta name="description" content="Stock-in screen for Mahalaxmi Kirana admin — add stock to products quickly from your phone." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <style>
+    /* ── Stock-In Page Styles ─────────────────────────────────────────────── */
+    .stock-in-page { max-width: 520px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+    .page-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .page-header .back-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--color-primary, #7c3aed); font-size: 1.5rem; line-height: 1;
+    }
+    .page-header h1 { font-size: 1.25rem; font-weight: 700; margin: 0; }
+
+    /* Search box */
+    .search-wrap { position: relative; margin-bottom: 1rem; }
+    .search-wrap input {
+      width: 100%; padding: 0.9rem 1rem 0.9rem 2.75rem;
+      border: 2px solid var(--color-border, #e5e7eb); border-radius: 12px;
+      font-size: 1rem; font-family: 'Noto Sans Devanagari', Inter, sans-serif;
+      outline: none; transition: border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color: var(--color-primary, #7c3aed); }
+    .search-wrap .search-icon {
+      position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%);
+      font-size: 1.1rem; pointer-events: none;
+    }
+
+    /* Product card (search result) */
+    .product-card {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.85rem 1rem; border-radius: 12px;
+      background: var(--color-surface, #fff);
+      border: 2px solid var(--color-border, #e5e7eb);
+      cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 0.6rem;
+    }
+    .product-card:hover, .product-card.selected {
+      border-color: var(--color-primary, #7c3aed);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+    }
+    .product-card img {
+      width: 52px; height: 52px; border-radius: 8px; object-fit: cover;
+      background: #f3f4f6;
+    }
+    .product-card .info { flex: 1; }
+    .product-card .info .name-mr { font-size: 1rem; font-weight: 600; }
+    .product-card .info .name-en { font-size: 0.8rem; color: #6b7280; }
+    .product-card .info .stock-badge {
+      display: inline-block; margin-top: 0.2rem;
+      font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+    }
+    .stock-badge.ok   { background: #d1fae5; color: #065f46; }
+    .stock-badge.low  { background: #fef3c7; color: #92400e; }
+    .stock-badge.zero { background: #fee2e2; color: #991b1b; }
+
+    /* Quantity input panel */
+    .qty-panel {
+      background: var(--color-surface, #fff);
+      border: 2px solid var(--color-primary, #7c3aed);
+      border-radius: 16px; padding: 1.25rem; margin-top: 1rem;
+    }
+    .qty-panel h3 { margin: 0 0 0.75rem; font-size: 1rem; font-weight: 700; }
+    .qty-row { display: flex; gap: 0.5rem; align-items: center; }
+    .qty-row input[type="number"] {
+      flex: 1; padding: 0.85rem 1rem; border: 2px solid var(--color-border, #e5e7eb);
+      border-radius: 10px; font-size: 1.2rem; font-weight: 700;
+      text-align: center; outline: none; transition: border-color 0.2s;
+    }
+    .qty-row input:focus { border-color: var(--color-primary, #7c3aed); }
+    .qty-unit {
+      font-size: 0.9rem; font-weight: 600; color: #6b7280;
+      min-width: 2.5rem; text-align: center;
+    }
+
+    .note-input {
+      width: 100%; margin-top: 0.75rem;
+      padding: 0.75rem 1rem; border: 2px solid var(--color-border, #e5e7eb);
+      border-radius: 10px; font-size: 0.9rem; outline: none;
+      font-family: 'Noto Sans Devanagari', Inter, sans-serif;
+      resize: none; transition: border-color 0.2s;
+    }
+    .note-input:focus { border-color: var(--color-primary, #7c3aed); }
+
+    .btn-save {
+      width: 100%; margin-top: 1rem; padding: 1rem;
+      background: var(--color-primary, #7c3aed); color: #fff;
+      border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+      font-family: 'Noto Sans Devanagari', Inter, sans-serif;
+    }
+    .btn-save:hover { opacity: 0.92; }
+    .btn-save:active { transform: scale(0.98); }
+    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: #1f2937; color: #fff; padding: 0.75rem 1.5rem;
+      border-radius: 10px; font-size: 0.9rem; z-index: 999;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+    .toast.success { background: #065f46; }
+    .toast.error   { background: #991b1b; }
+
+    /* Low-stock list */
+    .section-title {
+      font-size: 0.85rem; font-weight: 700; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin: 1.5rem 0 0.6rem;
+    }
+    .no-results { text-align: center; color: #9ca3af; padding: 2rem 0; }
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+  <!-- Sidebar (reuse existing admin nav structure) -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🏪</span>
+      <span class="logo-text">Mahalaxmi</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+      <a href="orders.html"    class="nav-item">📦 Orders</a>
+      <a href="packing.html"   class="nav-item">📋 Packing</a>
+      <a href="products.html"  class="nav-item">🛍️ Products</a>
+      <a href="stock-in.html"  class="nav-item active">📥 Stock In</a>
+      <a href="low-stock.html" class="nav-item">⚠️ Low Stock</a>
+      <a href="categories.html" class="nav-item">🗂️ Categories</a>
+      <a href="customers.html" class="nav-item">👥 Customers</a>
+      <a href="settings.html"  class="nav-item">⚙️ Settings</a>
+    </nav>
+    <button class="btn-logout" id="logoutBtn">🚪 Logout</button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="admin-main">
+    <div class="stock-in-page">
+      <div class="page-header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h1>📥 स्टॉक भरा / Stock In</h1>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          type="search"
+          id="productSearch"
+          placeholder="उत्पादन शोधा — नाव, मराठी किंवा इंग्रजी..."
+          autocomplete="off"
+          aria-label="Search product"
+        />
+      </div>
+
+      <!-- Search results -->
+      <div id="searchResults"></div>
+
+      <!-- Quantity panel (shown after product selected) -->
+      <div class="qty-panel" id="qtyPanel" style="display:none">
+        <h3 id="selectedProductName">—</h3>
+        <div class="qty-row">
+          <input
+            type="number"
+            id="qtyInput"
+            min="0.1"
+            step="0.1"
+            value="1"
+            aria-label="Quantity to add"
+          />
+          <span class="qty-unit" id="qtyUnit">pcs</span>
+        </div>
+        <div style="margin-top:0.75rem;">
+          <label style="font-size:0.8rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">
+            📅 मुदत समाप्ती तारीख / Expiry Date (ऐच्छिक):
+          </label>
+          <input
+            type="date"
+            id="expiryDateInput"
+            style="width:100%;padding:0.75rem 1rem;border:2px solid var(--color-border, #e5e7eb);border-radius:10px;font-size:0.95rem;outline:none;"
+          />
+        </div>
+        <textarea
+          class="note-input"
+          id="noteInput"
+          rows="2"
+          placeholder="नोट (ऐच्छिक) — e.g. Supplier delivery, stock count correction"
+        ></textarea>
+        <button class="btn-save" id="saveStockBtn">✅ स्टॉक जतन करा / Save Stock</button>
+      </div>
+
+      <!-- Low-stock quick list -->
+      <p class="section-title" id="lowStockTitle" style="display:none">⚠️ Low Stock Items</p>
+      <div id="lowStockList"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000/api'
+    : '/api';
+
+  const token = localStorage.getItem('mk_token');
+  const role  = localStorage.getItem('mk_role');
+
+  // Auth guard
+  if (!token || !['owner', 'staff'].includes(role)) {
+    window.location.href = '../login.html';
+  }
+
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+  let selectedProduct = null;
+  let debounceTimer   = null;
+  const currentProductsMap = new Map();
+
+  // ── Logout ────────────────────────────────────────────────────────────────
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.clear();
+    window.location.href = '../login.html';
+  });
+
+  // ── Toast helper ──────────────────────────────────────────────────────────
+  function showToast(msg, type = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className   = 'toast show ' + type;
+    setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  // ── Search ────────────────────────────────────────────────────────────────
+  document.getElementById('productSearch').addEventListener('input', (e) => {
+    clearTimeout(debounceTimer);
+    const q = e.target.value.trim();
+    if (!q) {
+      document.getElementById('searchResults').innerHTML = '';
+      hideQtyPanel();
+      return;
+    }
+    debounceTimer = setTimeout(() => searchProducts(q), 280);
+  });
+
+  async function searchProducts(q) {
+    try {
+      const res  = await fetch(`${API}/admin/products?search=${encodeURIComponent(q)}&limit=8`, { headers });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      renderResults(data.data);
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    }
+  }
+
+  function renderResults(products) {
+    const container = document.getElementById('searchResults');
+    if (!products.length) {
+      container.innerHTML = '<p class="no-results">कोणतेही उत्पादन सापडले नाही।</p>';
+      return;
+    }
+
+    currentProductsMap.clear();
+    products.forEach((p) => currentProductsMap.set(p._id, p));
+
+    container.innerHTML = products.map((p) => {
+      const stock = p.stockQuantity ?? 0;
+      const rl    = p.reorderLevel  ?? 5;
+      const badgeCls = stock === 0 ? 'zero' : stock <= rl ? 'low' : 'ok';
+      const badgeLbl = stock === 0 ? 'Out of Stock' : `${stock} ${escapeHtml(p.unitType || '')}`;
+      const img = p.imageUrl || '/images/placeholder.png';
+
+      return `
+        <div class="product-card" data-id="${p._id}">
+          <img src="${img}" alt="${escapeHtml(p.nameEn)}" loading="lazy" onerror="this.src='/images/placeholder.png'" />
+          <div class="info">
+            <div class="name-mr">${escapeHtml(p.nameMr)}</div>
+            <div class="name-en">${escapeHtml(p.nameEn)} — ${escapeHtml(p.packSize)}</div>
+            <span class="stock-badge ${badgeCls}">${badgeLbl}</span>
+          </div>
+        </div>`;
+    }).join('');
+
+    if (!container.dataset.listenerAttached) {
+      container.addEventListener('click', (e) => {
+        const card = e.target.closest('.product-card');
+        if (card && card.dataset.id) {
+          const p = currentProductsMap.get(card.dataset.id);
+          if (p) selectProduct(p);
+        }
+      });
+      container.dataset.listenerAttached = 'true';
+    }
+  }
+
+  // ── Select product ────────────────────────────────────────────────────────
+  function selectProduct(p) {
+    selectedProduct = p;
+    // Highlight selected card
+    document.querySelectorAll('.product-card').forEach((c) => {
+      c.classList.toggle('selected', c.dataset.id === p._id);
+    });
+
+    // Show qty panel
+    document.getElementById('selectedProductName').textContent =
+      `${p.nameMr} — ${p.nameEn} (${p.packSize})`;
+    document.getElementById('qtyUnit').textContent = p.unitType || 'pcs';
+    document.getElementById('qtyInput').value = 1;
+    document.getElementById('noteInput').value = '';
+    document.getElementById('qtyPanel').style.display = 'block';
+    document.getElementById('qtyInput').focus();
+  }
+
+  function hideQtyPanel() {
+    selectedProduct = null;
+    document.getElementById('qtyPanel').style.display = 'none';
+  }
+
+  // ── Save stock ────────────────────────────────────────────────────────────
+  document.getElementById('saveStockBtn').addEventListener('click', async () => {
+    if (!selectedProduct) return;
+
+    const qty  = parseFloat(document.getElementById('qtyInput').value);
+    const note = document.getElementById('noteInput').value.trim();
+    const expiryDate = document.getElementById('expiryDateInput').value || undefined;
+
+    if (isNaN(qty) || qty <= 0) {
+      showToast('Please enter a valid quantity.', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('saveStockBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Saving...';
+
+    try {
+      const res  = await fetch(`${API}/inventory/stock-in`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ productId: selectedProduct._id, quantity: qty, note, expiryDate }),
+      });
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.message);
+
+      showToast(`✅ ${data.message}`, 'success');
+      // Clear and reset
+      document.getElementById('productSearch').value = '';
+      document.getElementById('searchResults').innerHTML = '';
+      document.getElementById('expiryDateInput').value = '';
+      hideQtyPanel();
+      // Refresh low-stock list
+      loadLowStock();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✅ स्टॉक जतन करा / Save Stock';
+    }
+  });
+
+  // ── Low-stock list ────────────────────────────────────────────────────────
+  async function loadLowStock() {
+    try {
+      const res  = await fetch(`${API}/inventory/low-stock`, { headers });
+      const data = await res.json();
+      if (!data.success) return;
+
+      const container = document.getElementById('lowStockList');
+      const titleEl   = document.getElementById('lowStockTitle');
+
+      if (!data.count) {
+        titleEl.style.display   = 'none';
+        container.innerHTML = '';
+        return;
+      }
+
+      titleEl.style.display = 'block';
+      container.innerHTML = data.data.map((p) => {
+        const stock = p.stockQuantity ?? 0;
+        const badgeCls = stock === 0 ? 'zero' : 'low';
+        const badgeLbl = stock === 0 ? '0 — Out of Stock' : `${stock} ${escapeHtml(p.unitType || '')}`;
+        const img = p.imageUrl || '/images/placeholder.png';
+
+        return `
+          <div class="product-card" data-prefill="${escapeHtml(p.nameEn)}">
+            <img src="${img}" alt="${escapeHtml(p.nameEn)}" loading="lazy" onerror="this.src='/images/placeholder.png'" />
+            <div class="info">
+              <div class="name-mr">${escapeHtml(p.nameMr)}</div>
+              <div class="name-en">${escapeHtml(p.nameEn)} — ${escapeHtml(p.packSize)}</div>
+              <span class="stock-badge ${badgeCls}">${badgeLbl}</span>
+            </div>
+          </div>`;
+      }).join('');
+
+      if (!container.dataset.listenerAttached) {
+        container.addEventListener('click', (e) => {
+          const card = e.target.closest('.product-card');
+          if (card && card.dataset.prefill) {
+            prefillSearch(card.dataset.prefill);
+          }
+        });
+        container.dataset.listenerAttached = 'true';
+      }
+    } catch (_) { /* silently ignore */ }
+  }
+
+  function prefillSearch(name) {
+    const input = document.getElementById('productSearch');
+    input.value = name;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+  }
+
+  // On load: show low-stock list immediately
+  loadLowStock();
+</script>
+</body>
+</html>

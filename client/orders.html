@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Orders • माझ्या ऑर्डर्स • Mahalaxmi Kirana Store</title>
+<meta name="description" content="View your order history, delivery status, and reorder fresh groceries from Mahalaxmi Kirana Store, Yesgaon.">
+<meta name="theme-color" content="#064e3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mahalaxmi Kirana">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="images/icon-192.svg">
+<link rel="apple-touch-icon" href="images/icon-192.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="orders-page">
+
+<!-- Announcement bar -->
+<div class="announce">
+  <div class="wrap">
+    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="wrap hdr-row">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <span class="en">Mahalaxmi Kirana</span>
+        <span class="mr">महालक्ष्मी किराणा दुकान</span>
+      </div>
+    </a>
+    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div style="flex:1"></div>
+    <a href="index.html" class="navlink" style="margin-right:12px;">← Shop Catalog</a>
+    <div id="userHeaderArea"></div>
+  </div>
+</header>
+
+<main class="orders-main">
+  <div class="wrap">
+    <div class="orders-header">
+      <h1>My Orders <span class="mr">माझ्या ऑर्डर्स</span></h1>
+      <p>Track your grocery deliveries, cancel pending orders, or reorder items in one click.</p>
+    </div>
+
+    <!-- Pull to refresh indicator -->
+    <div id="ptrIndicator" class="ptr-indicator">
+      <span>🔄 ओढून रिफ्रेश करा • Pull to Refresh</span>
+    </div>
+
+    <!-- R4: Customer Udhar Credit Card (UDH-01, UDH-04) -->
+    <div id="udharCreditCard" class="card" style="display:none;margin-bottom:1.5rem;padding:1.4rem;border:1.5px solid rgba(4,120,87,0.2);border-radius:16px;background:linear-gradient(145deg, #ffffff, #f7faf7);box-shadow:0 4px 14px rgba(4,37,26,0.05);"></div>
+
+    <!-- Orders Container -->
+    <div id="ordersContainer" class="orders-container"></div>
+  </div>
+</main>
+
+<!-- Modal: Reorder Cart Prompt (Rule 14) -->
+<div id="reorderModal" class="modal-overlay" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3>Cart Already Has Items <span class="mr">कार्टमध्ये आधीच वस्तू आहेत</span></h3>
+    <p>Your shopping cart already contains items. How would you like to add these reorder items?</p>
+    <div class="modal-actions" style="flex-direction:column;gap:10px;margin-top:20px;">
+      <button type="button" id="reorderReplaceBtn" class="btn btn-primary btn-block">
+        Replace Cart / जुनी कार्ट बदला
+      </button>
+      <button type="button" id="reorderMergeBtn" class="btn btn-outline btn-block">
+        Merge with Existing Items / कार्टमध्ये एकत्र करा
+      </button>
+      <button type="button" id="reorderCancelBtn" class="btn btn-outline btn-block" style="border-color:#ccc;color:#666;">
+        Cancel / रद्द करा
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pwa.js"></script>
+<script src="js/orders.js"></script>
+<script>
+  // Pull to refresh support on orders
+  (function setupPullToRefresh() {
+    let startY = 0;
+    let ptr = document.getElementById('ptrIndicator');
+    window.addEventListener('touchstart', (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (window.scrollY === 0 && startY > 0) {
+        let diff = e.touches[0].clientY - startY;
+        if (diff > 40 && ptr) {
+          ptr.classList.add('active');
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (ptr && ptr.classList.contains('active')) {
+        ptr.classList.remove('active');
+        if (window.PWA) window.PWA.haptic(25);
+        if (typeof ordersApp !== 'undefined' && ordersApp.loadOrders) {
+          ordersApp.loadOrders();
+        } else {
+          window.location.reload();
+        }
+      }
+      startY = 0;
+    });
+  })();
+</script>
+</body>
+</html>

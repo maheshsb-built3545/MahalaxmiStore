@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Customer Login • ग्राहक लॉगिन • Mahalaxmi Kirana Store</title>
+<meta name="description" content="Log in to your Mahalaxmi Kirana Store account to place grocery orders and track delivery in Yesgaon & Kopargaon.">
+<meta name="theme-color" content="#064e3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mahalaxmi Kirana">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="images/icon-192.svg">
+<link rel="apple-touch-icon" href="images/icon-192.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+
+<!-- Announcement Bar -->
+<div class="announce">
+  <div class="wrap">
+    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="wrap hdr-row">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <span class="en">Mahalaxmi Kirana</span>
+        <span class="mr">महालक्ष्मी किराणा दुकान</span>
+      </div>
+    </a>
+    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div style="flex:1"></div>
+    <a href="index.html" class="navlink">← Back to Store</a>
+  </div>
+</header>
+
+<!-- Main Auth Container -->
+<main class="auth-main">
+  <div class="auth-card">
+    <div class="auth-card-head">
+      <span class="auth-icon">🔐</span>
+      <h1>Customer Login <span class="mr">ग्राहक लॉगिन</span></h1>
+      <p>Log in with your mobile number to checkout and view your orders.</p>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div id="errorAlert" class="alert-box" style="display:none" role="alert"></div>
+
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label for="phone">
+          Mobile Number <span class="mr">मोबाईल नंबर</span>
+          <span class="req">*</span>
+        </label>
+        <div class="input-with-prefix">
+          <span class="prefix">+91</span>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            placeholder="9860924504" 
+            maxlength="14" 
+            required 
+            inputmode="numeric"
+            autocomplete="tel" 
+            aria-describedby="phoneHelp"
+          >
+        </div>
+        <small id="phoneHelp" class="form-hint">Enter your 10-digit Indian mobile number</small>
+      </div>
+
+      <div class="form-group">
+        <label for="password">
+          Password <span class="mr">पासवर्ड</span>
+          <span class="req">*</span>
+        </label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="••••••••" 
+          minlength="8" 
+          maxlength="72" 
+          required 
+          autocomplete="current-password"
+        >
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
+        Log In <span class="mr">लॉगिन करा</span>
+      </button>
+    </form>
+
+    <div class="auth-card-foot">
+      <p>Don't have an account? <a id="registerLink" href="register.html">Register here <span class="mr">नोंदणी करा</span></a></p>
+    </div>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pwa.js"></script>
+<script>
+  // Forward safe redirect parameter to register link
+  const redirectTarget = auth.getSafeRedirect();
+  document.getElementById('registerLink').href = `register.html?redirect=${encodeURIComponent(redirectTarget)}`;
+
+  // Already logged in? Redirect directly based on role
+  if (auth.isLoggedIn()) {
+    window.location.href = auth.getRedirectForUser(auth.getUser());
+  }
+
+  const form = document.getElementById('loginForm');
+  const errorAlert = document.getElementById('errorAlert');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function showError(msg) {
+    errorAlert.textContent = msg;
+    errorAlert.style.display = 'block';
+  }
+
+  function clearError() {
+    errorAlert.textContent = '';
+    errorAlert.style.display = 'none';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    const rawPhone = document.getElementById('phone').value.trim();
+    const rawPass = document.getElementById('password').value;
+
+    // Normalise phone on client for instant validation
+    const digits = rawPhone.replace(/\D/g, '').slice(-10);
+    if (!/^[6-9]\d{9}$/.test(digits)) {
+      showError('Please enter a valid 10-digit Indian mobile number / कृपया वैध १० अंकी मोबाईल नंबर टाका.');
+      return;
+    }
+
+    if (rawPass.length < 8 || rawPass.length > 72) {
+      showError('Password must be between 8 and 72 characters / पासवर्ड ८ ते ७२ अक्षरांचा असावा.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Logging in…';
+
+    try {
+      const res = await fetch(`${CONFIG.API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: digits, password: rawPass }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        showError(data.message || 'Invalid phone or password.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log In';
+        return;
+      }
+
+      // Save token and user safely in localStorage
+      auth.setSession(data.token, data.user);
+
+      // Stage 3: Redirect based on role (owner to admin, customer to storefront/checkout)
+      window.location.href = auth.getRedirectForUser(data.user);
+    } catch (err) {
+      showError('Network error. Is the server running? Please try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Log In';
+    }
+  });
+</script>
+</body>
+</html>

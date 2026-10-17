@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>संदेश आणि सूचना • Inbox • Mahalaxmi Kirana Store</title>
+<meta name="description" content="Customer message box and notifications for Mahalaxmi Kirana Store, Yesgaon.">
+<meta name="theme-color" content="#064e3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mahalaxmi Kirana">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="images/icon-192.svg">
+<link rel="apple-touch-icon" href="images/icon-192.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .inbox-container {
+    max-width: 800px;
+    margin: 1.5rem auto 3rem;
+    padding: 0 1rem;
+  }
+  .inbox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .inbox-title h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-main, #1e293b);
+  }
+  .inbox-title p {
+    margin: 0.25rem 0 0;
+    color: var(--text-muted, #64748b);
+    font-size: 0.9rem;
+  }
+  .inbox-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--border-color, #e2e8f0);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+  }
+  .inbox-tab {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted, #64748b);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .inbox-tab.active {
+    color: var(--brand-primary, #047857);
+    background: #ecfdf5;
+  }
+  .inbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .inbox-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.15rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid var(--border-color, #e2e8f0);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+  .inbox-card.unread {
+    border-left: 4px solid var(--brand-primary, #047857);
+    background: #fafdfb;
+  }
+  .inbox-icon {
+    font-size: 1.5rem;
+    background: #f1f5f9;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .inbox-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .inbox-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .inbox-msg-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-main, #1e293b);
+  }
+  .inbox-time {
+    font-size: 0.78rem;
+    color: var(--text-muted, #64748b);
+    white-space: nowrap;
+  }
+  .inbox-body {
+    font-size: 0.92rem;
+    color: #475569;
+    line-height: 1.45;
+    margin-bottom: 0.6rem;
+  }
+  .inbox-actions {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .btn-inbox-action {
+    font-size: 0.82rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+  }
+  .btn-inbox-primary {
+    background: var(--brand-primary, #047857);
+    color: #fff;
+    border: 1px solid transparent;
+  }
+  .btn-inbox-primary:hover {
+    background: #065f46;
+  }
+  .btn-inbox-read {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+  }
+  .btn-inbox-read:hover {
+    background: #f1f5f9;
+    color: #334155;
+  }
+  .push-banner {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .push-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .push-info .bell-icon {
+    font-size: 1.4rem;
+  }
+  .push-title {
+    font-weight: 700;
+    color: #166534;
+    font-size: 0.95rem;
+  }
+  .push-sub {
+    font-size: 0.82rem;
+    color: #15803d;
+  }
+  .empty-inbox {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: #94a3b8;
+  }
+  .empty-inbox .icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Announcement bar -->
+<div class="announce">
+  <div class="wrap">
+    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="wrap hdr-row">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <span class="en">Mahalaxmi Kirana</span>
+        <span class="mr">महालक्ष्मी किराणा दुकान</span>
+      </div>
+    </a>
+    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div style="flex:1"></div>
+    <div id="userHeaderArea"></div>
+  </div>
+</header>
+
+<main class="inbox-container">
+  <div class="inbox-header">
+    <div class="inbox-title">
+      <h1>🔔 संदेश आणि सूचना <span style="font-size:1rem;font-weight:500;color:#64748b;">(Inbox)</span></h1>
+      <p>तुमच्या ऑर्डर्स आणि महत्त्वाच्या घडामोडींचे ताजे अपडेट्स</p>
+    </div>
+    <div>
+      <button id="markAllReadBtn" class="btn btn-outline" style="font-size:0.85rem;padding:0.4rem 0.8rem;">
+        ✓ सर्व वाचले म्हणून खूण करा (Mark All Read)
+      </button>
+    </div>
+  </div>
+
+  <!-- Web Push Prompt (MSG-05) -->
+  <div class="push-banner" id="pushBanner" style="display:none;">
+    <div class="push-info">
+      <span class="bell-icon">📲</span>
+      <div>
+        <div class="push-title">मोबाईलवर तात्काळ सूचना सुरू करा / Enable Web Push</div>
+        <div class="push-sub">ब्राउझर बंद असतानाही ऑर्डर कन्फर्मेशन आणि डिलिव्हरीचे मेसेज मिळवा.</div>
+      </div>
+    </div>
+    <button id="enablePushBtn" class="btn btn-primary" style="font-size:0.85rem;padding:0.4rem 0.9rem;">
+      🔔 सुरू करा (Enable)
+    </button>
+  </div>
+
+  <!-- Filter tabs -->
+  <div class="inbox-tabs">
+    <button class="inbox-tab active" data-filter="all" id="tabAll">सर्व संदेश (All)</button>
+    <button class="inbox-tab" data-filter="unread" id="tabUnread">न वाचलेले (Unread)</button>
+  </div>
+
+  <!-- List container -->
+  <div class="inbox-list" id="inboxList">
+    <div style="text-align:center;padding:2rem;color:#64748b;">लोड होत आहे… / Loading messages…</div>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pwa.js"></script>
+<script>
+  // Require login
+  if (!auth.isLoggedIn()) {
+    window.location.href = 'login.html?redirect=inbox.html';
+  }
+
+  auth.renderAuthHeader();
+
+  let currentFilter = 'all';
+  let notifications = [];
+
+  function getTypeIcon(type) {
+    switch (type) {
+      case 'order_new':
+      case 'order_status':
+        return '📦';
+      case 'order_cancelled':
+        return '❌';
+      case 'low_stock':
+        return '⚠️';
+      case 'announcement':
+        return '📢';
+      case 'udhar_request':
+      case 'udhar_status':
+        return '💰';
+      default:
+        return '🔔';
+    }
+  }
+
+  async function loadNotifications() {
+    const listEl = document.getElementById('inboxList');
+    try {
+      const url = `${CONFIG.API_BASE}/notifications?unreadOnly=${currentFilter === 'unread'}`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${auth.getToken()}` },
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        listEl.innerHTML = '<div class="empty-inbox">संदेश लोड करण्यात अडचण आली.</div>';
+        return;
+      }
+
+      notifications = data.data || [];
+      renderNotifications();
+      auth.updateCustomerUnreadBadge();
+    } catch (err) {
+      const errDiv = document.createElement('div');
+      errDiv.className = 'empty-inbox';
+      errDiv.textContent = 'एरर: ' + (err.message || 'Unknown error');
+      listEl.textContent = '';
+      listEl.appendChild(errDiv);
+    }
+  }
+
+  function renderNotifications() {
+    const listEl = document.getElementById('inboxList');
+    if (notifications.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty-inbox">
+          <div class="icon">📭</div>
+          <p><strong>कोणतेही नवीन संदेश नाहीत! / No messages</strong></p>
+          <small>तुमच्या ऑर्डर्सचे अपडेट्स येथे दिसतील.</small>
+        </div>
+      `;
+      return;
+    }
+
+    listEl.innerHTML = notifications.map((item) => {
+      const isUnread = !item.readAt;
+      const icon = getTypeIcon(item.type);
+      const timeStr = auth.formatDateIST(item.createdAt);
+
+      return `
+        <div class="inbox-card ${isUnread ? 'unread' : ''}" id="notif-${item._id}">
+          <div class="inbox-icon">${icon}</div>
+          <div class="inbox-content">
+            <div class="inbox-top-row">
+              <div class="inbox-msg-title">${escapeHtml(item.title)}</div>
+              <div class="inbox-time">${timeStr}</div>
+            </div>
+            <div class="inbox-body">${escapeHtml(item.body)}</div>
+            <div class="inbox-actions">
+              ${item.link ? `<a href="${item.link}" class="btn-inbox-action btn-inbox-primary" onclick="markRead('${item._id}')">तपशील पहा →</a>` : ''}
+              ${isUnread ? `<button class="btn-inbox-action btn-inbox-read" onclick="markRead('${item._id}')">✓ वाचले (Mark Read)</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function markRead(id) {
+    try {
+      await fetch(`${CONFIG.API_BASE}/notifications/${id}/read`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${auth.getToken()}` },
+      });
+      const target = notifications.find((n) => n._id === id);
+      if (target) target.readAt = new Date().toISOString();
+      renderNotifications();
+      auth.updateCustomerUnreadBadge();
+    } catch (err) {
+      console.warn('Mark read failed:', err.message);
+    }
+  }
+
+  async function markAllRead() {
+    try {
+      await fetch(`${CONFIG.API_BASE}/notifications/read-all`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${auth.getToken()}` },
+      });
+      notifications.forEach((n) => (n.readAt = new Date().toISOString()));
+      renderNotifications();
+      auth.updateCustomerUnreadBadge();
+    } catch (err) {
+      alert('Could not mark all as read: ' + err.message);
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Tabs
+  document.getElementById('tabAll').addEventListener('click', () => {
+    document.getElementById('tabAll').classList.add('active');
+    document.getElementById('tabUnread').classList.remove('active');
+    currentFilter = 'all';
+    loadNotifications();
+  });
+
+  document.getElementById('tabUnread').addEventListener('click', () => {
+    document.getElementById('tabUnread').classList.add('active');
+    document.getElementById('tabAll').classList.remove('active');
+    currentFilter = 'unread';
+    loadNotifications();
+  });
+
+  document.getElementById('markAllReadBtn').addEventListener('click', markAllRead);
+
+  // Web Push setup check (MSG-05)
+  if ('Notification' in window && 'serviceWorker' in navigator && Notification.permission !== 'granted') {
+    document.getElementById('pushBanner').style.display = 'flex';
+    document.getElementById('enablePushBtn').addEventListener('click', async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          document.getElementById('pushBanner').style.display = 'none';
+          alert('सूचना यशस्वीरित्या सुरू झाल्या! / Notifications enabled successfully.');
+        }
+      } catch (e) {
+        console.warn('Push permission error:', e);
+      }
+    });
+  }
+
+  loadNotifications();
+</script>
+</body>
+</html>

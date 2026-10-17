@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders Management — महालक्ष्मी किराणा Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="admin-navbar" id="adminNavbar"></header>
+
+  <!-- Main Content -->
+  <main class="admin-container">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">📦 Orders Queue / ऑर्डर्स व्यवस्थापन</h1>
+        <p class="page-subtitle">Track, advance status, mark payment, and notify customers on WhatsApp.</p>
+      </div>
+      <div>
+        <a href="packing.html" class="btn-action btn-outline">📋 Packing List</a>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="orderSearchInput" class="search-input" placeholder="Search by order #, customer name or phone…">
+    </div>
+
+    <!-- Status Filters -->
+    <div class="filter-row">
+      <button class="filter-pill active" data-status="all">All (सर्व)</button>
+      <button class="filter-pill" data-status="new">New (नवीन)</button>
+      <button class="filter-pill" data-status="confirmed">Confirmed</button>
+      <button class="filter-pill" data-status="packed">Packed</button>
+      <button class="filter-pill" data-status="out_for_delivery">Out for Delivery</button>
+      <button class="filter-pill" data-status="delivered">Delivered</button>
+      <button class="filter-pill" data-status="cancelled">Cancelled</button>
+    </div>
+
+    <!-- Date Filters -->
+    <div class="filter-row">
+      <button class="filter-pill active" data-date="all">All Time</button>
+      <button class="filter-pill" data-date="today">Today (आज)</button>
+      <button class="filter-pill" data-date="yesterday">Yesterday (काल)</button>
+      <button class="filter-pill" data-date="week">Last 7 Days</button>
+    </div>
+
+    <!-- Orders Cards List -->
+    <div id="ordersList"></div>
+
+    <!-- Pagination Area -->
+    <div id="paginationArea"></div>
+
+  </main>
+
+  <!-- Cancel Order Modal -->
+  <div class="modal-overlay" id="cancelModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Cancel Order / ऑर्डर रद्द करा</h3>
+        <button class="btn-close-modal" onclick="closeCancelModal()">×</button>
+      </div>
+      <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">
+        Are you sure you want to cancel order <strong id="cancelOrderNumText"></strong>?
+      </p>
+      <div class="form-group">
+        <label class="form-label">Reason / टीप (दिसणारा संदेश):</label>
+        <textarea id="cancelReasonInput" class="form-control" rows="3" placeholder="e.g. Out of stock / Customer requested cancel"></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button class="btn-action btn-outline" style="min-width: 80px;" onclick="closeCancelModal()">Back</button>
+        <button class="btn-action btn-danger" style="min-width: 120px;" onclick="confirmCancelOrder()">Confirm Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Propose Substitution Modal (ORD-06) -->
+  <div class="modal-overlay" id="subModal">
+    <div class="modal-content" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3 class="modal-title">🔄 Propose Substitute / वस्तू बदल सुचवा</h3>
+        <button class="btn-close-modal" onclick="closeSubModal()">×</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--admin-muted); margin-bottom: 0.75rem;">
+        Order: <strong id="subOrderNumText"></strong> — Propose a replacement for an unavailable item. The customer will be notified to accept or reject.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">1. Select item from order to replace / बदलण्याची वस्तू:</label>
+        <select id="subOriginalItemSelect" class="form-control" onchange="updateSubPriceCalc()"></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">2. Select replacement product / पर्यायी वस्तू निवडा:</label>
+        <select id="subProposedProductSelect" class="form-control" onchange="updateSubPriceCalc()"></select>
+      </div>
+
+      <div class="form-row" style="display:flex;gap:0.75rem;">
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Replacement Qty (नग):</label>
+          <input type="number" id="subProposedQtyInput" class="form-control" min="1" max="50" value="1" oninput="updateSubPriceCalc()">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Price Diff (किंमत फरक):</label>
+          <div id="subPriceDiffDisplay" style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-weight: 700; font-size: 0.95rem; color: #047857;">
+            ₹0
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Note for customer / ग्राहकासाठी टीप (ऐच्छिक):</label>
+        <input type="text" id="subNoteInput" class="form-control" placeholder="उदा. मूळ तेल संपल्याने सनफ्लॉवर तेल सुचवले आहे">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn-action btn-outline" style="min-width: 80px;" onclick="closeSubModal()">Cancel</button>
+        <button class="btn-action btn-primary" id="btnSubmitSub" style="min-width: 140px;" onclick="submitSubstitutionProposal()">Send Proposal →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Bar -->
+  <nav class="mobile-bottom-bar" id="mobileBottomBar"></nav>
+
+  <!-- Scripts -->
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/admin-orders.js"></script>
+</body>
+</html>

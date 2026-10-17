@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>दुकानदार संदेश • Admin Inbox • Mahalaxmi Kirana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+<style>
+  .admin-inbox-wrap {
+    max-width: 900px;
+    margin: 1.5rem auto 4rem;
+    padding: 0 1rem;
+  }
+  .inbox-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .inbox-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .inbox-filter-btn {
+    background: #ffffff;
+    border: 1px solid var(--admin-border, #cbd5e1);
+    border-radius: 8px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #475569;
+    transition: all 0.2s;
+  }
+  .inbox-filter-btn.active {
+    background: #047857;
+    color: #ffffff;
+    border-color: #047857;
+  }
+  .notif-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.15rem;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .notif-card.unread {
+    border-left: 5px solid #047857;
+    background: #f8fbf9;
+  }
+  .notif-card.type-low_stock.unread {
+    border-left-color: #f59e0b;
+    background: #fffdfa;
+  }
+  .notif-card.type-order_cancelled.unread {
+    border-left-color: #ef4444;
+    background: #fef8f8;
+  }
+  .notif-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    background: #f1f5f9;
+  }
+  .type-low_stock .notif-icon { background: #fef3c7; }
+  .type-order_cancelled .notif-icon { background: #fee2e2; }
+  .type-order_new .notif-icon { background: #d1fae5; }
+  .notif-body-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+  .notif-header-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .notif-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .notif-time {
+    font-size: 0.78rem;
+    color: #64748b;
+    white-space: nowrap;
+  }
+  .notif-text {
+    font-size: 0.92rem;
+    color: #334155;
+    line-height: 1.45;
+    margin-bottom: 0.6rem;
+  }
+  .notif-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .btn-sm-action {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .btn-green-action {
+    background: #047857;
+    color: #fff;
+  }
+  .btn-green-action:hover { background: #065f46; }
+  .btn-gray-action {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+  }
+  .btn-gray-action:hover { background: #e2e8f0; }
+  .empty-state {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body class="admin-page">
+
+<!-- Top Navigation -->
+<nav class="admin-navbar" id="adminNavbar"></nav>
+
+<main class="admin-inbox-wrap">
+  <div class="inbox-top-bar">
+    <div>
+      <h1 style="font-size: 1.6rem; font-weight: 800; margin: 0; color: #0f172a;">
+        🔔 दुकान अलर्ट्स आणि संदेश <span style="font-size:1rem;color:#64748b;font-weight:500;">(Alerts &amp; Inbox)</span>
+      </h1>
+      <p style="margin: 0.25rem 0 0; color: #64748b; font-size: 0.9rem;">
+        नवीन ऑर्डर्स, कमी साठ्याचा इशारा आणि ग्राहकांच्या रद्द केलेल्या ऑर्डर्स
+      </p>
+    </div>
+    <div>
+      <button id="adminMarkAllReadBtn" class="btn btn-outline" style="font-size:0.85rem;padding:0.4rem 0.8rem;">
+        ✓ सर्व वाचले म्हणून खूण करा (Mark All Read)
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter buttons -->
+  <div class="inbox-filters">
+    <button class="inbox-filter-btn active" data-type="all">सर्व (All)</button>
+    <button class="inbox-filter-btn" data-type="unread">न वाचलेले (Unread)</button>
+    <button class="inbox-filter-btn" data-type="order_new">नवीन ऑर्डर्स (Orders)</button>
+    <button class="inbox-filter-btn" data-type="low_stock">⚠️ कमी साठा (Low Stock)</button>
+    <button class="inbox-filter-btn" data-type="order_cancelled">रद्द ऑर्डर्स (Cancelled)</button>
+  </div>
+
+  <div id="adminNotificationsList">
+    <div style="text-align:center;padding:2rem;color:#64748b;">अलर्ट लोड होत आहेत… / Loading alerts…</div>
+  </div>
+</main>
+
+<!-- Mobile Bottom Bar -->
+<div class="mobile-bottom-bar" id="mobileBottomBar"></div>
+
+<script src="../js/config.js"></script>
+<script src="../js/auth.js"></script>
+<script src="js/admin-common.js"></script>
+<script>
+  renderAdminNavigation('inbox');
+
+  let currentTypeFilter = 'all';
+  let allAlerts = [];
+
+  async function loadAlerts() {
+    const listEl = document.getElementById('adminNotificationsList');
+    try {
+      const res = await adminFetch('/notifications?limit=100');
+      if (!res.success) {
+        listEl.innerHTML = '<div class="empty-state">सूचना लोड करताना त्रुटी आली.</div>';
+        return;
+      }
+      allAlerts = res.data || [];
+      renderAlertsList();
+      updateAdminInboxBadge();
+    } catch (err) {
+      const errDiv = document.createElement('div');
+      errDiv.className = 'empty-state';
+      errDiv.textContent = `एरर: ${err.message}`;
+      listEl.replaceChildren(errDiv);
+    }
+  }
+
+  function renderAlertsList() {
+    const listEl = document.getElementById('adminNotificationsList');
+
+    let filtered = allAlerts;
+    if (currentTypeFilter === 'unread') {
+      filtered = allAlerts.filter((a) => !a.readAt);
+    } else if (currentTypeFilter !== 'all') {
+      filtered = allAlerts.filter((a) => a.type === currentTypeFilter);
+    }
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size:3rem;margin-bottom:0.5rem;">✨</div>
+          <p><strong>कोणतेही प्रलंबित अलर्ट नाहीत! / All caught up</strong></p>
+          <small>दुकान व्यवस्थित सुरू आहे.</small>
+        </div>
+      `;
+      return;
+    }
+
+    listEl.innerHTML = filtered.map((item) => {
+      const isUnread = !item.readAt;
+      const timeStr = auth.formatDateIST(item.createdAt);
+
+      let icon = '🔔';
+      if (item.type === 'order_new') icon = '📦';
+      if (item.type === 'low_stock') icon = '⚠️';
+      if (item.type === 'order_cancelled') icon = '❌';
+
+      return `
+        <div class="notif-card type-${escapeHtml(item.type)} ${isUnread ? 'unread' : ''}">
+          <div class="notif-icon">${icon}</div>
+          <div class="notif-body-wrap">
+            <div class="notif-header-line">
+              <div class="notif-title">${escapeHtml(item.title)}</div>
+              <div class="notif-time">${timeStr}</div>
+            </div>
+            <div class="notif-text">${escapeHtml(item.body)}</div>
+            <div class="notif-actions">
+              ${item.link ? `<a href="${item.link}" class="btn-sm-action btn-green-action btn-mark-read" data-id="${item._id}">तपशील पहा →</a>` : ''}
+              ${isUnread ? `<button type="button" class="btn-sm-action btn-gray-action btn-mark-read" data-id="${item._id}">✓ वाचले</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    if (!listEl.dataset.listenerAttached) {
+      listEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-mark-read');
+        if (btn && btn.dataset.id) {
+          markReadAlert(btn.dataset.id);
+        }
+      });
+      listEl.dataset.listenerAttached = 'true';
+    }
+  }
+
+  async function markReadAlert(id) {
+    try {
+      await adminFetch(`/notifications/${id}/read`, { method: 'PATCH' });
+      const target = allAlerts.find((a) => a._id === id);
+      if (target) target.readAt = new Date().toISOString();
+      renderAlertsList();
+      updateAdminInboxBadge();
+    } catch (err) {
+      console.warn('Mark read alert failed:', err.message);
+    }
+  }
+
+  async function markAllAlertsRead() {
+    try {
+      await adminFetch('/notifications/read-all', { method: 'PATCH' });
+      allAlerts.forEach((a) => (a.readAt = new Date().toISOString()));
+      renderAlertsList();
+      updateAdminInboxBadge();
+    } catch (err) {
+      alert('Could not mark alerts as read: ' + err.message);
+    }
+  }
+
+  document.querySelectorAll('.inbox-filter-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.inbox-filter-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTypeFilter = btn.getAttribute('data-type');
+      renderAlertsList();
+    });
+  });
+
+  document.getElementById('adminMarkAllReadBtn').addEventListener('click', markAllAlertsRead);
+
+  loadAlerts();
+</script>
+</body>
+</html>

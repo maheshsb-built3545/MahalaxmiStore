@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — महालक्ष्मी किराणा</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="admin-navbar" id="adminNavbar"></header>
+
+  <!-- Main Content -->
+  <main class="admin-container">
+
+    <!-- New Order Live Alert Banner -->
+    <div class="new-order-banner" id="newOrderBanner">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.3rem;">🔔</span>
+        <strong id="newOrderBannerText">नवीन ऑर्डर आली आहे! / New order received!</strong>
+      </div>
+      <a href="orders.html" class="btn-action" style="background: #ffffff; color: var(--admin-primary); min-width: 100px; padding: 0.4rem 0.75rem;">
+        View Orders →
+      </a>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">📊 Live Dashboard / डॅशबोर्ड</h1>
+        <p class="page-subtitle">Today's business overview and live order status (IST).</p>
+      </div>
+      <div>
+        <a href="orders.html" class="btn-action btn-primary">📦 View All Orders</a>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card stat-primary">
+        <div class="stat-label">Today's Orders / आजच्या ऑर्डर्स</div>
+        <div class="stat-value" id="statTodayOrders">0</div>
+        <div class="stat-note">Since 12:00 AM IST</div>
+      </div>
+      <div class="stat-card stat-accent">
+        <div class="stat-label">Today's Sales / आजची विक्री</div>
+        <div class="stat-value" id="statTodaySales">₹0</div>
+        <div class="stat-note">Total non-cancelled</div>
+      </div>
+      <div class="stat-card" style="border-left: 4px solid #059669;">
+        <div class="stat-label">Delivered/Collected / जमा रक्कम</div>
+        <div class="stat-value" id="statCollectedSales" style="color: #059669;">₹0</div>
+        <div class="stat-note">Confirmed paid (excludes unverified)</div>
+      </div>
+      <div class="stat-card" style="border-left: 4px solid #d97706;">
+        <div class="stat-label">Pending Payment / येणे बाकी</div>
+        <div class="stat-value" id="statPendingPayment" style="color: #d97706;">₹0</div>
+        <div class="stat-note">COD & unverified UPI</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending / प्रलंबित (New+Conf+Pack)</div>
+        <div class="stat-value" id="statPending">0</div>
+        <div class="stat-note">Orders awaiting action</div>
+      </div>
+      <div class="stat-card stat-primary">
+        <div class="stat-label">To Deliver / डिलिव्हरीसाठी</div>
+        <div class="stat-value" id="statToDeliver">0</div>
+        <div class="stat-note">Packed + Out for delivery</div>
+      </div>
+      <div class="stat-card" style="border-left: 4px solid #f59e0b; cursor: pointer;" onclick="window.location.href='low-stock.html'">
+        <div class="stat-label">⚠️ Low Stock / कमी साठा</div>
+        <div class="stat-value" id="statLowStock" style="color: #b45309;">0</div>
+        <div class="stat-note">At or below reorder level →</div>
+      </div>
+      <div class="stat-card" style="border-left: 4px solid #047857; cursor: pointer;" onclick="window.location.href='inbox.html'">
+        <div class="stat-label">🔔 Unread Messages / न वाचलेले मेसेज</div>
+        <div class="stat-value" id="statUnreadMessages" style="color: #047857;">0</div>
+        <div class="stat-note">Alerts awaiting review →</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">💰 Udhar Outstanding / उधारी बाकी</div>
+        <div class="stat-value" id="statUdharOutstanding">₹0</div>
+        <div class="stat-note">Active credit ledger</div>
+      </div>
+    </div>
+
+    <!-- Quick Alerts / Badge -->
+    <div style="background: #ffffff; border: 1px solid var(--admin-border); border-radius: var(--admin-radius); padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span style="background: #fee2e2; color: #991b1b; padding: 0.35rem 0.65rem; border-radius: 8px; font-weight: 800; font-size: 0.85rem;" id="statNewOrders">0</span>
+        <strong>New Unconfirmed Orders / नवीन ऑर्डर्स</strong>
+      </div>
+      <a href="packing.html" class="btn-action btn-outline" style="min-width: 130px;">
+        📋 Packing List
+      </a>
+    </div>
+
+    <!-- Recent Orders Section -->
+    <div style="margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+      <h2 style="font-size: 1.1rem; font-weight: 700;">Latest Orders / अलीकडील ऑर्डर्स</h2>
+      <a href="orders.html" style="font-size: 0.85rem; color: var(--admin-primary); text-decoration: none; font-weight: 600;">See all →</a>
+    </div>
+
+    <div id="recentOrdersList"></div>
+
+  </main>
+
+  <!-- Mobile Bottom Bar -->
+  <nav class="mobile-bottom-bar" id="mobileBottomBar"></nav>
+
+  <!-- Scripts -->
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
