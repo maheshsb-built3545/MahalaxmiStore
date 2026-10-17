@@ -115,7 +115,7 @@
 <script>
   // Forward safe redirect parameter to register link
   const redirectTarget = auth.getSafeRedirect();
-  document.getElementById('registerLink').href = `register.html?redirect=${encodeURIComponent(redirectTarget)}`;
+  document.getElementById('registerLink').href = `register.html?next=${encodeURIComponent(redirectTarget)}&redirect=${encodeURIComponent(redirectTarget)}`;
 
   // Already logged in? Redirect directly based on role
   if (auth.isLoggedIn()) {

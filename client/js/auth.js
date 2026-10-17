@@ -25,10 +25,36 @@ const auth = (() => {
   function setSession(token, user) {
     if (token) localStorage.setItem(CONFIG.AUTH_TOKEN_KEY, token);
     if (user)  localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(user));
+
+    // Merge previous user cart with guest cart (Task 1 step 4)
+    if (user && user._id && window.cart && typeof window.cart.mergeWith === 'function') {
+      try {
+        const raw = localStorage.getItem(`kirana_user_cart_${user._id}`);
+        if (raw) {
+          const savedItems = JSON.parse(raw);
+          if (Array.isArray(savedItems) && savedItems.length > 0) {
+            window.cart.mergeWith(savedItems);
+          }
+        }
+      } catch (_) {}
+    }
+
     renderAuthHeader();
   }
 
   function clearSession() {
+    // Save snapshot of current cart to user's saved cart before wiping token
+    const user = getUser();
+    if (user && user._id) {
+      try {
+        const currentCart = localStorage.getItem('kirana_cart');
+        if (currentCart) {
+          localStorage.setItem(`kirana_user_cart_${user._id}`, currentCart);
+        }
+      } catch (_) {}
+    }
+
+    // Wipe ONLY auth tokens (Non-negotiable Rule 5: Never purge localStorage key kirana_cart)
     localStorage.removeItem(CONFIG.AUTH_TOKEN_KEY);
     localStorage.removeItem(CONFIG.USER_KEY);
     renderAuthHeader();
@@ -38,16 +64,113 @@ const auth = (() => {
     return Boolean(getToken());
   }
 
+  const PENDING_ACTION_KEY = 'kirana_pending_action';
+
   /**
    * Rule 4 & 5: Exact whitelist redirect targets.
+   * Safely honors both ?next= and ?redirect= parameters.
+   * Only allows same-origin relative paths on whitelist.
    */
   function getSafeRedirect() {
     const params = new URLSearchParams(window.location.search);
-    const target = params.get('redirect');
-    if (target && REDIRECT_WHITELIST.includes(target)) {
+    const target = params.get('next') || params.get('redirect');
+    if (!target) return 'index.html';
+    // Reject absolute URLs with protocol or double slash (e.g. //evil.com or https://evil.com)
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(target) || target.startsWith('//')) {
+      return 'index.html';
+    }
+    const cleanPath = target.split('?')[0].split('#')[0].replace(/^\/+/, '');
+    if (REDIRECT_WHITELIST.includes(cleanPath)) {
       return target;
     }
     return 'index.html';
+  }
+
+  function savePendingAction(action) {
+    if (!action) return;
+    try {
+      sessionStorage.setItem(PENDING_ACTION_KEY, JSON.stringify({
+        ...action,
+        timestamp: Date.now(),
+      }));
+    } catch (_) {}
+  }
+
+  function getPendingAction() {
+    try {
+      const raw = sessionStorage.getItem(PENDING_ACTION_KEY);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      // Short expiry: 30 minutes
+      if (Date.now() - data.timestamp > 30 * 60 * 1000) {
+        clearPendingAction();
+        return null;
+      }
+      return data;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function clearPendingAction() {
+    try {
+      sessionStorage.removeItem(PENDING_ACTION_KEY);
+    } catch (_) {}
+  }
+
+  /**
+   * Auto-apply pending action after successful guest login or registration (Task 1)
+   */
+  async function checkAndApplyPendingAction() {
+    if (!isLoggedIn()) return;
+    const action = getPendingAction();
+    if (!action) return;
+    clearPendingAction(); // Auto-apply strictly once
+
+    if (action.type === 'add_item') {
+      const prod = action.product;
+      const qty = action.qty || 1;
+      if (!prod) return;
+
+      const id = prod._id || prod.productId;
+      try {
+        const res = await fetch(`${CONFIG.API_BASE}/products?ids=${id}`);
+        const data = await res.json();
+        const liveProd = data.success && data.data && data.data[0];
+        if (liveProd && (!liveProd.inStock || liveProd.stockQuantity <= 0)) {
+          if (window.ui && window.ui.showToast) {
+            ui.showToast('या वस्तूचा स्टॉक संपला आहे / This item is out of stock');
+          }
+          return;
+        }
+      } catch (_) {}
+
+      if (window.cart && window.cart.change) {
+        window.cart.change(prod, qty);
+      }
+      if (window.ui) {
+        if (ui.updateCartBadge) ui.updateCartBadge();
+        if (ui.renderCartDrawer) ui.renderCartDrawer();
+        if (ui.openCart) setTimeout(() => ui.openCart(), 350);
+        if (ui.showToast) ui.showToast('कार्टमध्ये जोडले / Added to cart 🎉');
+      }
+    } else if (action.type === 'ai_list') {
+      const items = action.items || [];
+      if (!items.length) return;
+      if (window.cart && window.cart.addBatch) {
+        window.cart.addBatch(items);
+      }
+      if (window.ui) {
+        if (ui.updateCartBadge) ui.updateCartBadge();
+        if (ui.renderCartDrawer) ui.renderCartDrawer();
+        if (ui.openCart) setTimeout(() => ui.openCart(), 350);
+        if (ui.showToast) ui.showToast(`🎉 ${items.length} वस्तू कार्टमध्ये जोडल्या! (Added to cart)`);
+      }
+    } else if (action.type === 'reorder') {
+      if (window.location.pathname.includes('orders.html') && action.orderId) {
+        window._pendingReorderId = action.orderId;
+      }
+    }
   }
 
   /**
@@ -211,6 +334,10 @@ const auth = (() => {
     formatDateIST,
     renderAuthHeader,
     updateCustomerUnreadBadge,
+    savePendingAction,
+    getPendingAction,
+    clearPendingAction,
+    checkAndApplyPendingAction,
   };
 })();
 

@@ -204,6 +204,10 @@ const catalog = (() => {
         plus.style.cursor  = 'not-allowed';
       } else {
         plus.addEventListener('click', () => {
+          if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+            ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1 });
+            return;
+          }
           if (window.PWA) window.PWA.haptic(20);
           cart.change(p, 1);
           ui.renderCartDrawer();
@@ -219,6 +223,10 @@ const catalog = (() => {
       const addBtn = el('button', 'add-btn', '+ Add');
       addBtn.setAttribute('aria-label', 'Add ' + p.nameEn + ' to cart');
       addBtn.addEventListener('click', () => {
+        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+          ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1 });
+          return;
+        }
         if (window.PWA) window.PWA.haptic(25);
         addBtn.classList.remove('btn-pop');
         void addBtn.offsetWidth;

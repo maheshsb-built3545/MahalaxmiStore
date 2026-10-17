@@ -38,7 +38,7 @@ async function authFetch(url, options = {}) {
   const res = await fetch(url, Object.assign({}, options, { headers }));
 
   if (res.status === 401) {
-    // Clear user auth session but NEVER touch the cart
+    // Clear user auth session but NEVER touch the cart (Non-negotiable Rule 5)
     localStorage.removeItem(CONFIG.AUTH_TOKEN_KEY);
     localStorage.removeItem(CONFIG.USER_KEY);
 
@@ -47,8 +47,10 @@ async function authFetch(url, options = {}) {
     const safeWhitelist = ['checkout.html', 'orders.html', 'index.html'];
     const redirectTarget = safeWhitelist.includes(currentPage) ? currentPage : 'index.html';
 
-    if (!window.location.pathname.endsWith('login.html')) {
-      window.location.href = `login.html?redirect=${encodeURIComponent(redirectTarget)}`;
+    if (window.ui && typeof window.ui.showLoginPrompt === 'function') {
+      window.ui.showLoginPrompt({ type: 'session_expired', returnUrl: redirectTarget });
+    } else if (!window.location.pathname.endsWith('login.html')) {
+      window.location.href = `login.html?next=${encodeURIComponent(redirectTarget)}&redirect=${encodeURIComponent(redirectTarget)}`;
     }
   }
 

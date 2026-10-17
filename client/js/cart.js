@@ -81,11 +81,14 @@ const cart = (() => {
    * @returns {number} new qty
    */
   function change(product, delta) {
-    const id  = product._id;
+    const id  = product._id || product.productId;
+    if (!id) return 0;
     const cur = _items[id] ? _items[id].qty : 0;
-    const next = Math.max(0, cur + delta);
+    const stock = typeof product.stockQuantity === 'number' ? product.stockQuantity : 50;
+    const rawNext = Math.round((cur + delta) * 100) / 100;
+    const next = Math.max(0, Math.min(stock, rawNext));
 
-    if (next === 0) {
+    if (next <= 0) {
       delete _items[id];
     } else {
       _items[id] = { productId: id, qty: next, product };
@@ -97,8 +100,10 @@ const cart = (() => {
   }
 
   function addOrSet(product, qty) {
-    const id = product._id;
-    const next = Math.max(0, qty);
+    const id = product._id || product.productId;
+    if (!id) return 0;
+    const stock = typeof product.stockQuantity === 'number' ? product.stockQuantity : 50;
+    const next = Math.max(0, Math.min(stock, qty));
     if (next === 0) {
       delete _items[id];
     } else {
@@ -110,11 +115,46 @@ const cart = (() => {
   }
 
   function addBatch(itemsList) {
+    if (!Array.isArray(itemsList)) return;
     itemsList.forEach(({ product, qty }) => {
-      if (!product || !product._id || qty <= 0) return;
-      const id = product._id;
+      if (!product) return;
+      const id = product._id || product.productId;
+      if (!id || qty <= 0) return;
       const cur = _items[id] ? _items[id].qty : 0;
-      _items[id] = { productId: id, qty: Math.min(50, cur + qty), product };
+      const stock = typeof product.stockQuantity === 'number' ? product.stockQuantity : 50;
+      const nextQty = Math.max(0, Math.min(stock, cur + qty));
+      if (nextQty > 0) {
+        _items[id] = { productId: id, qty: nextQty, product };
+      }
+    });
+    _save();
+    _notify();
+  }
+
+  /**
+   * Merge external guest items into current in-memory cart (Rule 4 of Task 1)
+   * Sums quantities for the same product, capped by available stock, zero duplicates.
+   */
+  function mergeWith(otherItems) {
+    if (!Array.isArray(otherItems)) return;
+    otherItems.forEach((item) => {
+      const id = item.productId || (item.product && (item.product._id || item.product.productId));
+      const qty = item.qty || 0;
+      if (!id || qty <= 0) return;
+
+      const existing = _items[id];
+      const prod = item.product || (existing ? existing.product : null);
+      const stock = prod && typeof prod.stockQuantity === 'number' ? prod.stockQuantity : 50;
+      const cur = existing ? existing.qty : 0;
+      const nextQty = Math.min(stock, cur + qty);
+
+      if (nextQty > 0) {
+        _items[id] = {
+          productId: id,
+          qty: nextQty,
+          product: prod || existing?.product,
+        };
+      }
     });
     _save();
     _notify();
@@ -144,13 +184,13 @@ const cart = (() => {
       return;
     }
 
-    const ids = raw.map((r) => r.productId).join(',');
+    const ids = raw.map((r) => r.productId).filter(Boolean).join(',');
     let productMap = {};
 
     try {
       const res  = await fetch(`${CONFIG.API_BASE}/products?ids=${encodeURIComponent(ids)}&limit=500`);
       const data = await res.json();
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
         data.data.forEach((p) => { productMap[p._id] = p; });
       }
     } catch (_) {
@@ -160,12 +200,13 @@ const cart = (() => {
     let dropped = 0;
 
     raw.forEach(({ productId, qty }) => {
+      if (!productId) return;
       const p = productMap[productId];
-      if (!p || !p.inStock) {
+      if (productMap && Object.keys(productMap).length > 0 && (!p || !p.inStock)) {
         dropped++;
-        return; // skip – stale or out of stock
+        return; // skip – confirmed stale or out of stock
       }
-      _items[productId] = { productId, qty, product: p };
+      _items[productId] = { productId, qty, product: p || { _id: productId, productId, nameEn: 'Grocery Item', price: 0, inStock: true } };
     });
 
     if (dropped > 0) {
@@ -177,5 +218,5 @@ const cart = (() => {
     onReady && onReady();
   }
 
-  return { get, getQty, getAll, total, itemCount, change, addOrSet, addBatch, clear, onUpdate, init };
+  return { get, getQty, getAll, total, itemCount, change, addOrSet, addBatch, mergeWith, clear, onUpdate, init };
 })();

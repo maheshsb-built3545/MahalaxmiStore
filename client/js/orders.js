@@ -507,21 +507,25 @@ const ordersApp = (() => {
     if (replace) {
       cart.clear();
     }
-    items.forEach((item) => {
-      cart.change(
-        {
-          _id: item.productId,
-          nameEn: item.nameEn,
-          nameMr: item.nameMr,
-          packSize: item.packSize,
-          price: item.price,
-          mrp: item.mrp,
-          emoji: item.emoji,
-          inStock: true,
-        },
-        item.qty
-      );
-    });
+    const formatted = items.map((item) => ({
+      product: {
+        _id: item.productId,
+        nameEn: item.nameEn,
+        nameMr: item.nameMr,
+        packSize: item.packSize,
+        price: item.price,
+        mrp: item.mrp,
+        emoji: item.emoji,
+        inStock: true,
+        stockQuantity: item.stockQuantity || 50,
+      },
+      qty: item.qty,
+    }));
+    if (cart.addBatch) {
+      cart.addBatch(formatted);
+    } else {
+      formatted.forEach(({ product, qty }) => cart.change(product, qty));
+    }
   }
 
   function showReorderPromptModal(availableItems) {

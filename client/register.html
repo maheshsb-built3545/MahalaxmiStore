@@ -147,10 +147,10 @@
 <script src="js/pwa.js"></script>
 <script>
   const redirectTarget = auth.getSafeRedirect();
-  document.getElementById('loginLink').href = `login.html?redirect=${encodeURIComponent(redirectTarget)}`;
+  document.getElementById('loginLink').href = `login.html?next=${encodeURIComponent(redirectTarget)}&redirect=${encodeURIComponent(redirectTarget)}`;
 
   if (auth.isLoggedIn()) {
-    window.location.href = redirectTarget;
+    window.location.href = auth.getRedirectForUser(auth.getUser());
   }
 
   const form = document.getElementById('registerForm');
@@ -223,8 +223,8 @@
       // Save token and user safely in localStorage
       auth.setSession(data.token, data.user);
 
-      // Redirect to safe target (e.g. checkout.html)
-      window.location.href = redirectTarget;
+      // Safe redirect honoring return target
+      window.location.href = auth.getRedirectForUser(data.user);
     } catch (err) {
       showError('Network error. Is the server running? Please try again.');
       submitBtn.disabled = false;
