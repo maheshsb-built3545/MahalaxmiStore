@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mahalaxmi_store_app
+    ports:
+      - "5000:5000"
+    env_file:
+      - server/.env
+    restart: unless-stopped

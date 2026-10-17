@@ -1,0 +1,56 @@
+# ==============================================================================
+# Mahalaxmi Kirana Store — Root .gitignore
+# ==============================================================================
+
+# Node dependencies
+node_modules/
+server/node_modules/
+client/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment & Credentials (NEVER COMMIT SECRETS)
+.env
+.env.*
+server/.env
+server/.env.*
+!.env.example
+!server/.env.example
+
+# Database Backups & Temporary Data Dumps
+server/backups/*.json
+server/backups/*_*/
+backups/
+
+# Prototype & Scratch Directories
+_old/
+archive/
+scratch/
+
+# Runtime Uploads & Caches
+uploads/
+server/uploads/
+.cache/
+.parcel-cache/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+
+# Editor & IDE Directories
+.idea/
+.vscode/
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+
+# Application Logs
+*.log
+logs/
+server/logs/
