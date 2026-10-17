@@ -64,6 +64,6 @@ function setContent(container, ...children) {
 }
 
 // Global export for non-module scripts
-window.AdminDOM = { esc, el, setContent };
+window.AdminDOM = { esc, escape: esc, el, setContent };
 window.esc = esc;
 window.escapeHtml = esc; // backward compat with legacy scripts

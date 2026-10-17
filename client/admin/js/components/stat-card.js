@@ -33,4 +33,4 @@ function renderStatCard({ label, value, delta = null, note = '', icon = '', onCl
   return card;
 }
 
-window.AdminStatCard = { render: renderStatCard };
+window.AdminStatCard = { render: renderStatCard, create: renderStatCard };

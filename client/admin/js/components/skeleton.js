@@ -45,7 +45,40 @@ function renderCardsSkeleton(count = 5) {
   return container;
 }
 
+function cardList(count = 4) {
+  let html = '<div class="flex flex-col gap-3" style="display:flex;flex-direction:column;gap:12px;">';
+  for (let i = 0; i < count; i++) {
+    html += `
+      <div style="padding:14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="skeleton" style="width:44px;height:44px;border-radius:var(--radius-sm);flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div class="skeleton" style="height:14px;width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton" style="height:12px;width:35%;"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  html += '</div>';
+  return html;
+}
+
+function tableRows(rows = 5, cols = 4) {
+  let html = '';
+  for (let r = 0; r < rows; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) {
+      html += '<td style="padding:12px;"><div class="skeleton" style="height:14px;width:80%;"></div></td>';
+    }
+    html += '</tr>';
+  }
+  return html;
+}
+
 window.AdminSkeleton = {
   renderStats: renderStatsSkeleton,
   renderCards: renderCardsSkeleton,
+  cardList,
+  tableRows,
 };

@@ -6,23 +6,29 @@
 'use strict';
 
 class FilterBar {
-  constructor(options = {}) {
-    this.container = typeof options.container === 'string'
-      ? document.querySelector(options.container)
-      : options.container;
+  static create(options = {}) {
+    const inst = new FilterBar(options);
+    return inst.element || inst.container;
+  }
 
-    this.placeholder = options.placeholder || 'शोधा / Search...';
+  constructor(options = {}) {
+    this.element = document.createElement('div');
+    this.container = (typeof options.container === 'string'
+      ? document.querySelector(options.container)
+      : options.container) || this.element;
+
+    this.placeholder = options.placeholder || options.searchPlaceholder || 'शोधा / Search...';
     this.chips = options.chips || []; // [{ id, label, active }]
-    this.activeChipId = options.activeChipId || (this.chips[0] ? this.chips[0].id : null);
+    this.activeChipId = options.activeChipId || (this.chips.find(c => c.active)?.id || (this.chips[0] ? this.chips[0].id : null));
     this.onSearch = options.onSearch || null;
-    this.onChipSelect = options.onChipSelect || null;
+    this.onChipSelect = options.onChipSelect || options.onFilterChange || null;
 
     this.debounceTimer = null;
-    if (this.container) this.render();
+    this.render();
   }
 
   render() {
-    if (!this.container) return;
+    if (!this.container) this.container = this.element;
     this.container.className = 'filter-bar';
     this.container.innerHTML = `
       <div class="filter-search-wrap">

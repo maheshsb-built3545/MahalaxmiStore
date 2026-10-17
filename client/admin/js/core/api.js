@@ -15,6 +15,9 @@ function getApiBase() {
   if (typeof CONFIG !== 'undefined' && CONFIG.API_BASE) {
     return CONFIG.API_BASE;
   }
+  if (typeof window !== 'undefined' && window.location.origin && window.location.origin.startsWith('http')) {
+    return `${window.location.origin}/api`;
+  }
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   return isLocal ? 'http://localhost:5000/api' : '/api';
 }
@@ -37,8 +40,12 @@ async function request(endpoint, options = {}) {
 
   let url = endpoint;
   if (!url.startsWith('http')) {
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    url = `${getApiBase()}${cleanEndpoint}`;
+    const base = getApiBase();
+    let cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    if (cleanEndpoint.startsWith('/api/') && base.endsWith('/api')) {
+      cleanEndpoint = cleanEndpoint.slice(4);
+    }
+    url = `${base}${cleanEndpoint}`;
   }
 
   // De-duplicate in-flight GET requests

@@ -9,6 +9,12 @@
 'use strict';
 
 class AppShell {
+  static init(routeOrOptions) {
+    const opts = typeof routeOrOptions === 'string' ? { activeRoute: routeOrOptions } : (routeOrOptions || {});
+    window.shell = new AppShell(opts);
+    return window.shell;
+  }
+
   constructor(options = {}) {
     this.activeRoute = options.activeRoute || this.detectActiveRoute();
     this.pageTitle = options.pageTitle || this.getDefaultTitle(this.activeRoute);
@@ -348,7 +354,7 @@ class AppShell {
   async fetchStoreSettings() {
     try {
       if (!window.AdminAPI) return;
-      const res = await window.AdminAPI.get('/settings');
+      const res = await window.AdminAPI.get('/api/admin/settings');
       if (res && res.success && res.data) {
         this.isStoreOpen = res.data.isStoreOpen !== false;
         this.updateStoreStatusUi();
@@ -365,7 +371,7 @@ class AppShell {
     if (!confirm(confirmMsg)) return;
 
     try {
-      const res = await window.AdminAPI.put('/settings', {
+      const res = await window.AdminAPI.put('/api/admin/settings', {
         isStoreOpen: nextState,
       });
 

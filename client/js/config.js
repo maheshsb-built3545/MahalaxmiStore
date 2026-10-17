@@ -6,8 +6,10 @@
  */
 
 const CONFIG = {
-  // API base URL – change this for production
-  API_BASE: 'http://localhost:5000/api',
+  // API base URL – defaults to current origin in browser or fallback to localhost:5000
+  API_BASE: (typeof window !== 'undefined' && window.location.origin && window.location.origin.startsWith('http'))
+    ? `${window.location.origin}/api`
+    : 'http://localhost:5000/api',
 
   // Store WhatsApp number (international format without + or spaces)
   STORE_NUM: '919860924504',

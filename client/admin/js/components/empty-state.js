@@ -33,4 +33,4 @@ function renderEmptyState({
   return container;
 }
 
-window.AdminEmptyState = { render: renderEmptyState };
+window.AdminEmptyState = { render: renderEmptyState, create: renderEmptyState };
