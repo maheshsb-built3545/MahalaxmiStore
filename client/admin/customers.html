@@ -2,50 +2,45 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customers Directory — महालक्ष्मी किराणा Admin</title>
-  <link rel="stylesheet" href="css/admin.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ग्राहक यादी (Customers) — Mahalaxmi Kirana Store</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
 </head>
-<body>
+<body data-page="customers">
+  <div id="app-shell">
+    <main class="page-container" id="customers-page-root" role="main" aria-label="ग्राहक यादी (Customers)">
+      <!-- Rendered dynamically by customers.js -->
+    </main>
+  </div>
 
-  <!-- Top Navbar -->
-  <header class="admin-navbar" id="adminNavbar"></header>
-
-  <!-- Main Content -->
-  <main class="admin-container">
-
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">👥 Customer Directory / ग्राहक यादी</h1>
-        <p class="page-subtitle">View customer order history and manage accounts (Block / Unblock).</p>
-      </div>
-    </div>
-
-    <!-- Customers Table Card -->
-    <div style="background: #ffffff; border: 1px solid var(--admin-border); border-radius: var(--admin-radius); overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-      <table style="width: 100%; border-collapse: collapse; min-width: 550px;">
-        <thead>
-          <tr style="background: #f8fafc; border-bottom: 2px solid var(--admin-border); font-size: 0.8rem; text-transform: uppercase; color: var(--admin-muted); letter-spacing: 0.5px;">
-            <th style="padding: 0.75rem; text-align: left;">Customer Name</th>
-            <th style="padding: 0.75rem; text-align: left;">Phone Number</th>
-            <th style="padding: 0.75rem; text-align: left;">Orders Placed</th>
-            <th style="padding: 0.75rem; text-align: left;">Account Status</th>
-            <th style="padding: 0.75rem; text-align: right;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="customersTableBody"></tbody>
-      </table>
-    </div>
-
-  </main>
-
-  <!-- Mobile Bottom Bar -->
-  <nav class="mobile-bottom-bar" id="mobileBottomBar"></nav>
-
-  <!-- Scripts -->
+  <!-- Core Scripts -->
   <script src="../js/config.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="js/admin-common.js"></script>
-  <script src="js/admin-customers.js"></script>
+  <script src="js/core/net.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/router-guard.js"></script>
+  <script src="js/core/i18n.js"></script>
+  <script src="js/core/format.js"></script>
+  <script src="js/core/dom.js"></script>
+  <script src="js/core/toast.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/core/api.js"></script>
+
+  <!-- Components -->
+  <script src="js/components/shell.js"></script>
+  <script src="js/components/bottom-sheet.js"></script>
+  <script src="js/components/confirm.js"></script>
+  <script src="js/components/stat-card.js"></script>
+  <script src="js/components/badge.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/empty-state.js"></script>
+  <script src="js/components/filter-bar.js"></script>
+  <script src="js/components/data-list.js"></script>
+
+  <!-- Page Logic -->
+  <script src="js/pages/customers.js"></script>
 </body>
 </html>

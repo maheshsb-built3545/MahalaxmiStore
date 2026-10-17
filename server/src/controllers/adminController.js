@@ -1136,8 +1136,28 @@ const getCustomers = async (req, res, next) => {
       ];
     }
 
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
     if (segment === 'blocked') {
       filter.blocked = true;
+    } else if (segment === 'new') {
+      filter.createdAt = { $gte: thirtyDaysAgo };
+    } else if (segment === 'udhar') {
+      const udharCusts = await UdharAccount.distinct('customer', { status: { $in: ['active', 'pending'] } });
+      filter._id = { $in: udharCusts };
+    } else if (segment === 'regular') {
+      const regularCusts = await Order.aggregate([
+        { $match: { status: { $ne: 'cancelled' } } },
+        { $group: { _id: '$userId', count: { $sum: 1 } } },
+        { $match: { count: { $gte: 3 } } },
+      ]);
+      filter._id = { $in: regularCusts.map((r) => r._id) };
+    } else if (segment === 'dormant') {
+      const activeRecentCusts = await Order.distinct('userId', {
+        createdAt: { $gte: thirtyDaysAgo },
+        status: { $ne: 'cancelled' },
+      });
+      filter._id = { $nin: activeRecentCusts };
     }
 
     const [total, customers] = await Promise.all([
@@ -1170,15 +1190,31 @@ const getCustomers = async (req, res, next) => {
     const udharAccounts = await UdharAccount.find({ customer: { $in: customerIds } }).lean();
     const udharMap = new Map(udharAccounts.map((u) => [u.customer.toString(), u]));
 
+    // Fetch latest addresses
+    const latestOrders = await Order.find({ userId: { $in: customerIds } })
+      .sort({ createdAt: -1 })
+      .select('userId address')
+      .lean();
+    const addressMap = new Map();
+    latestOrders.forEach((o) => {
+      const uid = o.userId.toString();
+      if (!addressMap.has(uid) && o.address) {
+        addressMap.set(uid, o.address);
+      }
+    });
+
     const result = customers.map((c) => {
       const cid = c._id.toString();
       const st = statsMap.get(cid) || { orderCount: 0, lifetimeSpend: 0, lastOrderDate: null };
       const udhar = udharMap.get(cid) || null;
+      const addr = addressMap.get(cid) || null;
       return {
         ...c,
         orderCount: st.orderCount,
         lifetimeSpend: st.lifetimeSpend,
         lastOrderDate: st.lastOrderDate,
+        address: addr,
+        village: addr?.line || 'Yesgaon',
         udharAccount: udhar ? { balance: udhar.balance, creditLimit: udhar.creditLimit, status: udhar.status } : null,
       };
     });
@@ -1200,7 +1236,7 @@ const getCustomers = async (req, res, next) => {
 
 /**
  * GET /api/admin/customers/:id/orders
- * Returns recent order history for customer profile drawer.
+ * Returns recent order history, favorite items, and addresses for customer profile drawer.
  */
 const getCustomerOrders = async (req, res, next) => {
   try {
@@ -1209,12 +1245,52 @@ const getCustomerOrders = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid customer ID.' });
     }
 
-    const orders = await Order.find({ userId: id })
-      .sort({ createdAt: -1 })
-      .limit(30)
-      .lean();
+    const [orders, udharAccount] = await Promise.all([
+      Order.find({ userId: id }).sort({ createdAt: -1 }).limit(30).lean(),
+      UdharAccount.findOne({ customer: id }).lean(),
+    ]);
 
-    res.status(200).json({ success: true, data: orders });
+    const itemMap = new Map();
+    const addresses = [];
+    const addressKeys = new Set();
+
+    orders.forEach((o) => {
+      if (o.address && o.address.line) {
+        const key = `${o.address.line}|${o.address.pincode}`;
+        if (!addressKeys.has(key)) {
+          addressKeys.add(key);
+          addresses.push(o.address);
+        }
+      }
+      if (Array.isArray(o.items)) {
+        o.items.forEach((it) => {
+          const pid = (it.productId || it.nameEn || 'item').toString();
+          const prev = itemMap.get(pid) || {
+            nameEn: it.nameEn,
+            nameMr: it.nameMr,
+            count: 0,
+            packSize: it.packSize,
+            price: it.price,
+          };
+          prev.count += it.quantity || 1;
+          itemMap.set(pid, prev);
+        });
+      }
+    });
+
+    const favoriteItems = Array.from(itemMap.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        orders,
+        favoriteItems,
+        addresses,
+        udharAccount,
+      },
+    });
   } catch (err) {
     next(err);
   }

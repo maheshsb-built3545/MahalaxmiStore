@@ -125,6 +125,11 @@ const DICTIONARY = {
   customer_total_spent: 'एकूण खरेदी / Total Spent',
   customer_block: 'ग्राहक ब्लॉक करा / Block Customer',
   customer_unblock: 'अनब्लॉक करा / Unblock Customer',
+  customer_profile: 'ग्राहक प्रोफाइल / Customer Profile',
+  customer_favorite_items: 'नेहमीच्या वस्तू / Favorite Items',
+  customer_addresses: 'डिलिव्हरी पत्ते / Delivery Addresses',
+  customer_recent_orders: 'अलीकडील ऑर्डर्स / Recent Orders',
+  no_customers_found: 'कोणतेही ग्राहक सापडले नाहीत / No customers found',
 
   // ── Reports ──
   reports_sales: 'विक्री अहवाल / Sales Report',
