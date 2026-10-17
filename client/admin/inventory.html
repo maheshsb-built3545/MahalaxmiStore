@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="mr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>स्टॉक व माल — महालक्ष्मी किराणा / Inventory Management</title>
+  <meta name="description" content="Mahalaxmi Kirana Store inventory management: stock-in with cost rate, low-stock & expiry alerts, and audit adjustments.">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+
+  <!-- Router Guard -->
+  <script src="../js/config.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/router-guard.js"></script>
+</head>
+<body>
+
+  <div id="app-shell">
+    <!-- Top Inventory Tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid var(--border-subtle);padding-bottom:8px;">
+      <button type="button" class="btn btn-secondary active" id="tabBtn_stock-in" style="flex:1;border-radius:10px;">
+        📥 स्टॉक भरा (Stock In)
+      </button>
+      <button type="button" class="btn btn-secondary" id="tabBtn_alerts" style="flex:1;border-radius:10px;">
+        ⚠️ इशारे (Alerts)
+      </button>
+      <button type="button" class="btn btn-secondary" id="tabBtn_log" style="flex:1;border-radius:10px;">
+        📝 नोंदवही (Log & Adjust)
+      </button>
+    </div>
+
+    <!-- 1. TAB: STOCK-IN -->
+    <div id="tabView_stock-in">
+      <!-- Search & Barcode Scan Bar -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div class="filter-search-wrap" style="flex:1;">
+          <span class="search-icon-left">🔍</span>
+          <input
+            type="search"
+            class="filter-search-input"
+            id="inventoryProductSearch"
+            placeholder="उत्पादन नाव, मराठी किंवा बारकोड शोधा..."
+            autocomplete="off"
+            aria-label="Search product to receive"
+          />
+        </div>
+        <button type="button" class="btn btn-secondary" id="cameraScanBtn" title="Scan Barcode with Camera" style="flex-shrink:0;">
+          📷 बारकोड
+        </button>
+      </div>
+
+      <!-- Autocomplete Dropdown Target -->
+      <div id="inventorySearchResults" style="margin-bottom:16px;"></div>
+
+      <!-- Inward Supplier & Invoice Meta -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:10px;margin-bottom:16px;background:#ffffff;padding:12px;border-radius:12px;border:1px solid var(--border-subtle);">
+        <div>
+          <label class="form-label" style="font-size:0.75rem;">पुरवठादार / Supplier Name (Optional)</label>
+          <input type="text" class="form-input" id="globalSupplierInput" placeholder="उदा. बालाजी एजन्सी, कोपरगाव" />
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.75rem;">चलन / बिल क्र. / Invoice No. (Optional)</label>
+          <input type="text" class="form-input" id="globalInvoiceInput" placeholder="उदा. INV-2026-98" />
+        </div>
+      </div>
+
+      <!-- Multi-Item Receive Cart -->
+      <div id="receiveCartContainer" style="margin-bottom:16px;"></div>
+
+      <!-- Submit Receive Button -->
+      <button type="button" class="btn btn-primary btn-lg w-full" id="submitReceiveCartBtn" onclick="submitBatchStockIn()" disabled>
+        ✅ सर्व साठा जतन करा (Save All Stock)
+      </button>
+    </div>
+
+    <!-- 2. TAB: ALERTS -->
+    <div id="tabView_alerts" style="display:none;">
+      <div id="inventoryAlertsContainer"></div>
+    </div>
+
+    <!-- 3. TAB: LOG & ADJUST -->
+    <div id="tabView_log" style="display:none;">
+      <div id="inventoryLogsContainer"></div>
+    </div>
+  </div>
+
+  <!-- Core & Shared Component Scripts -->
+  <script src="js/core/dom.js"></script>
+  <script src="js/core/format.js"></script>
+  <script src="js/core/i18n.js"></script>
+  <script src="js/core/api.js"></script>
+  <script src="js/core/toast.js"></script>
+  <script src="js/core/net.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/components/bottom-sheet.js"></script>
+  <script src="js/components/shell.js"></script>
+  <script src="js/components/stat-card.js"></script>
+  <script src="js/components/data-list.js"></script>
+  <script src="js/components/filter-bar.js"></script>
+  <script src="js/components/badge.js"></script>
+  <script src="js/components/stepper.js"></script>
+  <script src="js/components/confirm.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/empty-state.js"></script>
+  <script src="js/components/chart.js"></script>
+
+  <!-- Page Logic -->
+  <script src="js/pages/inventory.js"></script>
+</body>
+</html>
