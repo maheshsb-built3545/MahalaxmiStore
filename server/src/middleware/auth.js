@@ -101,4 +101,37 @@ const requireOwnerOrStaff = (req, res, next) => {
  */
 const requireOwnerOnly = requireRole('owner');
 
-module.exports = { verifyToken, requireRole, requireOwnerOrStaff, requireOwnerOnly };
+/**
+ * Fine-grained module permission middleware.
+ * Owners have unrestricted access. Staff must have the requested permission in user.permissions.
+ */
+const requirePermission = (permission) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Authentication required.' });
+    }
+    if (req.user.role === 'owner') {
+      return next();
+    }
+    if (req.user.role === 'staff') {
+      const userPerms = Array.isArray(req.user.permissions)
+        ? req.user.permissions
+        : ['orders_view', 'orders_status', 'stock_manage'];
+      if (userPerms.includes(permission)) {
+        return next();
+      }
+    }
+    return res.status(403).json({
+      success: false,
+      message: `Access denied: missing permission "${permission}".`,
+    });
+  };
+};
+
+module.exports = {
+  verifyToken,
+  requireRole,
+  requireOwnerOrStaff,
+  requireOwnerOnly,
+  requirePermission,
+};

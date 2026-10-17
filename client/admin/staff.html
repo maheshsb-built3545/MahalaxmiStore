@@ -2,113 +2,43 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>कर्मचारी व्यवस्थापन (Staff Management) — Mahalaxmi Kirana Store</title>
-  <link rel="stylesheet" href="css/admin.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>कर्मचारी व अधिकार (Staff & Permissions) — Mahalaxmi Kirana Store</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
 </head>
-<body class="admin-body">
+<body data-page="staff">
+  <div id="app-shell">
+    <main class="page-container" id="staff-page-root" role="main" aria-label="कर्मचारी व अधिकार (Staff & Permissions)">
+      <!-- Rendered dynamically by staff.js -->
+    </main>
+  </div>
 
-  <!-- Top Navigation -->
-  <header class="admin-navbar" id="adminNavbar"></header>
-
-  <main class="admin-main">
-    <div class="admin-container">
-
-      <!-- Page Head -->
-      <div class="page-head">
-        <div>
-          <h1>🧑‍💼 कर्मचारी व्यवस्थापन (Staff Management)</h1>
-          <p class="sub">दुकान कर्मचारी खाती तयार करा, ब्लॉक करा किंवा काढा. (ADM-01)</p>
-        </div>
-      </div>
-
-      <!-- Explanatory Permissions Box -->
-      <div class="alert-box" style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.88rem;color:#065f46;line-height:1.5;">
-        ℹ️ <b>कर्मचारी अधिकार व ऑडिट (Staff Permissions &amp; Audit):</b><br>
-        कर्मचारी ऑर्डर्स स्थिती अपडेट करणे, स्टॉक-इन नोंदवणे, उधारी जमा घेणे आणि इनबॉक्स अलर्ट पाहू शकतात. कर्मचाऱ्यांना इतर कर्मचारी खाती जोडण्याचा किंवा मालकाचे पासवर्ड बदलण्याचा अधिकार नसतो. कर्मचाऱ्याने केलेल्या सर्व कृती मालकाच्या <b>Audit Log</b> मध्ये कर्मचाऱ्याच्या नावासह आपोआप नोंदवल्या जातात.
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;align-items:start;">
-
-        <!-- Form: Add Staff -->
-        <div class="card" style="padding:1.4rem;">
-          <h3 style="margin-top:0;font-size:1.15rem;color:#04251a;margin-bottom:1rem;">➕ नवीन कर्मचारी जोडा (Add Staff)</h3>
-          <form id="addStaffForm">
-            <div class="form-group" style="margin-bottom:0.85rem;">
-              <label for="staffName" style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">
-                कर्मचाऱ्याचे पूर्ण नाव (Full Name) *
-              </label>
-              <input type="text" id="staffName" class="input-field" placeholder="उदा. राहुल गायकवाड" required>
-            </div>
-
-            <div class="form-group" style="margin-bottom:0.85rem;">
-              <label for="staffPhone" style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">
-                मोबाईल नंबर (10-Digit Mobile) *
-              </label>
-              <input type="tel" id="staffPhone" class="input-field" placeholder="उदा. 9876543210" maxlength="10" required>
-            </div>
-
-            <div class="form-group" style="margin-bottom:0.85rem;">
-              <label for="staffPassword" style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">
-                पासवर्ड (Password, min 6 chars) *
-              </label>
-              <input type="password" id="staffPassword" class="input-field" placeholder="••••••" minlength="6" required>
-            </div>
-
-            <div class="form-group" style="margin-bottom:1.25rem;">
-              <label for="staffLang" style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">
-                पसंतीची भाषा (Preferred Language) *
-              </label>
-              <select id="staffLang" class="input-field" style="height:42px;">
-                <option value="mr" selected>मराठी (Marathi)</option>
-                <option value="hi">हिंदी (Hindi)</option>
-                <option value="en">English</option>
-              </select>
-            </div>
-
-            <button type="submit" id="saveStaffBtn" class="btn btn-primary" style="width:100%;">
-              ✓ कर्मचारी खाते तयार करा (Create Staff)
-            </button>
-          </form>
-        </div>
-
-        <!-- Staff List Table -->
-        <div class="table-card">
-          <div class="card-head" style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;">
-            <h3 style="margin:0;font-size:1.05rem;color:#04251a;">👥 कार्यरत कर्मचारी (Staff List)</h3>
-          </div>
-          <div class="table-responsive">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>कर्मचारी (Name &amp; Phone)</th>
-                  <th>भाषा</th>
-                  <th>स्थिती</th>
-                  <th>कृती (Actions)</th>
-                </tr>
-              </thead>
-              <tbody id="staffTableBody">
-                <tr><td colspan="4" style="text-align:center;padding:2rem;color:#64748b;">कर्मचारी लोड होत आहेत...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </main>
-
-  <!-- Mobile Bottom Bar -->
-  <nav class="mobile-bottom-bar" id="mobileBottomBar"></nav>
-
-  <!-- Scripts -->
+  <!-- Core Scripts -->
   <script src="../js/config.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="js/admin-common.js"></script>
-  <script src="js/admin-staff.js"></script>
+  <script src="js/core/net.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/router-guard.js"></script>
+  <script src="js/core/i18n.js"></script>
+  <script src="js/core/format.js"></script>
+  <script src="js/core/dom.js"></script>
+  <script src="js/core/toast.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/core/api.js"></script>
+
+  <!-- Components -->
+  <script src="js/components/shell.js"></script>
+  <script src="js/components/bottom-sheet.js"></script>
+  <script src="js/components/confirm.js"></script>
+  <script src="js/components/stat-card.js"></script>
+  <script src="js/components/badge.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/empty-state.js"></script>
+
+  <!-- Page Logic -->
+  <script src="js/pages/staff.js"></script>
 </body>
 </html>

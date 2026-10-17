@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    permissions: {
+      type: [String],
+      default: ['orders_view', 'orders_status', 'stock_manage'],
+    },
     createdAt: {
       type: Date,
       default: Date.now,

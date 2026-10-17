@@ -165,6 +165,12 @@ const DICTIONARY = {
   settings_cleanup_success: 'जुन्या सूचना यशस्वीरित्या हटवल्या / Old notifications cleaned up',
   settings_pincodes: 'सेवा देणारे पिनकोड / Serviceable Pincodes',
   settings_delivery_rules: 'डिलिव्हरी नियम व फी / Delivery Rules & Fees',
+  staff_add_title: 'नवीन कर्मचारी जोडा / Add New Staff',
+  staff_permissions: 'कर्मचारी अधिकार / Staff Permissions',
+  staff_audit_feed: 'ऑडिट लॉग / Activity Audit Log',
+  staff_created_success: 'कर्मचारी खाते यशस्वीरीत्या तयार केले / Staff account created successfully',
+  staff_permissions_updated: 'अधिकार यशस्वीरीत्या बदलले / Permissions updated successfully',
+  no_staff_members: 'कोणतेही कर्मचारी खाते नाही / No staff members found',
 
   // ── Empty States & Alerts ──
   no_orders_found: 'कोणतीही नवीन ऑर्डर नाही / No orders found',

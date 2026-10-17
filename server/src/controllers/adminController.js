@@ -1447,7 +1447,7 @@ const uploadImage = async (req, res, next) => {
 const getStaff = async (_req, res, next) => {
   try {
     const staffMembers = await User.find({ role: 'staff' })
-      .select('_id name phone preferredLanguage blocked createdAt updatedAt')
+      .select('_id name phone preferredLanguage blocked permissions createdAt updatedAt')
       .sort({ createdAt: -1 })
       .lean();
 
@@ -1467,6 +1467,9 @@ const createStaff = async (req, res, next) => {
     const rawPhone = ensureString(req.body.phone);
     const rawPassword = ensureString(req.body.password);
     const rawLang = ['mr', 'hi', 'en'].includes(req.body.preferredLanguage) ? req.body.preferredLanguage : 'mr';
+    const permissions = Array.isArray(req.body.permissions)
+      ? req.body.permissions
+      : ['orders_view', 'orders_status', 'stock_manage'];
 
     if (!rawName || rawName.length < 2 || rawName.length > 100) {
       return res.status(400).json({ success: false, message: 'Name must be between 2 and 100 characters.' });
@@ -1495,13 +1498,14 @@ const createStaff = async (req, res, next) => {
       passwordHash,
       role: 'staff',
       preferredLanguage: rawLang,
+      permissions,
     });
 
     await AuditLog.create({
       actor: { id: req.user._id, name: req.user.name, role: req.user.role },
       action: 'staff_created',
       target: { collection: 'User', id: staffUser._id, name: staffUser.name },
-      note: `Owner created staff account for ${staffUser.name} (${staffUser.phone})`,
+      note: `Owner created staff account for ${staffUser.name} (${staffUser.phone}) with permissions: [${permissions.join(', ')}]`,
     });
 
     res.status(201).json({
@@ -1512,9 +1516,53 @@ const createStaff = async (req, res, next) => {
         name: staffUser.name,
         phone: staffUser.phone,
         role: staffUser.role,
+        permissions: staffUser.permissions,
         preferredLanguage: staffUser.preferredLanguage,
         createdAt: staffUser.createdAt,
       },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * PATCH /api/admin/staff/:id/permissions
+ */
+const updateStaffPermissions = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid staff ID.' });
+    }
+
+    const { permissions } = req.body;
+    if (!Array.isArray(permissions)) {
+      return res.status(400).json({ success: false, message: 'Permissions array is required.' });
+    }
+
+    const staffUser = await User.findOne({ _id: id, role: 'staff' });
+    if (!staffUser) {
+      return res.status(404).json({ success: false, message: 'Staff member not found.' });
+    }
+
+    const beforePerms = staffUser.permissions || [];
+    staffUser.permissions = permissions;
+    await staffUser.save();
+
+    await AuditLog.create({
+      actor: { id: req.user._id, name: req.user.name, role: req.user.role },
+      action: 'staff_permissions_updated',
+      target: { collection: 'User', id: staffUser._id, name: staffUser.name },
+      before: { permissions: beforePerms },
+      after: { permissions },
+      note: `Updated permissions for staff ${staffUser.name}: [${permissions.join(', ')}]`,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Permissions updated for ${staffUser.name}.`,
+      data: staffUser,
     });
   } catch (err) {
     next(err);
@@ -1535,9 +1583,16 @@ const deleteStaff = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'You cannot delete your own account.' });
     }
 
-    const staffUser = await User.findOne({ _id: id, role: 'staff' });
-    if (!staffUser) {
-      return res.status(404).json({ success: false, message: 'Staff member not found.' });
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    if (targetUser.role === 'owner') {
+      const ownerCount = await User.countDocuments({ role: 'owner' });
+      if (ownerCount <= 1) {
+        return res.status(400).json({ success: false, message: 'Cannot delete the last store owner account.' });
+      }
     }
 
     await User.findByIdAndDelete(id);
@@ -1545,11 +1600,11 @@ const deleteStaff = async (req, res, next) => {
     await AuditLog.create({
       actor: { id: req.user._id, name: req.user.name, role: req.user.role },
       action: 'staff_deleted',
-      target: { collection: 'User', id: staffUser._id, name: staffUser.name },
-      note: `Owner removed staff account ${staffUser.name} (${staffUser.phone})`,
+      target: { collection: 'User', id: targetUser._id, name: targetUser.name },
+      note: `Owner removed ${targetUser.role} account ${targetUser.name} (${targetUser.phone})`,
     });
 
-    res.status(200).json({ success: true, message: `Staff member ${staffUser.name} removed successfully.` });
+    res.status(200).json({ success: true, message: `Account for ${targetUser.name} removed successfully.` });
   } catch (err) {
     next(err);
   }
@@ -2402,6 +2457,7 @@ module.exports = {
   createStaff,
   deleteStaff,
   toggleStaffBlock,
+  updateStaffPermissions,
   getAuditLogs,
   getReports,
   getDailySettlement,

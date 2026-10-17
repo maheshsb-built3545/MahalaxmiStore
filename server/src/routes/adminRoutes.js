@@ -53,6 +53,7 @@ router.get('/staff', requireOwnerOnly, admin.getStaff);
 router.post('/staff', requireOwnerOnly, admin.createStaff);
 router.delete('/staff/:id', requireOwnerOnly, admin.deleteStaff);
 router.patch('/staff/:id/toggle-block', requireOwnerOnly, admin.toggleStaffBlock);
+router.patch('/staff/:id/permissions', requireOwnerOnly, admin.updateStaffPermissions);
 
 // ─── Audit Log (ADM-02) ───────────────────────────────────────────────────────
 router.get('/audit-logs', admin.getAuditLogs);
