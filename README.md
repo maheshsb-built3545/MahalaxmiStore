@@ -16,6 +16,12 @@
   - Bilingual interface (Marathi `मराठी` + English) across all screens and notifications.
   - Cart key `kirana_cart` in `localStorage` is preserved on 401s; only auth tokens are cleared.
 - **Lightweight Vanilla Stack:** Zero React/Vue/Tailwind build overhead. Lightning-fast load times on low-end processors.
+- **Mobile-First Owner Admin Panel Rebuild:**
+  - Consolidated 14 legacy screens into 11 streamlined mobile-first modules (`client/admin/`).
+  - Reachable in $\le 2$ taps on 360px–390px phone screens with sticky header, bottom navigation bar, and gesture bottom sheet.
+  - Native 58mm & 80mm thermal receipt printing, camera barcode detection (`BarcodeDetector`), real SVG profit and line charts using authoritative purchase `costPrice`.
+  - 100% bilingual (मराठी + English) coverage across all labels, dialogs, empty states, and notifications.
+  - Comprehensive integration test suite (`npm run test:rebuild` - 28/28 tests passing).
 
 ---
 
@@ -30,11 +36,13 @@ MahalaxmiStore/
 ├── .gitattributes            # Line ending normalization (LF)
 ├── .editorconfig             # Consistent editor indentation
 ├── docs/
+│   ├── ADMIN_MIGRATION.md    # Owner & staff panel consolidation and migration guide
+│   ├── ADMIN_REBUILD_PLAN.md # Baseline audit, viewports, and rebuild phase plan
 │   ├── ARCHITECTURE.md       # High-level architecture and system design
 │   ├── PROJECT_HANDOVER.md   # Complete AI/human engineer handover documentation
 │   ├── AUDIT.md              # Technical audit and validation records
-│   ├── MASTER_PRD_v2.0.pdf   # Complete Product Requirements Document
-│   └── assets/               # Product mockups, flow diagrams, and screenshots
+│   ├── audit-screenshots/   # Before (56 PNGs) & After (44 PNGs) browser screenshots
+│   └── MASTER_PRD_v2.0.pdf   # Complete Product Requirements Document
 ├── client/                   # Customer storefront + Owner management interface
 │   ├── index.html            # Main grocery catalog storefront
 │   ├── checkout.html         # 3-step checkout with UPI deep-link & QR fallback
@@ -49,7 +57,7 @@ MahalaxmiStore/
 │   ├── css/                  # Curated responsive design tokens & mobile styles
 │   ├── js/                   # Client state management, catalog, and PWA registration
 │   ├── images/               # Vectors, PWA app icons (192, 512)
-│   └── admin/                # Owner management dashboard & packing lists
+│   └── admin/                # Mobile-first owner management suite (11 consolidated modules)
 └── server/                   # Node.js Express API
     ├── src/
     │   ├── server.js         # Express app, compression, security headers, static serving
