@@ -68,6 +68,7 @@ router.get('/export/udhar-ledger.csv', admin.exportUdharLedgerCsv);
 
 // ─── AI Alias Management (AI-08) ──────────────────────────────────────────────
 router.post('/ai/add-alias', admin.addAliasFromAiMiss);
+router.post('/ai/ignore-miss', admin.ignoreAiMiss);
 
 // ─── Image Upload (Cloudinary) ────────────────────────────────────────────────
 router.post('/upload', handleImageUpload('image'), admin.uploadImage);

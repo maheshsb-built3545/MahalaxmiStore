@@ -2103,6 +2103,33 @@ const addAliasFromAiMiss = async (req, res, next) => {
 };
 
 /**
+ * POST /api/admin/ai/ignore-miss
+ * Ignore / remove a missed phrase from the AI misses log
+ */
+const ignoreAiMiss = async (req, res, next) => {
+  try {
+    const { phrase } = req.body;
+    if (!phrase || typeof phrase !== 'string') {
+      return res.status(400).json({ success: false, message: 'Phrase is required.' });
+    }
+
+    const cleanPhrase = phrase.trim().toLowerCase();
+    const AiLog = require('../models/AiLog');
+    await AiLog.updateMany(
+      { unmatchedPhrases: { $regex: new RegExp(`^${cleanPhrase}$`, 'i') } },
+      { $pull: { unmatchedPhrases: { $regex: new RegExp(`^${cleanPhrase}$`, 'i') } } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Phrase "${cleanPhrase}" ignored from AI misses.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
  * POST /api/admin/orders/:id/substitutions/propose
  * Propose replacement of an unavailable item in a new/confirmed order.
  * R5 (ORD-06, MSG-06)
@@ -2346,6 +2373,7 @@ module.exports = {
   exportStockLogsCsv,
   exportUdharLedgerCsv,
   addAliasFromAiMiss,
+  ignoreAiMiss,
   // R5 & R6
   proposeSubstitution,
   exportBackup,

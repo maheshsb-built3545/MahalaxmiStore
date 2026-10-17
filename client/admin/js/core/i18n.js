@@ -148,6 +148,11 @@ const DICTIONARY = {
   reports_export_orders: 'ऑर्डर्स CSV / Orders CSV',
   reports_export_stock: 'स्टॉक नोंद CSV / Stock Log CSV',
   reports_export_udhar: 'उधारी CSV / Udhar CSV',
+  ai_misses_title: 'AI न सापडलेले शब्द / Unmatched Phrases',
+  ai_map_alias: 'पर्यायी नाव जोडा / Map Product Alias',
+  ai_ignore_phrase: 'दुर्लक्ष करा / Ignore Phrase',
+  ai_alias_success: 'पर्यायी नाव यशस्वीरीत्या जोडले / Alias added successfully',
+  no_ai_misses: 'कोणतेही न सापडलेले शब्द नाहीत / No missed search phrases',
 
   // ── Empty States & Alerts ──
   no_orders_found: 'कोणतीही नवीन ऑर्डर नाही / No orders found',
