@@ -1,0 +1,12 @@
+{
+  "name": "mahalaxmi-store",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix server start",
+    "dev": "npm --prefix server run dev",
+    "test": "npm --prefix server test",
+    "test:all": "npm --prefix server run test:all",
+    "i18n:check": "npm --prefix server run i18n:check"
+  }
+}

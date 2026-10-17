@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="mr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>उत्पादने व वर्ग — महालक्ष्मी किराणा / Catalog</title>
+  <meta name="description" content="Mahalaxmi Kirana Store catalog manager: products, categories, pricing, and bulk tools.">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+
+  <!-- Router Guard -->
+  <script src="../js/config.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/router-guard.js"></script>
+</head>
+<body>
+
+  <div id="app-shell">
+    <!-- Top Catalog Tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid var(--border-subtle);padding-bottom:8px;">
+      <button type="button" class="btn btn-secondary active" id="tabBtnCatalog_products" style="flex:1;border-radius:10px;">
+        🏷️ उत्पादने (Products)
+      </button>
+      <button type="button" class="btn btn-secondary" id="tabBtnCatalog_categories" style="flex:1;border-radius:10px;">
+        🗂️ वर्ग (Categories)
+      </button>
+      <button type="button" class="btn btn-secondary" id="tabBtnCatalog_bulk" style="flex:1;border-radius:10px;">
+        ⚖️ घाऊक दर बदल (Bulk Tools)
+      </button>
+    </div>
+
+    <!-- 1. TAB: PRODUCTS -->
+    <div id="tabViewCatalog_products">
+      <!-- Search & Add Bar -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div class="filter-search-wrap" style="flex:1;">
+          <span class="search-icon-left">🔍</span>
+          <input
+            type="search"
+            class="filter-search-input"
+            id="catalogSearchInput"
+            placeholder="नाव, मराठी, हिंदी किंवा टोपणनाव शोधा..."
+            autocomplete="off"
+            aria-label="Search catalog"
+          />
+        </div>
+        <button type="button" class="btn btn-primary" onclick="openProductModal()" style="flex-shrink:0;">
+          ➕ नवीन जोडा
+        </button>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="chip-scroll-row" id="catalogCategoryChips" style="margin-bottom:16px;"></div>
+
+      <!-- Products List Target -->
+      <div id="catalogProductsContainer"></div>
+    </div>
+
+    <!-- 2. TAB: CATEGORIES -->
+    <div id="tabViewCatalog_categories" style="display:none;">
+      <div id="catalogCategoriesContainer"></div>
+    </div>
+
+    <!-- 3. TAB: BULK PRICE ADJUSTMENT -->
+    <div id="tabViewCatalog_bulk" style="display:none;">
+      <div id="catalogBulkContainer"></div>
+    </div>
+  </div>
+
+  <!-- Core & Shared Component Scripts -->
+  <script src="js/core/dom.js"></script>
+  <script src="js/core/format.js"></script>
+  <script src="js/core/i18n.js"></script>
+  <script src="js/core/api.js"></script>
+  <script src="js/core/toast.js"></script>
+  <script src="js/core/net.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/components/bottom-sheet.js"></script>
+  <script src="js/components/shell.js"></script>
+  <script src="js/components/stat-card.js"></script>
+  <script src="js/components/data-list.js"></script>
+  <script src="js/components/filter-bar.js"></script>
+  <script src="js/components/badge.js"></script>
+  <script src="js/components/stepper.js"></script>
+  <script src="js/components/confirm.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/empty-state.js"></script>
+  <script src="js/components/chart.js"></script>
+
+  <!-- Page Logic -->
+  <script src="js/pages/catalog.js"></script>
+</body>
+</html>
