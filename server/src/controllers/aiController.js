@@ -36,27 +36,43 @@ const parseList = async (req, res, next) => {
     const cleanText = rawText.trim();
     const result = await parseGroceryList(cleanText, language);
 
-    // Asynchronously log to AiLog for owner miss analysis (AI-08)
-    (async () => {
-      try {
-        await AiLog.create({
-          customer: req.user ? req.user._id : null,
-          inputText: cleanText,
-          matchedItems: result.matched.map((m) => ({
-            productId: m.product.productId,
-            rawPhrase: m.rawPhrase,
-            quantity: m.qty,
-            unit: m.unit,
-            confidence: m.confidence,
-          })),
-          unmatchedPhrases: result.unmatched,
-          source: req.body.source === 'voice' ? 'voice' : 'typed',
-          usedFallback: result.usedFallback,
-        });
-      } catch (logErr) {
-        console.warn('AiLog creation warning:', logErr.message);
-      }
-    })();
+    // Calculate initial counts and dropped reasons
+    const inStockMatched = result.matched.filter((m) => m.product && m.product.inStock);
+    const droppedReasons = [];
+    result.unmatched.forEach((u) => {
+      droppedReasons.push({ phrase: typeof u === 'string' ? u : JSON.stringify(u), reason: 'unmatched_in_catalog' });
+    });
+    result.ambiguous.forEach((a) => {
+      droppedReasons.push({ phrase: a.rawPhrase, reason: 'ambiguous_needs_resolution' });
+    });
+    result.matched.filter((m) => !m.product || !m.product.inStock).forEach((m) => {
+      droppedReasons.push({ phrase: m.rawPhrase, reason: 'out_of_stock' });
+    });
+
+    let aiLogId = null;
+    try {
+      const createdLog = await AiLog.create({
+        customer: req.user ? req.user._id : null,
+        inputText: cleanText,
+        matchedItems: result.matched.map((m) => ({
+          productId: m.product.productId,
+          rawPhrase: m.rawPhrase,
+          quantity: m.qty,
+          unit: m.unit,
+          confidence: m.confidence,
+        })),
+        unmatchedPhrases: result.unmatched,
+        source: req.body.source === 'voice' ? 'voice' : 'typed',
+        usedFallback: result.usedFallback,
+        parsedCount: result.totalLines,
+        addedCount: inStockMatched.length,
+        droppedCount: droppedReasons.length,
+        droppedReasons,
+      });
+      aiLogId = createdLog._id;
+    } catch (logErr) {
+      console.warn('AiLog creation warning:', logErr.message);
+    }
 
     const replyMsg = result.usedFallback
       ? (language === 'en'
@@ -75,6 +91,8 @@ const parseList = async (req, res, next) => {
         unmatched: result.unmatched,
         usedFallback: result.usedFallback,
         totalItemsFound: result.matched.length,
+        totalLines: result.totalLines,
+        logId: aiLogId,
       },
     });
   } catch (err) {
@@ -138,8 +156,39 @@ const getAiMisses = async (req, res, next) => {
   }
 };
 
+/**
+ * POST /api/ai/log-add-result
+ * Log final added and dropped counts from the client review tray (Task 3 diagnostic logging)
+ */
+const logAddResult = async (req, res, next) => {
+  try {
+    const { logId, rawInput, parsedCount, addedCount, droppedCount, droppedReasons } = req.body;
+    if (logId && mongoose.Types.ObjectId.isValid(logId)) {
+      await AiLog.findByIdAndUpdate(logId, {
+        addedCount: typeof addedCount === 'number' ? addedCount : 0,
+        droppedCount: typeof droppedCount === 'number' ? droppedCount : 0,
+        droppedReasons: Array.isArray(droppedReasons) ? droppedReasons : [],
+      });
+    } else if (rawInput) {
+      await AiLog.create({
+        customer: req.user ? req.user._id : null,
+        inputText: String(rawInput).slice(0, 2000),
+        parsedCount: typeof parsedCount === 'number' ? parsedCount : 0,
+        addedCount: typeof addedCount === 'number' ? addedCount : 0,
+        droppedCount: typeof droppedCount === 'number' ? droppedCount : 0,
+        droppedReasons: Array.isArray(droppedReasons) ? droppedReasons : [],
+        source: req.body.source === 'voice' ? 'voice' : 'typed',
+      });
+    }
+    res.status(200).json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   parseList,
   getSubstitutes,
   getAiMisses,
+  logAddResult,
 };

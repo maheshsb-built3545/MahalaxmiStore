@@ -36,21 +36,54 @@ const WORD_QUANTITIES = {
  */
 function extractQuantityAndUnit(text) {
   let cleaned = normalizeDevanagariNumbers(text.toLowerCase().trim());
+  // Strip leading list numbering e.g. "1. ", "1) ", "१. ", "१) " (must have dot/paren/dash + space)
+  cleaned = cleaned.replace(/^[\d०-९]+[.)\-:]\s+/u, '').trim();
+
   let qty = 1;
   let unit = 'piece';
 
-  // Check word quantities first
-  for (const [w, val] of Object.entries(WORD_QUANTITIES)) {
-    const re = new RegExp(`\\b${w}\\b`, 'i');
+  // Sort word quantities by length descending so longer words match first
+  const sortedWordQuantities = Object.entries(WORD_QUANTITIES).sort(
+    ([a], [b]) => b.length - a.length
+  );
+
+  // Check word quantities with Unicode word boundaries
+  for (const [w, val] of sortedWordQuantities) {
+    const re = new RegExp(`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`, 'iu');
     if (re.test(cleaned)) {
       qty = val;
       cleaned = cleaned.replace(re, '').trim();
+
+      // Check if a unit immediately follows the word quantity (e.g. "अर्धा किलो साखर")
+      const unitMatchAfterWord = cleaned.match(
+        /^(?:kilo|kg|किलो|litre|liter|ltr|l|लिटर|लि|gm|g|gram|ग्रॅम|packet|pack|पॅकेट|पुडा|box|डबा|piece|pc|नग|डझन|dozen)(?![\\p{L}\\p{N}])/iu
+      );
+      if (unitMatchAfterWord) {
+        const rawUnit = unitMatchAfterWord[0].toLowerCase();
+        if (/kilo|kg|किलो/.test(rawUnit)) unit = 'kg';
+        else if (/litre|liter|ltr|l|लिटर|लि/.test(rawUnit)) unit = 'litre';
+        else if (/gm|g|gram|ग्रॅम/.test(rawUnit)) {
+          if (qty >= 1000) {
+            qty = qty / 1000;
+            unit = 'kg';
+          } else {
+            unit = 'g';
+          }
+        } else if (/packet|pack|पॅकेट|पुडा/.test(rawUnit)) unit = 'pack';
+        else if (/डझन|dozen/.test(rawUnit)) {
+          qty = qty * 12;
+          unit = 'piece';
+        }
+        cleaned = cleaned.replace(unitMatchAfterWord[0], '').trim();
+      }
       break;
     }
   }
 
   // Check digits (e.g. 2.5, 2, 500)
-  const numMatch = cleaned.match(/(\d+(?:\.\d+)?)\s*(kilo|kg|किलो|litre|liter|ltr|l|लिटर|लि|gm|g|gram|ग्रॅम|packet|pack|पॅकेट|पुडा|box|डबा|piece|pc|नग|डझन|dozen)?/i);
+  const numMatch = cleaned.match(
+    /(\d+(?:\.\d+)?)\s*(kilo|kg|किलो|litre|liter|ltr|l|लिटर|लि|gm|g|gram|ग्रॅम|packet|pack|पॅकेट|पुडा|box|डबा|piece|pc|नग|डझन|dozen)?/iu
+  );
   if (numMatch) {
     const parsedNum = parseFloat(numMatch[1]);
     if (!isNaN(parsedNum) && parsedNum > 0) {
@@ -76,8 +109,9 @@ function extractQuantityAndUnit(text) {
     }
   }
 
-  // Clean remnant words
-  cleaned = cleaned.replace(/^(आणि|and|व|\+|-|\*|,)/i, '').trim();
+  // Clean remnant words and punctuation at beginning and end
+  cleaned = cleaned.replace(/^(?:आणि|and|व|\+|-|\*|,|\.|\/|;)/iu, '').trim();
+  cleaned = cleaned.replace(/[.,;!?\-]+$/u, '').trim();
 
   return { phrase: cleaned, qty, unit };
 }
@@ -88,9 +122,10 @@ function extractQuantityAndUnit(text) {
 function tokenizeList(text) {
   if (!text || typeof text !== 'string') return [];
   return text
-    .split(/[\n,;।+•]+|(?:\s+आणि\s+)|\band\b/i)
+    .replace(/\r\n/g, '\n')
+    .split(/[\n,;।+•]+|(?:\s*,\s*आणि\s*)|(?:\s+आणि\s+)|\b(?:and)\b|(?:\s*,\s*and\s*)/iu)
     .map((s) => s.trim())
-    .filter((s) => s.length > 1);
+    .filter((s) => s.length > 0);
 }
 
 /**
@@ -114,7 +149,10 @@ function matchLocally(lines, catalog) {
 
   for (const rawLine of lines) {
     const { phrase, qty, unit } = extractQuantityAndUnit(rawLine);
-    if (!phrase || phrase.length < 2) continue;
+    if (!phrase || phrase.length === 0) {
+      unmatched.push(rawLine);
+      continue;
+    }
 
     const lowerPhrase = phrase.toLowerCase();
     const candidateMatches = [];
@@ -268,7 +306,7 @@ Rules:
     ],
     generationConfig: {
       temperature: 0.1,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 4096,
       responseMimeType: 'application/json',
     },
   };
@@ -363,6 +401,7 @@ Rules:
         ],
         response_format: { type: 'json_object' },
         temperature: 0.1,
+        max_tokens: 4096,
       }),
       signal: controller.signal,
     });
@@ -434,8 +473,12 @@ async function parseGroceryList(inputText, userLanguage = 'mr') {
   const catalogMap = new Map(catalog.map((p) => [p._id.toString(), p]));
 
   if (llmResult && Array.isArray(llmResult.matches)) {
+    // Track which raw lines were processed by LLM
+    const handledRawTexts = [];
+
     // 2. Server-side validation of every returned product ID (AI-02)
     for (const m of llmResult.matches) {
+      if (m.rawPhrase) handledRawTexts.push(m.rawPhrase.toLowerCase().trim());
       const pids = (m.matchedProductIds || []).filter((id) => catalogMap.has(id));
       const qty = typeof m.quantity === 'number' && m.quantity > 0 ? m.quantity : 1;
       const unit = m.unit || 'piece';
@@ -468,7 +511,28 @@ async function parseGroceryList(inputText, userLanguage = 'mr') {
     }
 
     if (Array.isArray(llmResult.unmatched)) {
-      unmatched.push(...llmResult.unmatched);
+      for (const u of llmResult.unmatched) {
+        if (typeof u === 'string') handledRawTexts.push(u.toLowerCase().trim());
+        unmatched.push(u);
+      }
+    }
+
+    // Edge case safety: If LLM dropped any raw lines (e.g. truncated JSON or skipped trailing items),
+    // process the remaining lines with matchLocally so zero items are lost.
+    for (const line of rawLines) {
+      const lowerLine = line.toLowerCase().trim();
+      const alreadyHandled = handledRawTexts.some((h) => lowerLine.includes(h) || h.includes(lowerLine));
+      if (!alreadyHandled) {
+        const fallbackSingle = matchLocally([line], catalog);
+        for (const item of fallbackSingle.matched) {
+          if (!item.product.inStock) {
+            item.substitutes = await findSubstitutes(item.product.productId, item.product.categoryId);
+          }
+          matched.push(item);
+        }
+        ambiguous.push(...fallbackSingle.ambiguous);
+        unmatched.push(...fallbackSingle.unmatched);
+      }
     }
   } else {
     // 3. Fallback to local regex/token matcher (AI-05)
@@ -488,7 +552,7 @@ async function parseGroceryList(inputText, userLanguage = 'mr') {
   return {
     matched,
     ambiguous,
-    unmatched: [...new Set(unmatched)],
+    unmatched,
     usedFallback,
     totalLines: rawLines.length,
   };

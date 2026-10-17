@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { parseList, getSubstitutes, getAiMisses } = require('../controllers/aiController');
+const { parseList, getSubstitutes, getAiMisses, logAddResult } = require('../controllers/aiController');
 const { aiLimiter } = require('../middleware/rateLimiter');
 const { verifyToken, requireOwnerOrStaff } = require('../middleware/auth');
 
@@ -37,6 +37,7 @@ const optionalToken = async (req, _res, next) => {
 
 // Customer facing routes
 router.post('/parse-list', aiLimiter, optionalToken, parseList);
+router.post('/log-add-result', optionalToken, logAddResult);
 router.get('/substitutes/:productId', getSubstitutes);
 
 // Owner / staff power tool routes (AI-08 miss analysis)

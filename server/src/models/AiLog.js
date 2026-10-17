@@ -49,6 +49,24 @@ const aiLogSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    parsedCount: {
+      type: Number,
+      default: 0,
+    },
+    addedCount: {
+      type: Number,
+      default: 0,
+    },
+    droppedCount: {
+      type: Number,
+      default: 0,
+    },
+    droppedReasons: [
+      {
+        phrase: String,
+        reason: String,
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
