@@ -24,6 +24,7 @@ router.get('/stock-log/:productId', inv.getStockLog);
 
 // Fast stock-in (phone-friendly: search product, enter qty, save)
 router.post('/stock-in', inv.stockIn);
+router.post('/inward', inv.stockIn);
 
 // Manual stock adjustment (requires note)
 router.post('/adjust', inv.adjustStock);

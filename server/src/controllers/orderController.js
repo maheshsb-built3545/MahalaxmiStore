@@ -64,6 +64,21 @@ const createOrder = async (req, res, next) => {
       });
     }
 
+    // Check store open status before processing order
+    let settings = await Settings.findOne().session(session);
+    if (!settings) settings = new Settings();
+
+    if (settings.isStoreOpen === false) {
+      await session.abortTransaction();
+      session.endSession();
+      const reason = settings.closureReason ? ` (${settings.closureReason})` : '';
+      return res.status(400).json({
+        success: false,
+        message: `दुकान सध्या बंद आहे${reason} / Store is currently closed${reason}. नवीन ऑर्डर्स तात्पुरत्या बंद आहेत.`,
+        code: 'STORE_CLOSED',
+      });
+    }
+
     const rawAddressId     = ensureString(req.body.addressId);
     const rawSlot          = ensureString(req.body.slot);
     const rawDeliveryDate  = ensureString(req.body.deliveryDate);
@@ -120,22 +135,6 @@ const createOrder = async (req, res, next) => {
       await session.abortTransaction();
       session.endSession();
       return res.status(400).json({ success: false, message: 'Selected address does not exist or does not belong to you.' });
-    }
-
-    // 4. Fetch store settings
-    let settings = await Settings.findOne().session(session);
-    if (!settings) settings = new Settings();
-
-    // 4b. Enforce store open status
-    if (settings.isStoreOpen === false) {
-      await session.abortTransaction();
-      session.endSession();
-      const reason = settings.closureReason ? ` (${settings.closureReason})` : '';
-      return res.status(400).json({
-        success: false,
-        message: `दुकान सध्या बंद आहे${reason} / Store is currently closed${reason}. नवीन ऑर्डर्स तात्पुरत्या बंद आहेत.`,
-        code: 'STORE_CLOSED',
-      });
     }
 
     // 5. Validate service pincode
