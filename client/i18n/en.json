@@ -1,0 +1,88 @@
+{
+  "lang": "en",
+  "langName": "English",
+  "nav": {
+    "home": "Home",
+    "cart": "Cart",
+    "orders": "My Orders",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register"
+  },
+  "hero": {
+    "tagline": "Your trusted village grocery store",
+    "cta": "Shop Now"
+  },
+  "catalog": {
+    "searchPlaceholder": "Search products... (Marathi, Hindi or English)",
+    "allCategories": "All",
+    "outOfStock": "Out of Stock",
+    "onlyNLeft": "Only {{n}} left",
+    "addToCart": "Add to Cart",
+    "noProducts": "No products found."
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty.",
+    "subtotal": "Subtotal",
+    "delivery": "Delivery charge",
+    "total": "Total",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "aiOrderBox": "Type or speak your list"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "address": "Select address",
+    "slot": "Delivery slot",
+    "payment": "Payment method",
+    "upi": "UPI QR Code",
+    "cod": "Cash on Delivery",
+    "placeOrder": "Place Order",
+    "minOrderError": "Minimum order is ₹{{amount}}."
+  },
+  "orders": {
+    "title": "My Orders",
+    "status": {
+      "new": "New",
+      "confirmed": "Confirmed",
+      "packed": "Packed",
+      "out_for_delivery": "Out for Delivery",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "reorder": "Reorder",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "outOfStock": "This item is out of stock.",
+    "insufficientStock": "Only {{available}} {{unit}} available.",
+    "serverBusy": "Server is busy. Please try again.",
+    "networkError": "Check your internet connection."
+  },
+  "inbox": {
+    "title": "Messages & Notifications",
+    "all": "All Messages",
+    "unread": "Unread",
+    "markAllRead": "Mark All as Read",
+    "empty": "No new messages."
+  },
+  "bestsellers": {
+    "title": "Best Sellers",
+    "subtitle": "Most popular grocery essentials this month"
+  },
+  "testimonials": {
+    "title": "Customer Reviews",
+    "sampleBadge": "Sample Review"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "back": "Go Back",
+    "search": "Search",
+    "inr": "₹"
+  }
+}

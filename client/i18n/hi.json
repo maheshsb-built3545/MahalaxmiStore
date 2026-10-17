@@ -1,0 +1,88 @@
+{
+  "lang": "hi",
+  "langName": "हिंदी",
+  "nav": {
+    "home": "होम",
+    "cart": "कार्ट",
+    "orders": "मेरे ऑर्डर",
+    "login": "लॉगिन",
+    "logout": "लॉगआउट",
+    "register": "रजिस्टर करें"
+  },
+  "hero": {
+    "tagline": "गांव की आपकी भरोसेमंद दुकान",
+    "cta": "अभी खरीदें"
+  },
+  "catalog": {
+    "searchPlaceholder": "उत्पाद खोजें... (मराठी, हिंदी या अंग्रेजी)",
+    "allCategories": "सभी",
+    "outOfStock": "स्टॉक खत्म",
+    "onlyNLeft": "सिर्फ {{n}} बचा है",
+    "addToCart": "कार्ट में जोड़ें",
+    "noProducts": "कोई उत्पाद नहीं मिला।"
+  },
+  "cart": {
+    "title": "कार्ट",
+    "empty": "आपका कार्ट खाली है।",
+    "subtotal": "उप-कुल",
+    "delivery": "डिलीवरी शुल्क",
+    "total": "कुल राशि",
+    "checkout": "चेकआउट करें",
+    "remove": "हटाएं",
+    "aiOrderBox": "अपनी सूची टाइप करें / बोलें"
+  },
+  "checkout": {
+    "title": "चेकआउट",
+    "address": "पता चुनें",
+    "slot": "डिलीवरी समय",
+    "payment": "भुगतान विधि",
+    "upi": "UPI QR कोड",
+    "cod": "नकद (डिलीवरी पर)",
+    "placeOrder": "ऑर्डर दें",
+    "minOrderError": "न्यूनतम ऑर्डर ₹{{amount}} है।"
+  },
+  "orders": {
+    "title": "मेरे ऑर्डर",
+    "status": {
+      "new": "नया",
+      "confirmed": "पुष्टि हुई",
+      "packed": "पैक हुआ",
+      "out_for_delivery": "डिलीवरी के लिए निकला",
+      "delivered": "डिलीवर हुआ",
+      "cancelled": "रद्द हुआ"
+    },
+    "reorder": "दोबारा ऑर्डर करें",
+    "cancel": "रद्द करें"
+  },
+  "errors": {
+    "outOfStock": "स्टॉक खत्म हो गया है।",
+    "insufficientStock": "सिर्फ {{available}} {{unit}} उपलब्ध है।",
+    "serverBusy": "सर्वर व्यस्त है। कृपया फिर से कोशिश करें।",
+    "networkError": "इंटरनेट कनेक्शन जाँचें।"
+  },
+  "inbox": {
+    "title": "संदेश और सूचनाएं",
+    "all": "सभी संदेश",
+    "unread": "अपठित",
+    "markAllRead": "सभी को पढ़ा हुआ चिह्नित करें",
+    "empty": "कोई नया संदेश नहीं है।"
+  },
+  "bestsellers": {
+    "title": "सबसे पसंदीदा उत्पाद",
+    "subtitle": "इस महीने सबसे ज्यादा ऑर्डर किए गए उत्पाद"
+  },
+  "testimonials": {
+    "title": "ग्राहकों के विचार",
+    "sampleBadge": "नमूना समीक्षा"
+  },
+  "common": {
+    "save": "सेव करें",
+    "cancel": "रद्द करें",
+    "close": "बंद करें",
+    "loading": "लोड हो रहा है...",
+    "confirm": "पुष्टि करें",
+    "back": "वापस जाएं",
+    "search": "खोजें",
+    "inr": "₹"
+  }
+}

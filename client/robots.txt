@@ -1,0 +1,18 @@
+# robots.txt for Mahalaxmi Kirana Store (Yesgaon, Kopargaon)
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /privacy.html
+Allow: /css/
+Allow: /js/
+Allow: /images/
+
+# Disallow private/transactional views
+Disallow: /admin/
+Disallow: /checkout.html
+Disallow: /order-confirmation.html
+Disallow: /orders.html
+Disallow: /inbox.html
+Disallow: /api/
+
+Sitemap: https://mahalaxmikirana.in/sitemap.xml
