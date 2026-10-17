@@ -31,6 +31,11 @@ const udharAccountSchema = new mongoose.Schema(
       default: 2000,
       min: 0,
     },
+    creditDays: {
+      type: Number,
+      default: 30,
+      min: 1,
+    },
     balance: {
       type: Number,
       default: 0,

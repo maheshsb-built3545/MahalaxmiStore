@@ -10,6 +10,8 @@ const UdharAccount = require('../models/UdharAccount');
 const UdharEntry = require('../models/UdharEntry');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
+const Settings = require('../models/Settings');
+const Order = require('../models/Order');
 const { createNotification } = require('./notificationController');
 
 /**
@@ -153,6 +155,43 @@ const getAdminAccounts = async (req, res, next) => {
     const activeCount = accounts.filter((a) => a.status === 'active').length;
     const pendingCount = accounts.filter((a) => a.status === 'pending').length;
 
+    // Weekly collected payments (last 7 days)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const weeklyPayments = await UdharEntry.aggregate([
+      { $match: { type: 'payment', createdAt: { $gte: sevenDaysAgo } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } },
+    ]);
+    const collectedThisWeek = weeklyPayments.length > 0 ? weeklyPayments[0].total : 0;
+
+    // Enrich accounts with last payment, village and overdue status
+    const now = Date.now();
+    for (const acc of accounts) {
+      const creditDays = acc.creditDays || 30;
+      const creditPeriodMs = creditDays * 24 * 60 * 60 * 1000;
+      
+      const lastPayment = await UdharEntry.findOne({ account: acc._id, type: 'payment' })
+        .sort({ createdAt: -1 })
+        .select('createdAt amount paymentMethod')
+        .lean();
+      acc.lastPayment = lastPayment || null;
+
+      const refTime = lastPayment ? new Date(lastPayment.createdAt).getTime() : new Date(acc.updatedAt || acc.createdAt).getTime();
+      acc.isOverdue = (acc.balance > 0) && ((now - refTime) > creditPeriodMs);
+      acc.limitUsagePercent = acc.creditLimit > 0 ? Math.min(100, Math.round((acc.balance / acc.creditLimit) * 100)) : 0;
+
+      if (acc.customer && acc.customer._id) {
+        const latestOrder = await Order.findOne({ userId: acc.customer._id })
+          .sort({ createdAt: -1 })
+          .select('address')
+          .lean();
+        acc.customerVillage = latestOrder?.address?.line || 'Yesgaon';
+      } else {
+        acc.customerVillage = 'Yesgaon';
+      }
+    }
+
+    const overdueCount = accounts.filter((a) => a.isOverdue).length;
+
     res.status(200).json({
       success: true,
       data: {
@@ -160,6 +199,8 @@ const getAdminAccounts = async (req, res, next) => {
         totalOutstanding,
         activeCount,
         pendingCount,
+        overdueCount,
+        collectedThisWeek,
         totalCount: accounts.length,
       },
     });
@@ -175,7 +216,7 @@ const getAdminAccounts = async (req, res, next) => {
 const updateAccountStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status, creditLimit, notes } = req.body;
+    const { status, creditLimit, creditDays, notes } = req.body;
 
     if (!['pending', 'active', 'paused', 'revoked'].includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid status value.' });
@@ -199,6 +240,9 @@ const updateAccountStatus = async (req, res, next) => {
 
     if (typeof creditLimit === 'number' && creditLimit >= 0) {
       account.creditLimit = creditLimit;
+    }
+    if (typeof creditDays === 'number' && creditDays > 0) {
+      account.creditDays = creditDays;
     }
     if (notes) {
       account.notes = notes.trim();
@@ -384,14 +428,17 @@ const getWhatsAppReminder = async (req, res, next) => {
     const name = customer.name || 'ग्राहक';
     const lang = customer.preferredLanguage || 'mr';
     const balance = account.balance || 0;
+    const settings = await Settings.findOne().lean();
+    const upiId = (settings && settings.upiId) ? settings.upiId : '9860924504@ybl';
+    const upiPayLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('Mahalaxmi Kirana')}&am=${balance}&cu=INR`;
 
     let reminderText = '';
     if (lang === 'en') {
-      reminderText = `Hello ${name}, Greetings from Mahalaxmi Kirana Store (Yesgaon). Your current outstanding Udhar balance is ₹${balance}. Kindly settle the bill via UPI (GPay/PhonePe) or at our shop. Thank you! — Kiran Gaikwad (9860924504)`;
+      reminderText = `Hello ${name}, Greetings from Mahalaxmi Kirana Store (Yesgaon). Your current outstanding Udhar balance is ₹${balance}. Kindly settle the bill via UPI: ${upiPayLink} or at our shop. Thank you! — Kiran Gaikwad (9860924504)`;
     } else if (lang === 'hi') {
-      reminderText = `नमस्ते ${name} जी, महालक्ष्मी किराना स्टोर (येसगांव) की ओर से सादर प्रणाम। आपके खाते की वर्तमान बकाया राशि ₹${balance} है। कृपया यह राशि UPI (GPay/PhonePe) अथवा दुकान पर आकर जमा करें। धन्यवाद! — किरण गायकवाड़ (9860924504)`;
+      reminderText = `नमस्ते ${name} जी, महालक्ष्मी किराना स्टोर (येसगांव) की ओर से सादर प्रणाम। आपके खाते की वर्तमान बकाया राशि ₹${balance} है। कृपया यह राशि UPI द्वारा भरें: ${upiPayLink} अथवा दुकान पर जमा करें। धन्यवाद! — किरण गायकवाड़ (9860924504)`;
     } else {
-      reminderText = `सस्नेह नमस्कार ${name}, महालक्ष्मी किराणा स्टोअर्स येसगाव. आपल्या उधारी खात्यातील चालू बाकी रक्कम ₹${balance} आहे. कृपया ही रक्कम Google Pay / PhonePe द्वारे किंवा दुकानात येऊन जमा करावी ही नम्र विनंती. धन्यवाद! — किरण गायकवाड (9860924504)`;
+      reminderText = `सस्नेह नमस्कार ${name}, महालक्ष्मी किराणा स्टोअर्स येसगाव. आपल्या उधारी खात्यातील चालू बाकी रक्कम ₹${balance} आहे. कृपया ही रक्कम UPI द्वारे भरा: ${upiPayLink} किंवा दुकानात येऊन जमा करावी ही नम्र विनंती. धन्यवाद! — किरण गायकवाड (9860924504)`;
     }
 
     const waUrl = phone
@@ -404,6 +451,8 @@ const getWhatsAppReminder = async (req, res, next) => {
         customerName: name,
         customerPhone: phone,
         balance,
+        upiId,
+        upiPayLink,
         reminderText,
         waUrl,
       },

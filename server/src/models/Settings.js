@@ -37,7 +37,11 @@ const settingsSchema = new mongoose.Schema(
     },
     upiMobile: {
       type: String,
-      default: 'REPLACE_ME', // Placeholder to be edited by owner in Stage 3
+      default: '9860924504',
+    },
+    upiId: {
+      type: String,
+      default: '9860924504@ybl',
     },
     upiQrImage: {
       type: String,

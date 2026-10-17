@@ -105,11 +105,17 @@ const DICTIONARY = {
   // ── Udhar (Credit) ──
   udhar_total_outstanding: 'एकूण उधारी बाकी / Total Outstanding',
   udhar_active_accounts: 'सक्रिय उधारी खाती / Active Accounts',
+  udhar_overdue: 'मुदत संपलेली उधारी / Overdue Udhar',
+  udhar_collected_week: 'या आठवड्यात जमा / Collected This Week',
   udhar_record_payment: 'जमा पावती नोंदवा / Record Payment',
   udhar_send_reminder: 'तगादा पाठवा / Send WhatsApp Reminder',
   udhar_credit_limit: 'उधारी मर्यादा / Credit Limit',
   udhar_limit_used: 'मर्यादा वापर / Limit Used',
   udhar_ledger: 'खातेवही / Ledger',
+  udhar_payment_success: 'रक्कम यशस्वीरित्या जमा झाली / Payment recorded successfully',
+  udhar_status_updated: 'खाते स्थिती व मर्यादा बदलली / Account status updated',
+  udhar_share_statement: 'हिशोब वही पाठवा / Share Statement',
+  udhar_print_statement: 'वही प्रिंट करा / Print Statement',
 
   // ── Customers ──
   customer_name: 'ग्राहकाचे नाव / Customer Name',
