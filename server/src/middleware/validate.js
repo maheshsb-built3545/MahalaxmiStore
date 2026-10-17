@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 /**
  * validate.js — express-validator rules for every POST/PUT route.
@@ -79,7 +79,9 @@ const validateSettings = [
 
 // Admin Order Status
 const validateOrderStatus = [
-  body('status').trim().isIn(['new', 'confirmed', 'packed', 'out_for_delivery', 'delivered', 'cancelled']).withMessage('Invalid order status.'),
+  body('status').optional().trim().isIn(['new', 'confirmed', 'packed', 'out_for_delivery', 'delivered', 'cancelled']).withMessage('Invalid order status.'),
+  body('nextStatus').optional().trim().isIn(['new', 'confirmed', 'packed', 'out_for_delivery', 'delivered', 'cancelled']).withMessage('Invalid order status.'),
+  body('currentStatus').optional().trim().isIn(['new', 'confirmed', 'packed', 'out_for_delivery', 'delivered', 'cancelled']).withMessage('Invalid order status.'),
   body('note').optional().trim().isLength({ max: 500 }).withMessage('Note cannot exceed 500 characters.').escape(),
   handleValidationErrors,
 ];

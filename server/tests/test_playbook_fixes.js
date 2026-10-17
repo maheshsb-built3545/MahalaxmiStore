@@ -46,6 +46,7 @@ const Product = require('../src/models/Product');
 const Order = require('../src/models/Order');
 const Category = require('../src/models/Category');
 const Settings = require('../src/models/Settings');
+const StockLog = require('../src/models/StockLog');
 
 let server;
 let baseUrl;
@@ -103,14 +104,14 @@ async function runTests() {
   }
 
   // Ensure test category
-  let category = await Category.findOne({ slug: 'test-playbook-cat' });
+  let category = await Category.findOne({ nameEn: 'Playbook Test Category' });
   if (!category) {
     category = await Category.create({
       nameEn: 'Playbook Test Category',
       nameMr: 'चाचणी श्रेणी',
-      slug: 'test-playbook-cat',
       emoji: '🛒',
-      order: 10,
+      sortOrder: 10,
+      active: true,
     });
   }
 
@@ -489,6 +490,7 @@ async function runTests() {
   } finally {
     console.log('🧹 Cleaning up test artifacts...');
     if (cleanup.orders.length > 0) {
+      await StockLog.deleteMany({ orderId: { $in: cleanup.orders } });
       await Order.deleteMany({ _id: { $in: cleanup.orders } });
     }
     if (cleanup.products.length > 0) {
@@ -496,7 +498,12 @@ async function runTests() {
     }
     await Address.deleteMany({ userId: customer._id });
     await User.deleteMany({ phone: { $in: ['9999900010', '9999900011'] } });
-    await Category.deleteOne({ slug: 'test-playbook-cat' });
+    await Category.deleteMany({
+      $or: [
+        { _id: category?._id },
+        { nameEn: 'Playbook Test Category' }
+      ]
+    });
     console.log('✓ Cleanup complete.');
 
     if (server) server.close();

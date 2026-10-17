@@ -642,8 +642,8 @@ const createProduct = async (req, res, next) => {
     const mrp             = Number(req.body.mrp);
     const offerPercent    = Number(req.body.offerPercent) || 0;
     const sortOrder       = Number(req.body.sortOrder) || 0;
-    const stockQuantity   = Number(req.body.stockQuantity) ?? 0;
-    const reorderLevel    = Number(req.body.reorderLevel) ?? 5;
+    const stockQuantity   = req.body.stockQuantity !== undefined && !isNaN(Number(req.body.stockQuantity)) ? Number(req.body.stockQuantity) : 0;
+    const reorderLevel    = req.body.reorderLevel !== undefined && !isNaN(Number(req.body.reorderLevel)) ? Number(req.body.reorderLevel) : 5;
     const unitType        = ensureString(req.body.unitType) || 'piece';
     const unavailableFlag = Boolean(req.body.unavailableFlag) || false;
     const expiryDate      = req.body.expiryDate ? new Date(req.body.expiryDate) : null;
@@ -909,9 +909,20 @@ const createCategory = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'English and Marathi category names are required.' });
     }
 
+    // Guard against duplicate category names (case-insensitive)
+    const existing = await Category.findOne({
+      nameEn: new RegExp('^' + nameEn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i'),
+    });
+    if (existing) {
+      return res.status(409).json({ success: false, message: `A category named "${nameEn}" already exists.` });
+    }
+
     const category = await Category.create({ nameEn, nameMr, emoji, sortOrder, active });
     res.status(201).json({ success: true, data: category });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ success: false, message: 'A category with this name already exists.' });
+    }
     next(err);
   }
 };
@@ -935,6 +946,15 @@ const updateCategory = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'English and Marathi category names are required.' });
     }
 
+    // Guard against duplicate category names when renaming
+    const existing = await Category.findOne({
+      _id: { $ne: id },
+      nameEn: new RegExp('^' + nameEn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i'),
+    });
+    if (existing) {
+      return res.status(409).json({ success: false, message: `A category named "${nameEn}" already exists.` });
+    }
+
     const updateFields = { nameEn, nameMr, emoji, sortOrder };
     if (req.body.active !== undefined) updateFields.active = Boolean(req.body.active);
 
@@ -945,6 +965,9 @@ const updateCategory = async (req, res, next) => {
 
     res.status(200).json({ success: true, data: category });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ success: false, message: 'A category with this name already exists.' });
+    }
     next(err);
   }
 };

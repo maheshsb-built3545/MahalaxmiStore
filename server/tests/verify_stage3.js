@@ -12,14 +12,36 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
+// ── Test URI Isolation Guard ──────────────────────────────────────────────────
+const testMongoUri = process.env.MONGODB_URI_TEST || process.env.MONGO_URI_TEST;
+const prodMongoUri = process.env.MONGO_URI;
+
+function verifyTestUriSafety(testUri, prodUri) {
+  if (!testUri) {
+    throw new Error('SAFETY ERROR: MONGODB_URI_TEST is required to run automated tests.');
+  }
+  if (testUri.trim() === (prodUri || '').trim()) {
+    throw new Error('CRITICAL SAFETY REFUSAL: MONGODB_URI_TEST equals production MONGO_URI! Refusing to run tests against production database.');
+  }
+  return true;
+}
+
+verifyTestUriSafety(testMongoUri, prodMongoUri);
+process.env.MONGO_URI = testMongoUri;
+
 const User = require('../src/models/User');
 const Address = require('../src/models/Address');
 const Product = require('../src/models/Product');
 const Order = require('../src/models/Order');
 const Category = require('../src/models/Category');
 const Settings = require('../src/models/Settings');
+const StockLog = require('../src/models/StockLog');
 
-const BASE_URL = 'http://localhost:5000/api';
+const http = require('http');
+const app = require('../src/server');
+
+let server;
+let BASE_URL = 'http://localhost:5000/api';
 
 // HTTP helper using fetch
 async function req(method, path, body = null, token = null, isFormData = false) {
@@ -45,8 +67,21 @@ async function req(method, path, body = null, token = null, isFormData = false) 
 
 async function runStage3Tests() {
   try {
-    await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 8000 });
-    console.log('connected');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(testMongoUri, { serverSelectionTimeoutMS: 8000 });
+    }
+    while (mongoose.connection.readyState !== 1) {
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    const currentDb = mongoose.connection.db ? mongoose.connection.db.databaseName : 'mahalaxmi_kirana_test';
+    console.log(`✓ Connected to Test DB: "${currentDb}" (Live database untouched)`);
+
+    // Spin up ephemeral test server
+    server = http.createServer(app);
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const port = server.address().port;
+    BASE_URL = `http://127.0.0.1:${port}/api`;
+    console.log(`✓ Ephemeral test server active on ${BASE_URL}\n`);
   } catch (err) {
     console.error(err.message);
     process.exit(1);
@@ -90,7 +125,22 @@ async function runStage3Tests() {
     ownerToken = jwt.sign({ id: ownerUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     testCat = await Category.findOne({ active: true });
+    if (!testCat) {
+      testCat = await Category.create({ nameEn: 'Stage3 Test Cat', nameMr: 'स्टेज ३ कॅट', emoji: '🛒' });
+    }
     testProduct = await Product.findOne({ active: true, inStock: true });
+    if (!testProduct) {
+      testProduct = await Product.create({
+        nameEn: 'Stage3 Test Sugar',
+        nameMr: 'साखर',
+        categoryId: testCat._id,
+        price: 50,
+        mrp: 60,
+        packSize: '1 kg',
+        stockQuantity: 100,
+        active: true,
+      });
+    }
 
     custAddress = await Address.create({
       userId: custUser._id,
@@ -223,7 +273,8 @@ async function runStage3Tests() {
 
     const orderArchivedRes = await req('POST', '/orders', {
       addressId: custAddress._id.toString(),
-      slot: 'Morning (7:00 AM – 11:00 AM)',
+      slot: 'Evening (5:00 PM – 9:00 PM) (उद्या / Tomorrow)',
+      deliveryDate: 'tomorrow',
       paymentMethod: 'cod',
       items: [{ productId: testProduct._id.toString(), qty: 1 }],
     }, custToken);
@@ -437,12 +488,24 @@ async function runStage3Tests() {
   } finally {
     try {
       console.log('\nCleaning up Stage 3 throwaway test records…');
+      const testOrders = await Order.find({ $or: [{ userId: custUser?._id }, { orderNumber: /^MK-S3/ }] });
+      const testOrderIds = testOrders.map(o => o._id);
+      if (testOrderIds.length > 0) {
+        await StockLog.deleteMany({ orderId: { $in: testOrderIds } });
+      }
       await User.deleteMany({ phone: { $in: [custPhone, ownerPhone] } });
-      await Address.deleteMany({ userId: custUser?._id });
+      if (custUser?._id) {
+        await Address.deleteMany({ userId: custUser._id });
+      }
       await Order.deleteMany({ $or: [{ userId: custUser?._id }, { orderNumber: /^MK-S3/ }] });
+      await Product.deleteMany({ nameEn: { $in: ['Fake Image Product', 'Valid Image Product', 'Stage3 Test Sugar'] } });
+      await Category.deleteMany({ nameEn: 'Stage3 Test Cat' });
       console.log('Stage 3 Cleanup complete.');
     } catch (cleanErr) {
       console.error('Cleanup error:', cleanErr.message);
+    }
+    if (server) {
+      await new Promise((res) => server.close(res));
     }
     await mongoose.disconnect();
   }

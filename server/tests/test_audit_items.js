@@ -18,13 +18,33 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
+// ── Test URI Isolation Guard ──────────────────────────────────────────────────
+const testMongoUri = process.env.MONGODB_URI_TEST || process.env.MONGO_URI_TEST;
+const prodMongoUri = process.env.MONGO_URI;
+
+function verifyTestUriSafety(testUri, prodUri) {
+  if (!testUri) {
+    throw new Error('SAFETY ERROR: MONGODB_URI_TEST is required to run automated tests.');
+  }
+  if (testUri.trim() === (prodUri || '').trim()) {
+    throw new Error('CRITICAL SAFETY REFUSAL: MONGODB_URI_TEST equals production MONGO_URI! Refusing to run tests against production database.');
+  }
+  return true;
+}
+
+verifyTestUriSafety(testMongoUri, prodMongoUri);
+
+// Point MONGO_URI to test database so server.js connects directly to test DB
+process.env.MONGO_URI = testMongoUri;
 const app = require('../src/server');
+
 const User = require('../src/models/User');
 const Address = require('../src/models/Address');
 const Product = require('../src/models/Product');
 const Order = require('../src/models/Order');
 const Category = require('../src/models/Category');
 const Settings = require('../src/models/Settings');
+const StockLog = require('../src/models/StockLog');
 
 let server;
 let baseUrl;
@@ -55,17 +75,15 @@ async function runAuditTests() {
   console.log('======================================================================\n');
 
   if (mongoose.connection.readyState !== 1) {
-    if (!process.env.MONGO_URI) {
-      throw new Error('MONGO_URI is missing in server/.env');
-    }
-    await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 10000 });
+    await mongoose.connect(testMongoUri, { serverSelectionTimeoutMS: 10000 });
   }
 
   // Wait until connected if in progress
   while (mongoose.connection.readyState !== 1) {
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
-  console.log('✓ Connected to MongoDB');
+  const currentDb = mongoose.connection.db.databaseName;
+  console.log(`✓ Connected to Test DB: "${currentDb}" (Live database untouched)`);
 
   // Start ephemeral server
   server = http.createServer(app);
@@ -91,14 +109,14 @@ async function runAuditTests() {
   }
 
   // Ensure test category
-  let category = await Category.findOne({ slug: 'audit-test-cat' });
+  let category = await Category.findOne({ nameEn: 'Audit Test Cat' });
   if (!category) {
     category = await Category.create({
       nameEn: 'Audit Test Cat',
       nameMr: 'ऑडिट टेस्ट कॅट',
-      slug: 'audit-test-cat',
       emoji: '🍚',
-      order: 999,
+      sortOrder: 999,
+      active: true,
     });
   }
 
@@ -404,12 +422,18 @@ async function runAuditTests() {
     // Clean up test data
     console.log('\n🧹 Cleaning up test artifacts from database...');
     if (cleanupIds.orders.length > 0) {
+      await StockLog.deleteMany({ orderId: { $in: cleanupIds.orders } });
       await Order.deleteMany({ _id: { $in: cleanupIds.orders } });
     }
     await Product.deleteMany({ _id: { $in: cleanupIds.products } });
     await Address.deleteMany({ _id: { $in: cleanupIds.addresses } });
     await User.deleteMany({ _id: { $in: cleanupIds.users } });
-    await Category.deleteOne({ slug: 'audit-test-cat' });
+    await Category.deleteMany({
+      $or: [
+        { _id: { $in: cleanupIds.categories } },
+        { nameEn: 'Audit Test Cat' }
+      ]
+    });
     console.log('✓ Cleanup complete.');
 
     if (server) {

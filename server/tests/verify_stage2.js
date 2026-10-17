@@ -12,11 +12,30 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
+// ── Test URI Isolation Guard ──────────────────────────────────────────────────
+const testMongoUri = process.env.MONGODB_URI_TEST || process.env.MONGO_URI_TEST;
+const prodMongoUri = process.env.MONGO_URI;
+
+function verifyTestUriSafety(testUri, prodUri) {
+  if (!testUri) {
+    throw new Error('SAFETY ERROR: MONGODB_URI_TEST is required to run automated tests.');
+  }
+  if (testUri.trim() === (prodUri || '').trim()) {
+    throw new Error('CRITICAL SAFETY REFUSAL: MONGODB_URI_TEST equals production MONGO_URI! Refusing to run tests against production database.');
+  }
+  return true;
+}
+
+verifyTestUriSafety(testMongoUri, prodMongoUri);
+process.env.MONGO_URI = testMongoUri;
+
 const User = require('../src/models/User');
 const Address = require('../src/models/Address');
 const Product = require('../src/models/Product');
+const Category = require('../src/models/Category');
 const Order = require('../src/models/Order');
 const Settings = require('../src/models/Settings');
+const StockLog = require('../src/models/StockLog');
 
 const http = require('http');
 const app = require('../src/server');
@@ -104,10 +123,63 @@ async function runTests() {
   }
 
   try {
-    // ── Pre-fetch real products from DB ───────────────────────────────────
-    const products = await Product.find({ active: true, inStock: true });
-    testProduct1 = products.find(p => p.price >= 200) || products[0];
-    testProduct2 = products.find(p => p._id.toString() !== testProduct1._id.toString());
+    // ── Ensure settings & products exist in isolated test DB ───────────────
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = await Settings.create({
+        minOrder: 100,
+        deliveryCharge: 30,
+        freeDeliveryAbove: 1000,
+        servicePincodes: ['423601', '423602'],
+        slots: ['Morning (7:00 AM – 11:00 AM)', 'Afternoon (12:00 PM – 4:00 PM)', 'Evening (5:00 PM – 9:00 PM)'],
+      });
+    }
+
+    let products = await Product.find({ active: true, stockQuantity: { $gt: 5 } });
+    if (!products || products.length < 2) {
+      let cat = await Category.findOne({ nameEn: 'Stage 2 Test Cat' });
+      if (!cat) {
+        cat = await Category.create({ nameEn: 'Stage 2 Test Cat', nameMr: 'स्टेज २ कॅट', emoji: '🛒' });
+      }
+      testProduct1 = await Product.create({
+        nameEn: 'Stage 2 Test Rice',
+        nameMr: 'तांदूळ',
+        categoryId: cat._id,
+        price: 250,
+        mrp: 300,
+        packSize: '1 kg',
+        stockQuantity: 50,
+        active: true,
+      });
+      testProduct2 = await Product.create({
+        nameEn: 'Stage 2 Test Dal',
+        nameMr: 'डाळ',
+        categoryId: cat._id,
+        price: 220,
+        mrp: 260,
+        packSize: '1 kg',
+        stockQuantity: 50,
+        active: true,
+      });
+    } else {
+      testProduct1 = products.find(p => p.price >= 200) || products[0];
+      testProduct2 = products.find(p => p._id.toString() !== testProduct1._id.toString()) || products[1];
+    }
+
+    let cheapProduct = await Product.findOne({ active: true, price: { $lt: 100 } });
+    if (!cheapProduct) {
+      let cat = await Category.findOne();
+      cheapProduct = await Product.create({
+        nameEn: 'Stage 2 Cheap Biscuit',
+        nameMr: 'बिस्कीट',
+        categoryId: cat ? cat._id : testProduct1.categoryId,
+        price: 20,
+        mrp: 25,
+        packSize: '1 pkt',
+        stockQuantity: 50,
+        active: true,
+      });
+    }
 
     // ── Check 1: Register, login, GET /api/auth/me ────────────────────────
     const regA = await req('POST', '/auth/register', {
@@ -244,7 +316,7 @@ async function runTests() {
     });
 
     // ── Check 6: Order below minOrder & out-of-area pincode ────────────────
-    const cheapProduct = await Product.findOne({ price: { $lt: 100 } });
+    cheapProduct = await Product.findOne({ price: { $lt: 100 } });
     const lowOrder = await req('POST', '/orders', {
       addressId: addrAId,
       slot: validSlotInfo.slot,
@@ -542,9 +614,16 @@ async function runTests() {
   } finally {
     try {
       console.log('\nCleaning up throwaway test users and orders…');
+      const testOrders = await Order.find({ $or: [{ userId: { $in: [userAId, userBId] } }, { orderNumber: /^MK-TEST/ }] });
+      const testOrderIds = testOrders.map(o => o._id);
+      if (testOrderIds.length > 0) {
+        await StockLog.deleteMany({ orderId: { $in: testOrderIds } });
+      }
       await User.deleteMany({ phone: { $in: [phoneA, phoneB, ratePhone, okPhone] } });
       await Address.deleteMany({ userId: { $in: [userAId, userBId] } });
       await Order.deleteMany({ $or: [{ userId: { $in: [userAId, userBId] } }, { orderNumber: /^MK-TEST/ }] });
+      await Product.deleteMany({ nameEn: { $in: ['Stage 2 Test Rice', 'Stage 2 Test Dal', 'Stage 2 Cheap Biscuit'] } });
+      await Category.deleteMany({ nameEn: 'Stage 2 Test Cat' });
       console.log('Cleanup complete.');
     } catch (cleanErr) {
       console.error('Cleanup error:', cleanErr.message);
