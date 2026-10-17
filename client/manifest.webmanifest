@@ -1,0 +1,49 @@
+{
+  "name": "महालक्ष्मी किराणा दुकान • Mahalaxmi Kirana",
+  "short_name": "Mahalaxmi Kirana",
+  "description": "Fresh daily groceries, atta, dal, spices, and oil delivered in 30 minutes in Yesgaon and Kopargaon. Order via Web, WhatsApp, or AI list.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#04251a",
+  "theme_color": "#064e3b",
+  "lang": "mr",
+  "dir": "ltr",
+  "categories": ["shopping", "food", "lifestyle"],
+  "icons": [
+    {
+      "src": "/images/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "ऑर्डर्स पहा • Orders",
+      "short_name": "Orders",
+      "url": "/orders.html",
+      "icons": [{ "src": "/images/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI किराणा यादी • AI Order",
+      "short_name": "AI Order",
+      "url": "/index.html#aiOrderBox",
+      "icons": [{ "src": "/images/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "खरेदी करा • Cart",
+      "short_name": "Cart",
+      "url": "/checkout.html",
+      "icons": [{ "src": "/images/icon-192.svg", "sizes": "192x192" }]
+    }
+  ]
+}

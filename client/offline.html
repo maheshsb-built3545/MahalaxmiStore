@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>इंटरनेट कनेक्शन नाही • Offline — Mahalaxmi Kirana</title>
+  <meta name="theme-color" content="#064e3b">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .offline-page {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.08), transparent 70%), #04251a;
+      color: #ffffff;
+    }
+    .offline-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 36px 24px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+    }
+    .offline-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 2px solid #f59e0b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .offline-title {
+      font-family: 'Outfit', 'Noto Sans Devanagari', sans-serif;
+      font-size: 22px;
+      color: #fbbf24;
+      margin-bottom: 8px;
+    }
+    .offline-sub {
+      font-size: 15px;
+      color: #d1fae5;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .offline-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn-offline-retry {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #04251a;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease;
+    }
+    .btn-offline-retry:active {
+      transform: scale(0.97);
+    }
+    .btn-offline-call {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body class="offline-page">
+  <div class="offline-card">
+    <div class="offline-icon">📡</div>
+    <h1 class="offline-title">इंटरनेट कनेक्शन नाही</h1>
+    <p class="offline-sub">You seem to be offline. Don't worry, your cart items are safely saved on your device.</p>
+    
+    <div class="offline-actions">
+      <button class="btn-offline-retry" onclick="window.location.reload();">
+        🔄 पुन्हा प्रयत्न करा • Retry
+      </button>
+      <a href="tel:+919860924504" class="btn-offline-call">
+        📞 थेट दुकानात कॉल करा • Call Store
+      </a>
+    </div>
+  </div>
+</body>
+</html>

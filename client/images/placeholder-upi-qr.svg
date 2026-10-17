@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <rect width="300" height="300" fill="#ffffff" rx="16"/>
+  <rect x="15" y="15" width="270" height="270" fill="none" stroke="#04251a" stroke-width="4" rx="12"/>
+  
+  <!-- Outer Corner QR Position Patterns -->
+  <rect x="35" y="35" width="70" height="70" fill="#04251a" rx="8"/>
+  <rect x="47" y="47" width="46" height="46" fill="#ffffff" rx="4"/>
+  <rect x="57" y="57" width="26" height="26" fill="#04251a" rx="2"/>
+
+  <rect x="195" y="35" width="70" height="70" fill="#04251a" rx="8"/>
+  <rect x="207" y="47" width="46" height="46" fill="#ffffff" rx="4"/>
+  <rect x="217" y="57" width="26" height="26" fill="#04251a" rx="2"/>
+
+  <rect x="35" y="195" width="70" height="70" fill="#04251a" rx="8"/>
+  <rect x="47" y="207" width="46" height="46" fill="#ffffff" rx="4"/>
+  <rect x="57" y="217" width="26" height="26" fill="#04251a" rx="2"/>
+
+  <!-- Simulated QR Matrix Dots -->
+  <rect x="125" y="35" width="16" height="16" fill="#064e3b"/>
+  <rect x="150" y="50" width="16" height="16" fill="#04251a"/>
+  <rect x="125" y="75" width="16" height="16" fill="#064e3b"/>
+  <rect x="160" y="85" width="16" height="16" fill="#04251a"/>
+
+  <rect x="35" y="125" width="16" height="16" fill="#04251a"/>
+  <rect x="65" y="145" width="16" height="16" fill="#064e3b"/>
+  <rect x="90" y="125" width="16" height="16" fill="#04251a"/>
+
+  <rect x="120" y="120" width="60" height="60" fill="#f59e0b" rx="8"/>
+  <text x="150" y="157" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="bold" font-size="22" fill="#04251a">UPI</text>
+
+  <rect x="195" y="125" width="16" height="16" fill="#04251a"/>
+  <rect x="235" y="140" width="16" height="16" fill="#064e3b"/>
+  <rect x="215" y="165" width="16" height="16" fill="#04251a"/>
+
+  <rect x="125" y="195" width="16" height="16" fill="#04251a"/>
+  <rect x="155" y="215" width="16" height="16" fill="#064e3b"/>
+  <rect x="135" y="245" width="16" height="16" fill="#04251a"/>
+
+  <rect x="195" y="210" width="16" height="16" fill="#064e3b"/>
+  <rect x="220" y="235" width="16" height="16" fill="#04251a"/>
+  <rect x="245" y="200" width="16" height="16" fill="#064e3b"/>
+
+  <!-- Footer label -->
+  <text x="150" y="280" text-anchor="middle" font-family="sans-serif" font-weight="600" font-size="12" fill="#04251a">Scan &amp; Pay via Any UPI App</text>
+</svg>
