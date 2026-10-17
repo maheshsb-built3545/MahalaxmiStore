@@ -1,0 +1,36 @@
+{
+  "name": "mahalaxmi-kirana-server",
+  "version": "1.0.0",
+  "description": "Mahalaxmi Kirana Store – backend API (Stage 1)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node seed/seed.js",
+    "seed:owner": "node seed/seedOwner.js",
+    "backup": "node scripts/backup.js",
+    "test": "node tests/test_playbook_fixes.js && node tests/test_audit_items.js && node tests/test-r5-r6.js && node tests/verify_stage2.js",
+    "test:all": "npm test && node tests/verify_stage3.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
+    "compression": "^1.8.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.3.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.3.4",
+    "multer": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
