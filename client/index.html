@@ -63,7 +63,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="images/hero-bg.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap">
+</noscript>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -148,28 +153,40 @@
   </div>
 </section>
 
-<!-- ── R3: AI Order Box (AI-01 .. AI-09, ORD-05, ORD-08) ──────── -->
+<!-- ── R3: AI Order Box (AI-01 .. AI-09, ORD-05, ORD-08, Task 2) ──────── -->
 <section class="section ai-order-section" id="aiOrderBox">
   <div class="wrap">
+    <!-- One-time dismissible onboarding hint (Task 2) -->
+    <div id="aiOnboardingHint" class="ai-onboarding-hint" style="display:none;" role="status">
+      <div class="ai-hint-content">
+        <span class="ai-hint-icon">✨</span>
+        <div class="ai-hint-text">
+          <strong class="ai-hint-title">नवीन: तुमची संपूर्ण किराणा यादी एकाच वेळी जोडा! <span class="ai-hint-en">/ New: Smart Grocery List</span></strong>
+          <span class="ai-hint-desc">यादी लिहा किंवा बोला — आमचे AI सर्व वस्तू शोधून एका क्लिकवर तुमच्या कार्टमध्ये भरेल. (Type or speak your list to add all items at once.)</span>
+        </div>
+      </div>
+      <button type="button" id="dismissAiHintBtn" class="ai-hint-dismiss" aria-label="Dismiss hint">समजले (Got it) ✕</button>
+    </div>
+
     <div class="ai-box-card" data-reveal>
       <div class="ai-box-header">
         <div class="ai-badge-row">
-          <span class="ai-smart-badge">✨ AI Kirana Assistant</span>
+          <span class="ai-smart-badge">✨ Smart AI List • स्मार्ट यादी</span>
           <span class="ai-tagline">मराठी / Hindi / Hinglish / English</span>
         </div>
         <h2 class="ai-box-title">
-          किराणा यादी येथे लिहा किंवा पेस्ट करा
-          <span class="ai-box-sub">— Instant Grocery List to Cart</span>
+          तुमची यादी लिहा, आम्ही कार्टमध्ये टाकतो
+          <span class="ai-box-sub">— Type your list, we add it to cart</span>
         </h2>
         <p class="ai-box-desc">
-          व्हॉट्सॲप मेसेज किंवा घरची यादी जशी आहे तशी येथे पेस्ट करा. आमचे AI कॅटलॉगमधून वस्तू, वजन आणि चालू भाव आपोआप शोधेल.
+          व्हॉट्सॲप मेसेज किंवा घरची यादी जशी आहे तशी येथे पेस्ट करा किंवा बोलून सांगा. आमचे AI कॅटलॉगमधून वस्तू, वजन आणि चालू भाव आपोआप शोधेल.
         </p>
       </div>
 
       <!-- Quick sample pills -->
       <div class="ai-sample-pills">
         <span class="ai-pills-label">💡 उदाहरणे (क्लिक करा):</span>
-        <button type="button" class="ai-pill-btn" data-text="२ किलो साखर, १ लिटर गोडे तेल, १ साबण">२ किलो साखर, १ लिटर गोडे तेल, १ साबण</button>
+        <button type="button" class="ai-pill-btn" data-text="२ किलो तांदूळ, १ लिटर तेल, अर्धा किलो साखर">२ किलो तांदूळ, १ लिटर तेल, अर्धा किलो साखर</button>
         <button type="button" class="ai-pill-btn" data-text="5kg wheat flour, 2kg basmati rice, 1 packet tea">5kg wheat flour, 2kg basmati rice, 1 packet tea</button>
         <button type="button" class="ai-pill-btn" data-text="१ किलो तूर डाळ, अर्धा किलो पोहे, १०० ग्रॅम जिरे">१ किलो तूर डाळ, अर्धा किलो पोहे, १०० ग्रॅम जिरे</button>
       </div>
@@ -180,7 +197,7 @@
           id="aiListInput"
           class="ai-textarea"
           rows="4"
-          placeholder="उदा. २ किलो साखर, १ लिटर तेल, १ डेटॉल साबण, अर्धा किलो चहा पावडर...&#10;Type or paste items separated by commas or newlines..."
+          placeholder="उदा. २ किलो तांदूळ, १ लिटर तेल, अर्धा किलो साखर...&#10;Type or speak your list, e.g. 2kg rice, 1L oil, 0.5kg sugar... (separated by commas or newlines)"
           maxlength="2000"
           aria-label="Grocery list text"
         ></textarea>

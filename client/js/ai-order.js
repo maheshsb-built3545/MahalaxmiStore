@@ -17,6 +17,8 @@ const aiOrderBox = (() => {
   // Array of { product: fullProductObj, qty: number, unit: string, rawPhrase: string }
   let _resolvedItems = [];
   let _ambiguousItems = [];
+  let _unmatchedPhrases = [];
+  let _currentLogId = null;
   let _speechActive = false;
   let _recognition = null;
 
@@ -88,7 +90,7 @@ const aiOrderBox = (() => {
       });
     });
 
-    // Voice recognition setup (AI-01, Voice Polish)
+    // Voice recognition setup (AI-01, Task 2: Hide gracefully if unsupported, mr-IN with fallback)
     setupVoiceRecognition();
 
     // Parse button click
@@ -108,31 +110,38 @@ const aiOrderBox = (() => {
     }
   }
 
-  // ── Voice Input Setup ────────────────────────────────────────────────────────
+  // ── Voice Input Setup (Task 2) ───────────────────────────────────────────────
   function setupVoiceRecognition() {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec || !$voiceBtn) {
-      if ($voiceBtn) $voiceBtn.title = 'Voice input not supported in this browser';
+      // Gracefully hide button if Web Speech API is not supported in browser
+      if ($voiceBtn) $voiceBtn.style.display = 'none';
       return;
     }
+
+    // Show button explicitly if supported
+    $voiceBtn.style.display = 'inline-flex';
 
     try {
       _recognition = new SpeechRec();
       _recognition.continuous = false;
       _recognition.interimResults = true;
 
+      const fallbackLangs = ['mr-IN', 'hi-IN', 'en-IN'];
+      let currentLangIndex = 0;
       let initialVal = '';
 
       _recognition.onstart = () => {
         _speechActive = true;
         initialVal = $input.value.trim();
-        const currentLang = localStorage.getItem('mk_lang') || 'mr';
-        _recognition.lang = currentLang === 'hi' ? 'hi-IN' : (currentLang === 'en' ? 'en-IN' : 'mr-IN');
+        const preferred = localStorage.getItem('kirana_lang') || 'mr';
+        currentLangIndex = preferred === 'hi' ? 1 : (preferred === 'en' ? 2 : 0);
+        _recognition.lang = fallbackLangs[currentLangIndex];
         $voiceBtn.classList.add('recording');
         if ($voiceStatus) {
           $voiceStatus.style.display = 'flex';
-          const langLabel = currentLang === 'hi' ? 'हिंदी' : (currentLang === 'en' ? 'English' : 'मराठी');
-          $voiceStatusText.textContent = `🎙️ ऐकत आहे... / Listening (${langLabel}) — बोलून किराणा यादी सांगा...`;
+          const labels = ['मराठी', 'हिंदी', 'English'];
+          $voiceStatusText.textContent = `🎙️ ऐकत आहे... / Listening (${labels[currentLangIndex]}) — किराणा यादी सांगा...`;
         }
       };
 
@@ -151,6 +160,15 @@ const aiOrderBox = (() => {
 
       _recognition.onerror = (err) => {
         console.warn('Speech recognition error:', err.error);
+        // Fallback to next supported language if language not supported
+        if (err.error === 'language-not-supported' && currentLangIndex < fallbackLangs.length - 1) {
+          currentLangIndex++;
+          _recognition.lang = fallbackLangs[currentLangIndex];
+          try {
+            _recognition.start();
+            return;
+          } catch (_) {}
+        }
         stopVoice();
       };
 
@@ -172,6 +190,7 @@ const aiOrderBox = (() => {
       });
     } catch (e) {
       console.warn('Speech recognition setup error:', e);
+      if ($voiceBtn) $voiceBtn.style.display = 'none';
     }
   }
 
@@ -216,6 +235,7 @@ const aiOrderBox = (() => {
         throw new Error(data.message || 'यादी वाचण्यात अडचण आली / Failed to parse list');
       }
 
+      _currentLogId = data.data?.logId || data.logId || null;
       renderResults(data.data);
     } catch (err) {
       console.error('AI parse error:', err);
@@ -240,7 +260,9 @@ const aiOrderBox = (() => {
 
   // ── Render Review Tray ───────────────────────────────────────────────────────
   function renderResults(data) {
-    const { matched = [], ambiguous = [], unmatched = [], usedFallback = false } = data;
+    const { matched = [], ambiguous = [], unmatched = [], usedFallback = false, logId = null } = data;
+    if (logId) _currentLogId = logId;
+    _unmatchedPhrases = unmatched || [];
 
     _resolvedItems = matched.map((m) => ({
       product: m.product,
@@ -328,11 +350,16 @@ const aiOrderBox = (() => {
       btn.addEventListener('click', (e) => {
         const idx = parseInt(btn.getAttribute('data-index'), 10);
         const action = btn.getAttribute('data-action');
+        const item = _resolvedItems[idx];
+        if (!item) return;
+        const unit = (item.unit || item.product?.unitType || item.product?.unit || '').toLowerCase();
+        const isLoose = ['kg', 'l', 'litre', 'liter', 'किलो', 'लिटर'].includes(unit) || (item.qty % 1 !== 0);
+        const step = isLoose ? 0.5 : 1;
         if (action === 'inc') {
-          _resolvedItems[idx].qty = Math.min(50, _resolvedItems[idx].qty + 1);
+          item.qty = Math.min(50, Math.round((item.qty + step) * 100) / 100);
         } else if (action === 'dec') {
-          if (_resolvedItems[idx].qty > 1) {
-            _resolvedItems[idx].qty -= 1;
+          if (item.qty > step) {
+            item.qty = Math.round((item.qty - step) * 100) / 100;
           } else {
             _resolvedItems.splice(idx, 1);
           }
@@ -495,13 +522,32 @@ const aiOrderBox = (() => {
     }
   }
 
-  // ── Add All to Cart (AI-04, ORD-08) ──────────────────────────────────────────
+  // ── Add All to Cart (AI-04, ORD-08, Task 1 & 3) ─────────────────────────────
   function handleAddToCart() {
     const inStockItems = _resolvedItems.filter((i) => i.product.inStock && i.product.stockQuantity > 0);
+    const oosItems = _resolvedItems.filter((i) => !i.product.inStock || i.product.stockQuantity <= 0);
 
     if (!inStockItems.length) {
       if (window.ui && window.ui.showToast) {
         ui.showToast('कार्टमध्ये जोडण्यासाठी कोणतीही उपलब्ध वस्तू नाही / No in-stock items to add');
+      }
+      return;
+    }
+
+    // Task 1: If guest, prompt login with pending action and resume after login
+    if (window.auth && !window.auth.isLoggedIn()) {
+      if (window.ui && window.ui.showLoginPrompt) {
+        window.ui.showLoginPrompt({
+          type: 'ai_list',
+          items: inStockItems.map((i) => ({
+            product: i.product,
+            productId: i.product.productId || i.product._id,
+            qty: i.qty,
+            unit: i.unit || i.product.unitType || 'unit',
+          })),
+          rawInput: $input ? $input.value : '',
+          logId: _currentLogId,
+        });
       }
       return;
     }
@@ -511,7 +557,7 @@ const aiOrderBox = (() => {
       localStorage.setItem('kirana_order_channel', 'ai_box');
     } catch (_) {}
 
-    // Add batch to cart
+    // Add batch to cart in one atomic operation
     if (window.cart && window.cart.addBatch) {
       window.cart.addBatch(inStockItems);
     } else if (window.cart && window.cart.change) {
@@ -520,8 +566,48 @@ const aiOrderBox = (() => {
       });
     }
 
+    // Diagnostic logging for AiLog (Task 3)
+    const rawInput = $input ? $input.value : '';
+    const parsedCount = _resolvedItems.length + _ambiguousItems.length + (_unmatchedPhrases ? _unmatchedPhrases.length : 0);
+    const addedCount = inStockItems.length;
+    const droppedReasons = [];
+    oosItems.forEach((i) => {
+      droppedReasons.push(`OOS: ${i.product.nameEnglish || i.product.name} (${i.rawPhrase || ''})`);
+    });
+    _ambiguousItems.forEach((i) => {
+      droppedReasons.push(`Ambiguous: ${i.rawPhrase || ''}`);
+    });
+    (_unmatchedPhrases || []).forEach((p) => {
+      droppedReasons.push(`Unmatched: ${p}`);
+    });
+    const droppedCount = oosItems.length + _ambiguousItems.length + (_unmatchedPhrases ? _unmatchedPhrases.length : 0);
+
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = window.auth ? window.auth.getToken() : localStorage.getItem('token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      fetch(`${CONFIG.API_BASE}/ai/log-add-result`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          logId: _currentLogId,
+          rawInput,
+          parsedCount,
+          addedCount,
+          droppedCount,
+          droppedReasons,
+          source: _speechActive ? 'voice' : 'typed',
+        }),
+      }).catch(() => {});
+    } catch (_) {}
+
+    // Bilingual feedback summary toast
+    let summaryMsg = `🎉 ${addedCount} वस्तू कार्टमध्ये जोडल्या! / ${addedCount} items added`;
+    if (droppedCount > 0) {
+      summaryMsg += ` • ${droppedCount} वस्तू तपासणे बाकी आहे / ${droppedCount} need attention`;
+    }
     if (window.ui && window.ui.showToast) {
-      ui.showToast(`🎉 ${inStockItems.length} वस्तू कार्टमध्ये जोडल्या! (Added to cart)`);
+      ui.showToast(summaryMsg);
     }
 
     // Open cart drawer so user sees items instantly

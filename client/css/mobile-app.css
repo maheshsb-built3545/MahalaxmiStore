@@ -484,3 +484,325 @@ button:active, .btn:active, .dept:active, .card-btn:active {
     padding: 12px 14px !important;
   }
 }
+
+/* ── 10. Login-to-Add Bottom Sheet (Task 1) ─────────────────── */
+.login-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 1200;
+}
+
+.login-prompt-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.login-prompt-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 520px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.22);
+  padding: 16px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(105%);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1201;
+  touch-action: pan-y;
+}
+
+.login-prompt-sheet.open {
+  transform: translateY(0);
+}
+
+.login-prompt-sheet .sheet-drag-handle {
+  width: 44px;
+  height: 5px;
+  background: #cbd5e1;
+  border-radius: 3px;
+  margin: 0 auto 14px;
+  cursor: grab;
+}
+
+.login-sheet-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.login-sheet-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.login-sheet-title-box {
+  flex: 1;
+}
+
+.login-sheet-title {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #064e3b;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.login-sheet-title .en-sub {
+  font-size: 14px;
+  color: #047857;
+  font-weight: 500;
+}
+
+.login-sheet-body {
+  font-size: 13px;
+  color: #475569;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.login-sheet-body .en-sub {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.login-sheet-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  color: #64748b;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.login-sheet-reassurance {
+  margin: 14px 0 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reassurance-sparkle {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.reassurance-text {
+  font-size: 12.5px;
+  color: #166534;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.reassurance-text .en-sub {
+  font-size: 11.5px;
+  color: #15803d;
+  font-weight: 400;
+}
+
+.login-sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.login-sheet-actions .btn {
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-login-action {
+  background: linear-gradient(135deg, #064e3b, #047857) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(6, 78, 59, 0.28);
+}
+
+.btn-register-action {
+  background: #ffffff !important;
+  color: #064e3b !important;
+  border: 1.5px solid #064e3b !important;
+}
+
+.btn-not-now {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── 11. Floating Smart List Button (Task 2) ─────────────────── */
+.floating-smart-list-btn {
+  position: fixed;
+  bottom: 84px;
+  right: 16px;
+  z-index: 990;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #064e3b, #059669);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 28px;
+  padding: 10px 16px;
+  box-shadow: 0 6px 20px rgba(6, 78, 59, 0.35);
+  cursor: pointer;
+  min-height: 48px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.floating-smart-list-btn:active {
+  transform: scale(0.96);
+}
+
+.floating-smart-list-btn .fab-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.floating-smart-list-btn .fab-text {
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.floating-smart-list-btn .fab-sub {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .floating-smart-list-btn {
+    bottom: 24px;
+    right: 24px;
+  }
+}
+
+/* ── 12. Smart AI List Onboarding Hint (Task 2) ──────────────── */
+.ai-onboarding-hint {
+  background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+  border: 1.5px solid #a7f3d0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.08);
+}
+
+.ai-hint-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ai-hint-icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ai-hint-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-hint-title {
+  font-size: 14px;
+  color: #064e3b;
+  font-weight: 700;
+}
+
+.ai-hint-title .ai-hint-en {
+  font-size: 13px;
+  color: #047857;
+  font-weight: 500;
+}
+
+.ai-hint-desc {
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.ai-hint-dismiss {
+  background: rgba(6, 78, 59, 0.08);
+  border: none;
+  color: #064e3b;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.ai-hint-dismiss:active {
+  background: rgba(6, 78, 59, 0.18);
+}
+
+@media (max-width: 600px) {
+  .ai-onboarding-hint {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ai-hint-dismiss {
+    align-self: flex-end;
+  }
+}
+

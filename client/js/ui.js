@@ -121,10 +121,9 @@ const ui = (() => {
 
   // ── Cart drawer & Bottom Sheet ─────────────────────────────────────────────
 
-  let sheetDragBound = false;
-  function setupSheetDrag(drawer) {
-    if (!drawer || sheetDragBound) return;
-    sheetDragBound = true;
+  function setupSheetDrag(drawer, onClose) {
+    if (!drawer || drawer._sheetDragBound) return;
+    drawer._sheetDragBound = true;
 
     // Ensure drag handle exists
     if (!drawer.querySelector('.sheet-drag-handle')) {
@@ -139,7 +138,7 @@ const ui = (() => {
     let isDragging = false;
 
     drawer.addEventListener('touchstart', (e) => {
-      const body = document.getElementById('drawerBody');
+      const body = drawer.querySelector('.drawer-body, .login-sheet-body, .login-sheet-actions');
       if (body && body.scrollTop > 5 && e.target !== drawer.querySelector('.sheet-drag-handle') && e.target !== drawer.querySelector('.drawer-head')) {
         return;
       }
@@ -164,7 +163,11 @@ const ui = (() => {
       drawer.style.transition = '';
       const delta = currentY - startY;
       if (delta > 75) {
-        closeCart();
+        if (typeof onClose === 'function') {
+          onClose();
+        } else {
+          closeCart();
+        }
       } else {
         drawer.style.transform = '';
       }
@@ -178,7 +181,7 @@ const ui = (() => {
     const overlay = document.getElementById('overlay');
     drawer?.classList.add('open');
     overlay?.classList.add('open');
-    if (drawer) setupSheetDrag(drawer);
+    if (drawer) setupSheetDrag(drawer, closeCart);
   }
 
   function closeCart() {
@@ -190,6 +193,146 @@ const ui = (() => {
       drawer.classList.remove('open');
     }
     overlay?.classList.remove('open');
+  }
+
+  // ── Login-to-Add Bottom Sheet (Task 1) ──────────────────────────────────
+  let _previousActiveElement = null;
+
+  function ensureLoginPromptElements() {
+    if (document.getElementById('loginPromptSheet')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'loginPromptOverlay';
+    overlay.className = 'login-prompt-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+
+    const sheet = document.createElement('div');
+    sheet.id = 'loginPromptSheet';
+    sheet.className = 'login-prompt-sheet';
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.setAttribute('aria-labelledby', 'loginPromptTitle');
+
+    sheet.innerHTML = `
+      <div class="sheet-drag-handle" aria-hidden="true"></div>
+      <div class="login-sheet-head">
+        <div class="login-sheet-icon-wrap" aria-hidden="true">
+          <span class="login-sheet-icon">🔐</span>
+        </div>
+        <div class="login-sheet-title-box">
+          <h3 id="loginPromptTitle" class="login-sheet-title">
+            आधी लॉगिन करा <span class="en-sub">/ Please log in first</span>
+          </h3>
+          <p class="login-sheet-body">
+            तुमचा कार्ट सुरक्षित राहील आणि ऑर्डर ट्रॅक करता येईल.<br>
+            <span class="en-sub">Log in to save your cart and track your orders.</span>
+          </p>
+        </div>
+        <button type="button" class="login-sheet-close" id="loginPromptClose" aria-label="Close / बंद करा">✕</button>
+      </div>
+      <div class="login-sheet-reassurance">
+        <span class="reassurance-sparkle">✨</span>
+        <span class="reassurance-text">
+          तुम्ही निवडलेली वस्तू लॉगिननंतर आपोआप कार्टमध्ये येईल.<br>
+          <span class="en-sub">Your item will be added automatically after login.</span>
+        </span>
+      </div>
+      <div class="login-sheet-actions">
+        <a href="login.html" id="loginPromptLoginBtn" class="btn btn-primary btn-login-action">
+          Log In / लॉगिन करा →
+        </a>
+        <a href="register.html" id="loginPromptRegisterBtn" class="btn btn-outline btn-register-action">
+          Register / नोंदणी करा
+        </a>
+        <button type="button" id="loginPromptNotNowBtn" class="btn-not-now">
+          नंतर / Not now
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(sheet);
+
+    overlay.addEventListener('click', () => closeLoginPrompt());
+    document.getElementById('loginPromptClose')?.addEventListener('click', () => closeLoginPrompt());
+    document.getElementById('loginPromptNotNowBtn')?.addEventListener('click', () => closeLoginPrompt());
+
+    setupSheetDrag(sheet, () => closeLoginPrompt());
+  }
+
+  function showLoginPrompt(pendingAction) {
+    if (window.PWA) window.PWA.haptic(20);
+    _previousActiveElement = document.activeElement;
+
+    // Save pending intent in sessionStorage so it persists across redirects
+    if (pendingAction && typeof auth !== 'undefined' && auth.savePendingAction) {
+      auth.savePendingAction(pendingAction);
+    }
+
+    ensureLoginPromptElements();
+
+    const overlay = document.getElementById('loginPromptOverlay');
+    const sheet = document.getElementById('loginPromptSheet');
+    if (!overlay || !sheet) return;
+
+    // Build return redirect URL with safe relative path
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const loginBtn = document.getElementById('loginPromptLoginBtn');
+    const regBtn = document.getElementById('loginPromptRegisterBtn');
+    if (loginBtn) loginBtn.href = `login.html?redirect=${encodeURIComponent(currentPath)}`;
+    if (regBtn) regBtn.href = `register.html?redirect=${encodeURIComponent(currentPath)}`;
+
+    overlay.classList.add('open');
+    sheet.classList.add('open');
+    sheet.style.transform = '';
+
+    // Focus primary action for accessibility
+    setTimeout(() => {
+      loginBtn?.focus();
+    }, 100);
+
+    function handleKeydown(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeLoginPrompt();
+      } else if (e.key === 'Tab') {
+        const focusable = sheet.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    }
+
+    sheet._keyHandler = handleKeydown;
+    document.addEventListener('keydown', handleKeydown);
+  }
+
+  function closeLoginPrompt() {
+    if (window.PWA) window.PWA.haptic(10);
+    const overlay = document.getElementById('loginPromptOverlay');
+    const sheet = document.getElementById('loginPromptSheet');
+    if (sheet) {
+      sheet.classList.remove('open');
+      sheet.style.transform = '';
+      if (sheet._keyHandler) {
+        document.removeEventListener('keydown', sheet._keyHandler);
+      }
+    }
+    overlay?.classList.remove('open');
+    if (_previousActiveElement && typeof _previousActiveElement.focus === 'function') {
+      _previousActiveElement.focus();
+    }
   }
 
   function renderCartDrawer() {
@@ -246,13 +389,16 @@ const ui = (() => {
       info.appendChild(el('div', 'sub',  p.packSize + ' · ' + fmt(p.price)));
       row.appendChild(info);
 
-      // Mini stepper
+      // Mini stepper with decimal support (Task 3 sibling fixes)
       const step  = el('div', 'mini-step');
+      const isDecimal = (qty % 1 !== 0);
+      const decStep = (qty <= 0.5) ? -qty : (isDecimal ? -0.5 : -1);
+      const incStep = isDecimal ? 0.5 : 1;
 
       const minus = el('button', null, '−');
-      minus.setAttribute('aria-label', 'Remove one ' + p.nameEn);
+      minus.setAttribute('aria-label', 'Remove ' + p.nameEn);
       minus.addEventListener('click', () => {
-        cart.change(p, -1);
+        cart.change(p, decStep);
         updateCartBadge();
         renderCartDrawer();
       });
@@ -260,9 +406,9 @@ const ui = (() => {
       const qtySpan = el('span', null, String(qty));
 
       const plus = el('button', null, '+');
-      plus.setAttribute('aria-label', 'Add one more ' + p.nameEn);
+      plus.setAttribute('aria-label', 'Add more ' + p.nameEn);
       plus.addEventListener('click', () => {
-        cart.change(p, 1);
+        cart.change(p, incStep);
         updateCartBadge();
         renderCartDrawer();
         showToast(p.nameEn + ' added to cart');
@@ -494,13 +640,63 @@ const ui = (() => {
     window.closeCart = closeCart;
     window.checkout  = checkout;
 
+    // Auto-apply pending action if user just returned from login/registration (Task 1)
+    if (typeof auth !== 'undefined' && auth.checkAndApplyPendingAction) {
+      auth.checkAndApplyPendingAction();
+    }
+
     // Initialize Mobile App Bottom Navigation
     initMobileBottomNav();
+
+    // Initialize Smart AI List floating entry & onboarding hint (Task 2)
+    initSmartAiPromotion();
 
     // Show stale-cart toast if cart.init() dropped items
     if (window._cartDroppedCount > 0) {
       showToast('Some cart items were removed — they are out of stock.');
       window._cartDroppedCount = 0;
+    }
+  }
+
+  // ── Smart AI List Floating Action & Onboarding Hint (Task 2) ───────────
+  function initSmartAiPromotion() {
+    // 1. Floating button for 1-tap AI list access from anywhere on storefront
+    if (!document.getElementById('floatingSmartListBtn') && document.getElementById('aiOrderBox')) {
+      const fab = document.createElement('button');
+      fab.id = 'floatingSmartListBtn';
+      fab.className = 'floating-smart-list-btn';
+      fab.setAttribute('type', 'button');
+      fab.setAttribute('aria-label', 'Open Smart AI List / स्मार्ट किराणा यादी उघडा');
+      fab.innerHTML = `
+        <span class="fab-icon">✨</span>
+        <span class="fab-text">स्मार्ट यादी <span class="fab-sub">Smart List</span></span>
+      `;
+      fab.addEventListener('click', () => {
+        if (window.PWA) window.PWA.haptic(20);
+        const aiBox = document.getElementById('aiOrderBox');
+        if (aiBox) {
+          aiBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setTimeout(() => {
+            const input = document.getElementById('aiListInput');
+            if (input) input.focus();
+          }, 400);
+        }
+      });
+      document.body.appendChild(fab);
+    }
+
+    // 2. One-time dismissible onboarding hint
+    const hintContainer = document.getElementById('aiOnboardingHint');
+    const HINT_KEY = 'kirana_ai_hint_seen';
+    if (hintContainer && !localStorage.getItem(HINT_KEY)) {
+      hintContainer.style.display = 'flex';
+      const dismissBtn = document.getElementById('dismissAiHintBtn');
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+          localStorage.setItem(HINT_KEY, '1');
+          hintContainer.style.display = 'none';
+        });
+      }
     }
   }
 
@@ -511,14 +707,18 @@ const ui = (() => {
       nav.className = 'mobile-bottom-nav';
       nav.setAttribute('aria-label', 'Mobile Bottom Navigation');
       nav.innerHTML = `
-        <a href="/index.html" class="mbn-item" id="mbnHome" aria-label="Home">
+        <a href="index.html" class="mbn-item" id="mbnHome" aria-label="Home">
           <span class="mbn-icon">🏠</span>
           <span class="mbn-label"><span class="mbn-mr">मुख्य</span>Home</span>
         </a>
-        <a href="/index.html#catalog" class="mbn-item" id="mbnCatalog" aria-label="Categories">
+        <a href="index.html#catalog" class="mbn-item" id="mbnCatalog" aria-label="Categories">
           <span class="mbn-icon">🗂️</span>
           <span class="mbn-label"><span class="mbn-mr">विभाग</span>Items</span>
         </a>
+        <button type="button" class="mbn-item mbn-ai" id="mbnSmartList" aria-label="Smart List">
+          <span class="mbn-icon">✨</span>
+          <span class="mbn-label"><span class="mbn-mr">स्मार्ट यादी</span>Smart List</span>
+        </button>
         <button type="button" class="mbn-item mbn-cart" id="mbnCart" aria-label="Cart">
           <span class="mbn-icon-wrap">
             <span class="mbn-icon">🛒</span>
@@ -526,11 +726,11 @@ const ui = (() => {
           </span>
           <span class="mbn-label"><span class="mbn-mr">कार्ट</span>Cart</span>
         </button>
-        <a href="/orders.html" class="mbn-item" id="mbnOrders" aria-label="Orders">
+        <a href="orders.html" class="mbn-item" id="mbnOrders" aria-label="Orders">
           <span class="mbn-icon">📋</span>
           <span class="mbn-label"><span class="mbn-mr">ऑर्डर्स</span>Orders</span>
         </a>
-        <a href="/login.html" class="mbn-item" id="mbnAccount" aria-label="Account">
+        <a href="login.html" class="mbn-item" id="mbnAccount" aria-label="Account">
           <span class="mbn-icon">👤</span>
           <span class="mbn-label"><span class="mbn-mr">खाते</span>Account</span>
         </a>
@@ -548,6 +748,8 @@ const ui = (() => {
       document.getElementById('mbnAccount')?.classList.add('active');
     } else if (hash.includes('catalog') || hash.includes('deals')) {
       document.getElementById('mbnCatalog')?.classList.add('active');
+    } else if (hash.includes('aiorderbox')) {
+      document.getElementById('mbnSmartList')?.classList.add('active');
     } else if (path.endsWith('index.html') || path === '/' || path.endsWith('/')) {
       document.getElementById('mbnHome')?.classList.add('active');
     }
@@ -556,6 +758,19 @@ const ui = (() => {
       e.preventDefault();
       openCart();
     });
+
+    document.getElementById('mbnSmartList')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const aiBox = document.getElementById('aiOrderBox');
+      if (aiBox) {
+        aiBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => {
+          document.getElementById('aiListInput')?.focus();
+        }, 400);
+      } else {
+        window.location.href = 'index.html#aiOrderBox';
+      }
+    });
   }
 
   // Re-render cart badge whenever cart changes
@@ -563,7 +778,19 @@ const ui = (() => {
     updateCartBadge();
   });
 
-  return { init, showToast, updateCartBadge, updateStickyCartBar, renderCartDrawer, openCart, closeCart, observeReveals };
+  return {
+    init,
+    showToast,
+    updateCartBadge,
+    updateStickyCartBar,
+    renderCartDrawer,
+    openCart,
+    closeCart,
+    showLoginPrompt,
+    closeLoginPrompt,
+    initSmartAiPromotion,
+    observeReveals,
+  };
 })();
 
 // Explicitly attach to window object

@@ -248,7 +248,7 @@ nav a.active {
   background-color: var(--forest-950);
   background-image:
     linear-gradient(to right, rgba(4, 37, 26, 0.94) 0%, rgba(4, 37, 26, 0.88) 45%, rgba(4, 37, 26, 0.45) 75%, rgba(4, 37, 26, 0.2) 100%),
-    url('../images/hero-bg.jpg');
+    url('../images/hero-bg.webp');
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;
@@ -374,7 +374,7 @@ nav a.active {
     background-position: center center;
     background-image:
       linear-gradient(to right, rgba(4, 37, 26, 0.92) 0%, rgba(4, 37, 26, 0.88) 100%),
-      url('../images/hero-bg.jpg');
+      url('../images/hero-bg.webp');
   }
   .hero-content {
     max-width: 100%;
