@@ -257,7 +257,7 @@ const adjustStock = async (req, res, next) => {
       productId: product._id,
       type: 'adjustment',
       quantity: delta,
-      balanceAfter: newQuantity,
+      balanceAfter: targetQuantity,
       note: `${note} (adjusted by ${req.user.name})`,
       actor: req.user.name,
       actorId: req.user._id,

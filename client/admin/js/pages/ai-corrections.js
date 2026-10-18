@@ -95,7 +95,7 @@
     }
 
     container.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:12px;" class="misses-grid"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 320px), 1fr));gap:12px;" class="misses-grid"></div>
     `;
     const grid = container.querySelector('.misses-grid');
 
@@ -107,7 +107,7 @@
   function createMissCard(m) {
     const card = document.createElement('div');
     card.className = 'card';
-    card.style.cssText = 'padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;justify-content:space-between;gap:12px;';
+    card.style.cssText = 'min-width:0;padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;justify-content:space-between;gap:12px;box-sizing:border-box;';
 
     const phrase = m.phrase || '';
     const frequency = m.frequency || 1;
@@ -128,11 +128,11 @@
         </p>
       </div>
 
-      <div style="display:flex;gap:8px;margin-top:4px;">
-        <button type="button" class="btn btn-primary btn-map-alias" style="flex:2;min-height:44px;font-size:0.82rem;font-weight:700;">
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary btn-map-alias" style="flex:1 1 180px;min-height:44px;font-size:0.82rem;font-weight:700;">
           🔗 पर्यायी नाव जोडा / Map Alias
         </button>
-        <button type="button" class="btn btn-secondary btn-ignore" style="flex:1;min-height:44px;font-size:0.82rem;font-weight:600;color:var(--text-muted);">
+        <button type="button" class="btn btn-secondary btn-ignore" style="flex:1 1 90px;min-height:44px;font-size:0.82rem;font-weight:600;color:var(--text-muted);">
           दुर्लक्ष / Ignore
         </button>
       </div>

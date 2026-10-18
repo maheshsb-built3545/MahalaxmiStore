@@ -86,6 +86,7 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
@@ -152,6 +153,8 @@ app.get('/api/version', (_req, res) =>
   })
 );
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 app.use('/api/auth', authRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/settings', settingsRoutes);
@@ -171,6 +174,8 @@ app.use(compression());
 // ─── Client Static Files ────────────────────────────────────────────────────
 const path = require('path');
 const clientDir = path.join(__dirname, '../../client');
+
+app.use('/admin/images', express.static(path.join(clientDir, 'images')));
 
 app.use(express.static(clientDir, {
   maxAge: '1d',

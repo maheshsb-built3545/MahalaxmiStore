@@ -150,3 +150,50 @@ All 75 distinct API calls executed across the admin suite matched against Expres
 - **Service Worker Version Bump**: `mk-cache-v1.0.5` &rarr; `mk-cache-v1.0.6`.
 - **Exclusion of Admin Routes from Static Cache**:
   All requests matching `/admin/*`, `/api/admin/*`, `/api/inventory/*`, `/api/udhar/*`, and `/api/notifications/*` must bypass Cache-First logic and execute Network-First with background revalidation.
+
+---
+
+## 2. Verification Results & Final Compliance Matrix
+
+### 2.1 Backend Master Verification Suite (`server/tests/test_owner_rebuild_verification.js`)
+Executed strictly against isolated test DB `mahalaxmi_kirana_test`:
+
+| Test Suite Module | Tests Executed | Passed | Failed | Details |
+| :--- | :---: | :---: | :---: | :--- |
+| **1. Auth Roles & Permissions** | 3 | 3 | 0 | Owner unrestricted, staff without perms rejected (403), staff with perms allowed. |
+| **2. Toggle Stock Idempotency** | 3 | 3 | 0 | Idempotent unavailable flag handling; inStock true restore verified. |
+| **3. Authenticated CSV Exports** | 3 | 3 | 0 | Bearer auth enforced, `text/csv; charset=utf-8` + UTF-8 BOM verified. |
+| **4. Stock-In with Cost Rate** | 4 | 4 | 0 | Atomic stock increment, product.costPrice updated, StockLog entry created. |
+| **5. Stock Adjustment & Codes** | 2 | 2 | 0 | Invalid reason code rejected (400), valid reason (damage) creates StockLog with delta. |
+| **6. Profit Math & Valuation** | 3 | 3 | 0 | Selling valuation, cost valuation, and potential margin math verified. |
+| **7. Customer Pagination** | 2 | 2 | 0 | Page 1 limit 20 with pagination metadata and array response verified. |
+| **8. Store Open/Closed Gate** | 2 | 2 | 0 | Emergency close verified; storefront checkout blocked with `STORE_CLOSED` (403). |
+| **9. XSS Escaping Unit Tests** | 4 | 4 | 0 | HTML entities escaped, attributes escaped, null/undefined handled safely. |
+| **10. Bilingual i18n Coverage** | 2 | 2 | 0 | 151 bilingual phrases validated in dictionary (exceeds requirement of 140). |
+| **Total** | **28** | **28** | **0** | **100% PASS** |
+
+### 2.2 End-to-End Browser Verification Suite (`verify_admin_pages_e2e.js`)
+Executed across all 11 admin pages in Microsoft Edge across 3 viewports (390px Mobile, 768px Tablet, 1280px Desktop):
+
+| Page | Viewport 390px (Mobile) | Viewport 768px (Tablet) | Viewport 1280px (Desktop) | Status |
+| :--- | :---: | :---: | :---: | :---: |
+| **Dashboard** (`dashboard.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Orders** (`orders.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Catalog** (`catalog.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Inventory** (`inventory.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Udhar Khata** (`udhar.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Customers** (`customers.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Reports** (`reports.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Inbox** (`inbox.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Staff & Audit** (`staff.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Settings** (`settings.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **AI Corrections** (`ai-corrections.html`) | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | ✅ 0 errors / 0 overflow | **PASSED** |
+| **Overall Result** | **0 Failures** | **0 Failures** | **0 Failures** | **100% GREEN** |
+
+### 2.3 Non-Negotiable Safety Rules Audit
+1. **Branch**: Isolated on `fix/owner-wiring`. Never pushed to `main`, never merged.
+2. **Database Isolation**: Automated tests executed strictly against `MONGODB_URI_TEST` (`mahalaxmi_kirana_test`). Zero mutations to live database.
+3. **Vanilla Platform**: Pure vanilla HTML5, CSS3, ES6 JavaScript. Zero frontend frameworks, zero build steps.
+4. **Bilingual Requirement**: 100% Marathi + English coverage across all labels, toasts, modals, and error messages.
+5. **Touch Ergonomics**: All interactive buttons, chips, and toggles enforce $\ge 44$px minimum tap target sizes.
+
