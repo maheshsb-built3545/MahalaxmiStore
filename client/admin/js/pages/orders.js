@@ -32,7 +32,38 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initDetailSheet();
   loadOrders();
+
+  // Background polling every 30s
+  setInterval(() => {
+    pollNewOrders();
+  }, 30000);
 });
+
+let previousNewOrdersCount = null;
+async function pollNewOrders() {
+  try {
+    const res = await window.AdminAPI.get('/admin/orders?limit=100');
+    if (res.success && Array.isArray(res.data)) {
+      const newOrders = res.data.filter((o) => o.status === 'new');
+      if (previousNewOrdersCount !== null && newOrders.length > previousNewOrdersCount) {
+        if (window.shell?.playOrderChime) window.shell.playOrderChime();
+        if (window.AdminToast) {
+          window.AdminToast.show(`नवीन ऑर्डर आली! (${newOrders.length - previousNewOrdersCount}) / New order received!`, 'info');
+        }
+      }
+      previousNewOrdersCount = newOrders.length;
+      allOrders = res.data;
+      updateStatusCounts();
+      if (currentTab === 'queue' && !advancingOrderIds.size && !window._activeActionSheet?.isOpen && !window._activePaymentSheet?.isOpen) {
+        renderOrdersQueue();
+      } else if (currentTab === 'packing') {
+        renderPackingList();
+      }
+    }
+  } catch (e) {
+    // Silent fail on polling
+  }
+}
 
 function initTabs() {
   const queueTabBtn = document.getElementById('tabQueueBtn');
@@ -74,9 +105,9 @@ function initDetailSheet() {
   });
 }
 
-async function loadOrders() {
+async function loadOrders(search = searchQuery) {
   const listEl = document.getElementById('ordersListContainer');
-  if (listEl) {
+  if (listEl && !search) {
     listEl.innerHTML = `
       <div class="flex flex-col gap-3">
         <div class="skeleton" style="height: 120px; border-radius: 12px;"></div>
@@ -87,9 +118,14 @@ async function loadOrders() {
   }
 
   try {
-    const res = await window.AdminAPI.get('/admin/orders?limit=100');
+    const query = search ? `&search=${encodeURIComponent(search)}` : '';
+    const res = await window.AdminAPI.get(`/admin/orders?limit=100${query}`);
     if (!res.success) throw new Error(res.message);
     allOrders = res.data || [];
+    const newOrders = allOrders.filter((o) => o.status === 'new');
+    if (previousNewOrdersCount === null) {
+      previousNewOrdersCount = newOrders.length;
+    }
     updateStatusCounts();
 
     // Check URL for deep-linked order id
@@ -209,16 +245,19 @@ function renderPaymentBadge(order) {
   const status = order.paymentStatus;
   let label = 'Cash (COD)';
   let color = '#475569';
+  let bg = '#f1f5f9';
 
   if (method === 'upi_qr') {
     label = status === 'paid' ? 'UPI Paid' : 'UPI Unverified';
-    color = status === 'paid' ? '#16a34a' : '#d97706';
+    color = status === 'paid' ? '#166534' : '#b45309';
+    bg = status === 'paid' ? '#dcfce7' : '#fef3c7';
   } else if (method === 'udhar') {
     label = 'उधारी (Udhar)';
-    color = '#b91c1c';
+    color = '#991b1b';
+    bg = '#fee2e2';
   }
 
-  return `<span style="font-weight:700;color:${color};font-size:0.75rem;">${label}</span>`;
+  return `<button type="button" onclick="event.stopPropagation(); window.openPaymentActionsModal('${order._id}')" style="cursor:pointer;font-weight:700;color:${color};background:${bg};border:1px solid ${color}40;border-radius:12px;padding:3px 8px;font-size:0.75rem;display:inline-flex;align-items:center;gap:4px;" title="पेमेंट स्थिती बदला / Change Payment Status">${label} ⚙️</button>`;
 }
 
 function renderActionButtons(order) {
@@ -233,7 +272,7 @@ function renderActionButtons(order) {
     btn.type = 'button';
     btn.className = 'btn btn-sm btn-primary';
     btn.textContent = next.label;
-    btn.onclick = () => advanceOrderStatus(order, next.status);
+    btn.onclick = () => advanceOrderStatus(order, next.status, btn);
     container.appendChild(btn);
   }
 
@@ -252,10 +291,12 @@ function renderOrderCardMobile(order) {
   card.className = 'item-card';
 
   const next = getNextStatus(order.status);
-  const customerName = window.esc(order.address?.name || order.customer?.name || 'Customer');
-  const village = window.esc(order.address?.village || order.address?.area || 'Yesgaon');
-  const phone = order.address?.phone || order.customer?.phone || '';
+  const customerName = window.esc(order.customerName || order.address?.name || order.customer?.name || 'Customer');
+  const village = window.esc(order.address?.line || order.address?.village || order.address?.area || 'Yesgaon');
+  const phone = order.customerPhone || order.address?.phone || order.customer?.phone || '';
+  const digits = String(phone).replace(/\D/g, '').slice(-10);
   const itemsCount = (order.items || []).length;
+  const statusMsg = `नमस्कार ${customerName}! महालक्ष्मी किराणाकडून तुमची ऑर्डर #${order.orderNumber} स्थिती: ${order.status}. एकूण रक्कम: ₹${order.total}. डिलिव्हरी वेळ: ${order.deliverySlot || 'Standard'}. काही अडचण असल्यास संपर्क करा: 9860924504.`;
 
   card.innerHTML = `
     <div class="item-card-header">
@@ -278,13 +319,18 @@ function renderOrderCardMobile(order) {
         <div class="text-xs" style="text-align:right;">${renderPaymentBadge(order)}</div>
       </div>
     </div>
-    <div class="item-card-footer">
+    <div class="item-card-footer" style="display:flex;gap:6px;align-items:center;">
       ${next ? `
-        <button type="button" class="btn btn-primary" style="flex:1;" onclick="advanceOrderStatusById('${order._id}', '${next.status}')">
+        <button type="button" class="btn btn-primary" id="btnAdvance_${order._id}" style="flex:1;" onclick="advanceOrderStatusById('${order._id}', '${next.status}')">
           ${next.label}
         </button>
-      ` : '<span class="text-sm font-semibold" style="color:#16a34a;">✓ पूर्ण झाले / Completed</span>'}
-      <button type="button" class="btn btn-secondary" onclick="openOrderDetailById('${order._id}')" title="More Actions">
+      ` : '<span class="text-sm font-semibold" style="color:#16a34a;flex:1;">✓ पूर्ण झाले / Completed</span>'}
+      ${phone ? `
+        <a href="https://wa.me/91${digits}?text=${encodeURIComponent(statusMsg)}" target="_blank" class="btn btn-secondary" style="min-width:44px;min-height:44px;padding:0 10px;color:#16a34a;" title="WhatsApp Customer">
+          💬
+        </a>
+      ` : ''}
+      <button type="button" class="btn btn-secondary" style="min-width:44px;min-height:44px;padding:0 12px;font-size:1.25rem;" onclick="openOrderActionsSheetById('${order._id}')" title="अधिक पर्याय / More Actions">
         ⋮
       </button>
     </div>
@@ -308,54 +354,210 @@ window.openOrderDetailById = (id) => {
   if (order) openOrderDetail(order);
 };
 
+window.openOrderActionsSheetById = (id) => {
+  const order = allOrders.find((o) => o._id === id);
+  if (order) openOrderActionsSheet(order);
+};
+
+function openOrderActionsSheet(order) {
+  const phone = order.customerPhone || order.address?.phone || '';
+  const digits = String(phone).replace(/\D/g, '').slice(-10);
+  const statusMsg = `नमस्कार! महालक्ष्मी किराणाकडून तुमची ऑर्डर #${order.orderNumber} स्थिती: ${order.status}. एकूण रक्कम: ₹${order.total}. संपर्क: 9860924504.`;
+
+  const sheet = new window.AdminBottomSheet({
+    title: `ऑर्डर #${order.orderNumber} कृती / Actions`,
+    isSheetOnMobile: true,
+  });
+
+  const list = document.createElement('div');
+  list.className = 'flex flex-col gap-2';
+  list.style.padding = '8px 0';
+
+  list.innerHTML = `
+    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;" onclick="orderActionSheet_view('${order._id}')">
+      👁️ संपूर्ण ऑर्डर तपशील / View Order Details
+    </button>
+    ${phone ? `
+      <a href="tel:${phone}" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;">
+        📞 ग्राहकाला कॉल करा / Call Customer (${phone})
+      </a>
+      <a href="https://wa.me/91${digits}?text=${encodeURIComponent(statusMsg)}" target="_blank" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;color:#16a34a;">
+        💬 WhatsApp वर संदेश पाठवा / WhatsApp Customer
+      </a>
+    ` : ''}
+    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;" onclick="printThermalBill('${order._id}')">
+      🖨️ थर्मल पावती प्रिंट / Print Slip
+    </button>
+    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;" onclick="openPaymentActionsModal('${order._id}')">
+      💳 पेमेंट स्थिती बदला / Payment Actions (${order.paymentStatus || 'pending'})
+    </button>
+    ${order.status !== 'cancelled' && order.status !== 'delivered' ? `
+      <button type="button" class="btn btn-danger" style="justify-content:flex-start;min-height:48px;margin-top:8px;" onclick="promptCancelOrder('${order._id}')">
+        ❌ ऑर्डर रद्द करा / Cancel Order (Restore Stock)
+      </button>
+    ` : ''}
+  `;
+
+  sheet.setContent(list);
+  sheet.open();
+  window._activeActionSheet = sheet;
+}
+
+window.orderActionSheet_view = (id) => {
+  if (window._activeActionSheet) window._activeActionSheet.close();
+  const order = allOrders.find((o) => o._id === id);
+  if (order) openOrderDetail(order);
+};
+
+window.openPaymentActionsModal = (id) => {
+  if (window._activeActionSheet) window._activeActionSheet.close();
+  const order = allOrders.find((o) => o._id === id);
+  if (!order) return;
+
+  const sheet = new window.AdminBottomSheet({
+    title: `पेमेंट कृती — ऑर्डर #${order.orderNumber}`,
+    isSheetOnMobile: true,
+  });
+
+  const content = document.createElement('div');
+  content.className = 'flex flex-col gap-3';
+  content.style.padding = '12px 0';
+
+  content.innerHTML = `
+    <div style="background:var(--bg-subtle);padding:12px;border-radius:10px;font-size:0.9rem;">
+      <div><strong>पद्धत / Method:</strong> ${order.paymentMethod}</div>
+      <div><strong>सध्याची स्थिती / Current:</strong> ${order.paymentStatus}</div>
+      <div><strong>रक्कम / Amount:</strong> ${window.AdminFormat.currency(order.total)}</div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <button type="button" class="btn btn-primary" style="min-height:48px;" onclick="submitPaymentStatus('${order._id}', 'paid')">
+        ✅ पेमेंट जमा झाले / Mark Paid (Verified)
+      </button>
+      <button type="button" class="btn btn-secondary" style="min-height:48px;" onclick="submitPaymentStatus('${order._id}', 'pending')">
+        ⏳ पेमेंट बाकी / Mark Unpaid (Pending)
+      </button>
+    </div>
+  `;
+
+  sheet.setContent(content);
+  sheet.open();
+  window._activePaymentSheet = sheet;
+};
+
+window.submitPaymentStatus = async (id, status) => {
+  try {
+    let utr = '';
+    if (status === 'paid') {
+      utr = prompt('पर्यायी UPI UTR / Reference ID प्रविष्ट करा (Optional):') || '';
+    }
+    const res = await window.AdminAPI.patch(`/admin/orders/${id}/payment`, {
+      paymentStatus: status,
+      paymentRef: utr,
+    });
+    if (res.success) {
+      const order = allOrders.find((o) => o._id === id);
+      if (order) {
+        order.paymentStatus = status;
+        if (utr) order.paymentRef = utr;
+      }
+      if (window._activePaymentSheet) window._activePaymentSheet.close();
+      renderOrdersQueue();
+      if (window.AdminToast) {
+        window.AdminToast.show(`पेमेंट स्थिती अद्यतनित केली: ${status}`, 'success');
+      }
+    }
+  } catch (err) {
+    if (window.AdminToast) window.AdminToast.show('Error: ' + err.message, 'danger');
+  }
+};
+
+window.promptCancelOrder = async (id) => {
+  if (window._activeActionSheet) window._activeActionSheet.close();
+  const reason = prompt('ऑर्डर रद्द करण्याचे कारण प्रविष्ट करा / Enter cancellation reason:\n(उदा. ग्राहकाची विनंती / Customer request, माल उपलब्ध नाही / Out of stock)');
+  if (!reason || !reason.trim()) {
+    if (window.AdminToast) window.AdminToast.show('रद्द करण्याचे कारण आवश्यक आहे / Reason is required to cancel', 'warning');
+    return;
+  }
+
+  try {
+    const res = await window.AdminAPI.patch(`/admin/orders/${id}/cancel`, { note: reason.trim() });
+    if (res.success) {
+      if (window.AdminToast) {
+        window.AdminToast.show('ऑर्डर रद्द केली व साठा पूर्ववत केला / Order cancelled and stock restored', 'success');
+      }
+      loadOrders();
+    }
+  } catch (err) {
+    if (window.AdminToast) window.AdminToast.show('Error: ' + err.message, 'danger');
+  }
+};
+
+const advancingOrderIds = new Set();
 window.advanceOrderStatusById = (id, nextStatus) => {
   const order = allOrders.find((o) => o._id === id);
   if (order) advanceOrderStatus(order, nextStatus);
 };
 
-async function advanceOrderStatus(order, nextStatus) {
-  // If delivering a COD order, confirm cash collection
-  let note = '';
-  if (nextStatus === 'delivered' && order.paymentMethod === 'cod') {
-    const confirmed = await window.AdminConfirm({
-      title: '💵 रोख रक्कम जमा (Cash Collected)',
-      message: `ग्राहकाकडून ₹${order.total} रोख रक्कम मिळाली आहे का?\nDid you collect ${window.AdminFormat.currency(order.total)} cash from customer?`,
-      confirmText: 'होय, जमा झाले / Yes, Collected',
-      cancelText: 'रद्द करा / Cancel',
-    });
-    if (!confirmed) return;
-    note = 'Cash collected on delivery';
-  } else if (nextStatus === 'delivered' && order.paymentMethod === 'udhar') {
-    const confirmed = await window.AdminConfirm({
-      title: '📝 उधारी डिलिव्हरी (Udhar Delivery)',
-      message: `या ऑर्डरचे ₹${order.total} ग्राहकाच्या उधारी खात्यावर नोंदवून डिलिव्हरी पूर्ण करावी का?\nConfirm delivery and update customer credit ledger?`,
-      confirmText: 'होय, पूर्ण करा / Deliver',
-      cancelText: 'रद्द करा / Cancel',
-    });
-    if (!confirmed) return;
-    note = 'Delivered on approved Udhar credit';
+async function advanceOrderStatus(order, nextStatus, triggerBtn = null) {
+  if (advancingOrderIds.has(order._id)) return; // Double-click race guard
+  advancingOrderIds.add(order._id);
+
+  const btn = triggerBtn || document.getElementById(`btnAdvance_${order._id}`);
+  let oldText = '';
+  if (btn) {
+    oldText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'प्रक्रिया चालू... / Updating...';
   }
 
   try {
+    let note = '';
+    if (nextStatus === 'delivered' && order.paymentMethod === 'cod') {
+      const confirmed = await window.AdminConfirm({
+        title: '💵 रोख रक्कम जमा (Cash Collected)',
+        message: `ग्राहकाकडून ₹${order.total} रोख रक्कम मिळाली आहे का?\nDid you collect ${window.AdminFormat.currency(order.total)} cash from customer?`,
+        confirmText: 'होय, जमा झाले / Yes, Collected',
+        cancelText: 'रद्द करा / Cancel',
+      });
+      if (!confirmed) return;
+      note = 'Cash collected on delivery';
+    } else if (nextStatus === 'delivered' && order.paymentMethod === 'udhar') {
+      const confirmed = await window.AdminConfirm({
+        title: '📝 उधारी डिलिव्हरी (Udhar Delivery)',
+        message: `या ऑर्डरचे ₹${order.total} ग्राहकाच्या उधारी खात्यावर नोंदवून डिलिव्हरी पूर्ण करावी का?\nConfirm delivery and update customer credit ledger?`,
+        confirmText: 'होय, पूर्ण करा / Deliver',
+        cancelText: 'रद्द करा / Cancel',
+      });
+      if (!confirmed) return;
+      note = 'Delivered on approved Udhar credit';
+    }
+
     const res = await window.AdminAPI.patch(`/admin/orders/${order._id}/status`, {
       currentStatus: order.status,
       nextStatus,
       note,
     });
 
-    if (res.success) {
-      order.status = nextStatus;
+    if (res.success && res.data) {
+      // In-place refresh with server data
+      Object.assign(order, res.data);
       updateStatusCounts();
       renderOrdersQueue();
       if (window.AdminToast) {
-        window.AdminToast.show(`✅ ऑर्डर #${order.orderNumber} स्थिती बदलली / Status updated: ${nextStatus}`, 'success');
+        window.AdminToast.show(`ऑर्डर #${order.orderNumber} स्थिती: ${nextStatus}`, 'success');
       }
     }
   } catch (err) {
     if (window.AdminToast) {
-      window.AdminToast.show(`❌ Error: ${err.message}`, 'danger');
+      window.AdminToast.show(`Error: ${err.message}`, 'danger');
     } else {
       alert(`Error: ${err.message}`);
+    }
+  } finally {
+    advancingOrderIds.delete(order._id);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = oldText;
     }
   }
 }
@@ -601,6 +803,7 @@ function renderPackingList() {
         <span class="text-xs text-muted">एकूण ${aggregated.length} प्रकारच्या वस्तू पॅक करायच्या आहेत.</span>
       </div>
       <div class="flex gap-2">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="sharePackingWhatsApp()" style="background:#22c55e;color:#fff;border-color:#16a34a;">📲 WhatsApp</button>
         <button type="button" class="btn btn-sm btn-secondary" onclick="printPackingSlip()">🖨️ प्रिंट (Print)</button>
         <button type="button" class="btn btn-sm btn-secondary" onclick="copyPackingText()">📋 कॉपी (Copy)</button>
       </div>
@@ -656,6 +859,19 @@ window.copyPackingText = () => {
   });
 };
 
+window.sharePackingWhatsApp = () => {
+  const container = document.getElementById('packingListContainer');
+  if (!container) return;
+  const items = container.querySelectorAll('.flex.items-center.justify-between');
+  const lines = ['📦 *महालक्ष्मी किराणा — पॅकिंग यादी (Packing List)*\n'];
+  items.forEach((item) => {
+    const text = item.innerText.replace(/\n+/g, ' ').trim();
+    lines.push(`• ${text}`);
+  });
+  const text = encodeURIComponent(lines.join('\n'));
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+};
+
 window.printPackingSlip = () => {
   window.print();
 };
@@ -671,10 +887,16 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Search input
+// Search input with debounce
+let searchDebounceTimeout = null;
 document.addEventListener('input', (e) => {
   if (e.target && e.target.id === 'orderSearchInput') {
     searchQuery = e.target.value.trim();
     renderOrdersQueue();
+    clearTimeout(searchDebounceTimeout);
+    searchDebounceTimeout = setTimeout(() => {
+      loadOrders(searchQuery);
+    }, 400);
   }
 });
+

@@ -240,6 +240,8 @@ const getOrders = async (req, res, next) => {
         { orderNumber: { $regex: safeSearch, $options: 'i' } },
         { customerName: { $regex: safeSearch, $options: 'i' } },
         { customerPhone: { $regex: safeSearch, $options: 'i' } },
+        { 'address.line': { $regex: safeSearch, $options: 'i' } },
+        { 'address.landmark': { $regex: safeSearch, $options: 'i' } },
       ];
     }
 

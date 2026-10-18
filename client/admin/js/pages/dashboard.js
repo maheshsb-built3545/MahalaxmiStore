@@ -45,19 +45,29 @@ async function loadDashboardData() {
   const container = document.getElementById('dashboardContent');
   if (!container) return;
 
+  container.innerHTML = `
+    <div style="padding: 16px 0;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
+        <div class="stat-card"><div class="skeleton" style="height:14px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:32px;width:40%;"></div></div>
+        <div class="stat-card"><div class="skeleton" style="height:14px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:32px;width:40%;"></div></div>
+        <div class="stat-card"><div class="skeleton" style="height:14px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:32px;width:40%;"></div></div>
+        <div class="stat-card"><div class="skeleton" style="height:14px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:32px;width:40%;"></div></div>
+      </div>
+    </div>
+  `;
+
   try {
     const statsRes = await window.AdminAPI.get('/admin/stats');
     if (!statsRes.success) throw new Error(statsRes.message);
     renderDashboard(statsRes.data);
   } catch (err) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">⚠️</div>
-        <div class="empty-state-title">माहिती लोड करण्यात त्रुटी / Failed to load dashboard</div>
-        <div class="empty-state-desc">${window.esc(err.message)}</div>
-        <button type="button" class="btn btn-primary" onclick="loadDashboardData()">पुन्हा प्रयत्न करा / Retry</button>
-      </div>
-    `;
+    container.innerHTML = '';
+    const errEl = window.AdminEmptyState.renderError({
+      title: 'माहिती लोड करण्यात त्रुटी / Failed to load dashboard',
+      description: err.message,
+      onRetry: () => loadDashboardData(),
+    });
+    container.appendChild(errEl);
   }
 }
 
@@ -68,10 +78,10 @@ function renderDashboard(data) {
 
   const today = data.today || {};
   const actionCounts = data.actionCounts || {};
-  const newOrdersCount = today.newOrders || 0;
+  const newOrdersCount = today.newOrders || data.newOrdersCount || 0;
   const lowStockCount = data.lowStockCount || 0;
   const udharOutstanding = data.udharOutstanding || 0;
-  const netSales = today.sales || 0;
+  const netSales = today.sales || data.todaySales || 0;
 
   // ── 1. ACTION CENTER (Big Tappable Priority Badges) ──
   const actionCenter = document.createElement('div');
@@ -91,13 +101,13 @@ function renderDashboard(data) {
       show: newOrdersCount > 0,
     },
     {
-      count: today.pendingDispatches || 0,
+      count: today.pendingDispatches || data.toDeliverCount || 0,
       label: 'डिलिव्हरी बाकी / To Dispatch',
       icon: '🚚',
       color: '#ffedd5',
       textColor: '#9a3412',
       href: 'orders.html?status=packed',
-      show: (today.pendingDispatches || 0) > 0,
+      show: (today.pendingDispatches || data.toDeliverCount || 0) > 0,
     },
     {
       count: lowStockCount,
@@ -165,13 +175,15 @@ function renderDashboard(data) {
     value: window.AdminFormat.currency(netSales),
     note: 'रद्द वगळून / Non-cancelled',
     icon: '💰',
+    href: 'reports.html?range=today',
   }));
 
   statsGrid.appendChild(window.AdminStatCard.render({
     label: 'आजच्या ऑर्डर्स / Today Orders',
-    value: String(today.ordersCount || 0),
-    note: `${today.deliveredOrders || 0} डिलिव्हर पूर्ण`,
+    value: String(today.orders || data.todayOrders || 0),
+    note: `${today.deliveredOrders || data.deliveredOrders || 0} डिलिव्हर पूर्ण`,
     icon: '📦',
+    href: 'orders.html',
   }));
 
   statsGrid.appendChild(window.AdminStatCard.render({
@@ -179,13 +191,15 @@ function renderDashboard(data) {
     value: window.AdminFormat.currency(udharOutstanding),
     note: 'सक्रिय खाती / Active Credit',
     icon: '📝',
+    href: 'udhar.html',
   }));
 
   statsGrid.appendChild(window.AdminStatCard.render({
     label: 'जमा रक्कम / Collected Today',
-    value: window.AdminFormat.currency(today.collectedSales || 0),
+    value: window.AdminFormat.currency(today.collectedSales || data.collectedSales || 0),
     note: 'रोख व UPI जमा / Paid',
     icon: '✅',
+    href: 'reports.html?range=today',
   }));
 
   container.appendChild(statsGrid);
