@@ -121,8 +121,11 @@ const checkoutApp = (() => {
     }
 
     _addresses.forEach((addr, idx) => {
-      const card = document.createElement('label');
+      const card = document.createElement('div');
       card.className = 'address-card' + (addr.isDefault || idx === 0 ? ' selected' : '');
+
+      const topRow = document.createElement('div');
+      topRow.style.cssText = 'display:flex;align-items:flex-start;gap:10px;width:100%;';
 
       const radio = document.createElement('input');
       radio.type = 'radio';
@@ -142,10 +145,15 @@ const checkoutApp = (() => {
 
       const body = document.createElement('div');
       body.className = 'addr-body';
+      body.style.cssText = 'flex:1;cursor:pointer;';
+      body.addEventListener('click', () => {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+      });
 
       const line = document.createElement('div');
       line.className = 'addr-line';
-      line.textContent = addr.line;
+      line.innerHTML = `<strong>${addr.line}</strong>${addr.isDefault ? ' <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px;">मुख्य (Default)</span>' : ''}`;
       body.appendChild(line);
 
       if (addr.landmark) {
@@ -160,14 +168,64 @@ const checkoutApp = (() => {
       pin.textContent = 'Pincode: ' + addr.pincode;
       body.appendChild(pin);
 
-      card.appendChild(radio);
-      card.appendChild(body);
+      topRow.appendChild(radio);
+      topRow.appendChild(body);
+      card.appendChild(topRow);
+
+      // Address actions row
+      const actionRow = document.createElement('div');
+      actionRow.style.cssText = 'display:flex;gap:10px;margin-top:8px;padding-top:6px;border-top:1px dashed #e2e8f0;font-size:12px;';
+
+      if (!addr.isDefault) {
+        const defBtn = document.createElement('button');
+        defBtn.type = 'button';
+        defBtn.className = 'btn-link';
+        defBtn.textContent = '⭐ मुख्य पत्ता करा / Make Default';
+        defBtn.style.cssText = 'background:none;border:none;color:#047857;font-weight:600;padding:0;cursor:pointer;font-size:12px;';
+        defBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await handleSetDefaultAddress(addr._id);
+        });
+        actionRow.appendChild(defBtn);
+      }
+
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'btn-link';
+      delBtn.textContent = '🗑️ हटवा / Delete';
+      delBtn.style.cssText = 'background:none;border:none;color:#dc2626;font-weight:600;padding:0;cursor:pointer;font-size:12px;margin-left:auto;';
+      delBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await handleDeleteAddress(addr._id);
+      });
+      actionRow.appendChild(delBtn);
+
+      card.appendChild(actionRow);
       container.appendChild(card);
     });
 
     // Validate the currently selected address pincode
     const current = _addresses.find((a) => a._id === _selectedAddressId);
     if (current) validatePincodeServiceability(current.pincode);
+  }
+
+  async function handleSetDefaultAddress(id) {
+    try {
+      await authFetch(`${CONFIG.API_BASE}/addresses/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isDefault: true }),
+      });
+      await loadAddresses();
+    } catch (_) {}
+  }
+
+  async function handleDeleteAddress(id) {
+    if (!confirm('हा पत्ता नक्की हटवायचा आहे का? / Are you sure you want to delete this address?')) return;
+    try {
+      await authFetch(`${CONFIG.API_BASE}/addresses/${id}`, { method: 'DELETE' });
+      await loadAddresses();
+    } catch (_) {}
   }
 
   function validatePincodeServiceability(pincode) {
@@ -308,9 +366,9 @@ const checkoutApp = (() => {
       upiPayableEl.textContent = fmt(grandTotal);
     }
 
-    const upiId = _settings.upiMobile
+    const upiId = _settings.upiId || (_settings.upiMobile
       ? (_settings.upiMobile.includes('@') ? _settings.upiMobile : `${_settings.upiMobile.replace(/[^0-9]/g, '')}@upi`)
-      : '9860924504@upi';
+      : '9860924504@upi');
     const upiDeepLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('Mahalaxmi Kirana')}&am=${grandTotal.toFixed(2)}&cu=INR&tn=${encodeURIComponent('Grocery Order')}`;
 
     const deepLinkBtn = document.getElementById('upiDeepLinkBtn');
@@ -427,6 +485,41 @@ const checkoutApp = (() => {
       saveAddrBtn.addEventListener('click', handleSaveNewAddress);
     }
 
+    // Share Location button (GPS Geolocation)
+    const shareLocBtn = document.getElementById('shareLocationBtn');
+    if (shareLocBtn) {
+      shareLocBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+          alert('तुमच्या ब्राऊझरमध्ये GPS सेवा उपलब्ध नाही / Geolocation not supported in this browser.');
+          return;
+        }
+        shareLocBtn.disabled = true;
+        shareLocBtn.textContent = '📍 शोधत आहे... / Locating...';
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            const mapsUrl = `https://maps.google.com/?q=${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+            const input = document.getElementById('orderLocationPinInput');
+            if (input) {
+              input.value = mapsUrl;
+              if (window.ui && window.ui.showToast) {
+                ui.showToast('📍 चालू लोकेशन लिंक जोडली! / Location link added!');
+              }
+            }
+            shareLocBtn.disabled = false;
+            shareLocBtn.textContent = '📍 चालू लोकेशन जोडा (GPS) / Share Location';
+          },
+          (err) => {
+            console.warn('Geolocation error:', err.message);
+            alert('लोकेशन मिळवता आले नाही. कृपया ब्राऊझरमध्ये लोकेशन परवानगी द्या किंवा हाताने जवळची खूण लिहा.\nCould not access GPS. Please allow location permissions or type a landmark manually.');
+            shareLocBtn.disabled = false;
+            shareLocBtn.textContent = '📍 चालू लोकेशन जोडा (GPS) / Share Location';
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
+    }
+
     // Place Order button
     const placeBtn = document.getElementById('placeOrderBtn');
     if (placeBtn) {
@@ -536,11 +629,15 @@ const checkoutApp = (() => {
     placeBtn.textContent = 'Placing Order… / ऑर्डर देत आहे…';
 
     const orderChannel = localStorage.getItem('kirana_order_channel') || 'website';
+    const idempotencyKey = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
 
     try {
       const res = await authFetch(`${CONFIG.API_BASE}/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': idempotencyKey,
+        },
         body: JSON.stringify({
           addressId: _selectedAddressId,
           slot: _selectedSlotId || 'morning',
@@ -562,6 +659,13 @@ const checkoutApp = (() => {
         showInvalidItemsModal(data.invalidItems);
         placeBtn.disabled = false;
         placeBtn.textContent = 'Place Order / ऑर्डर द्या';
+        return;
+      }
+
+      if (res.status === 403 && data.code === 'STORE_CLOSED') {
+        showGlobalError('⚠️ दुकान सध्या बंद आहे. नवीन ऑर्डर्स तात्पुरत्या बंद आहेत. / Store is currently closed. Order placement paused.');
+        placeBtn.disabled = true;
+        placeBtn.textContent = 'दुकान बंद आहे / Store Closed';
         return;
       }
 

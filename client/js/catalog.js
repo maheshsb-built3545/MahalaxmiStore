@@ -134,6 +134,7 @@ const catalog = (() => {
     card.appendChild(offEl);
 
     // Product image wrapper with 1:1 ratio
+    const catEmoji = (p.categoryId && p.categoryId.emoji) || p.emoji || '🛒';
     const imgWrap = el('div', 'card-img-wrap');
     if (p.imageUrl) {
       const img = document.createElement('img');
@@ -144,10 +145,10 @@ const catalog = (() => {
       img.className = 'card-img';
       img.loading   = 'lazy';
       img.decoding  = 'async';
-      img.onerror   = () => { img.replaceWith(el('div', 'em', p.emoji || '🛒')); };
+      img.onerror   = () => { img.replaceWith(el('div', 'em', catEmoji)); };
       imgWrap.appendChild(img);
     } else {
-      imgWrap.appendChild(el('div', 'em', p.emoji || '🛒'));
+      imgWrap.appendChild(el('div', 'em', catEmoji));
     }
     card.appendChild(imgWrap);
 
@@ -191,6 +192,7 @@ const catalog = (() => {
         cart.change(p, -1);
         ui.renderCartDrawer();
         renderProductGrid();
+        renderBestSellers();
         ui.updateCartBadge();
       });
 
@@ -209,14 +211,11 @@ const catalog = (() => {
         });
       } else {
         plus.addEventListener('click', () => {
-          if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
-            ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1 });
-            return;
-          }
           if (window.PWA) window.PWA.haptic(20);
           cart.change(p, 1);
           ui.renderCartDrawer();
           renderProductGrid();
+          renderBestSellers();
           ui.updateCartBadge();
           ui.showToast(p.nameEn + ' added to cart');
         });
@@ -228,10 +227,6 @@ const catalog = (() => {
       const addBtn = el('button', 'add-btn', '+ जोडा / Add');
       addBtn.setAttribute('aria-label', 'Add ' + p.nameEn + ' to cart');
       addBtn.addEventListener('click', () => {
-        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
-          ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1 });
-          return;
-        }
         if (window.PWA) window.PWA.haptic(25);
         addBtn.classList.remove('btn-pop');
         void addBtn.offsetWidth;
@@ -239,6 +234,7 @@ const catalog = (() => {
         cart.change(p, 1);
         ui.renderCartDrawer();
         renderProductGrid();
+        renderBestSellers();
         ui.updateCartBadge();
         ui.showToast(p.nameEn + ' added to cart');
       });
@@ -281,10 +277,22 @@ const catalog = (() => {
       icon.style.cssText = 'font-size:2.4rem;margin-bottom:8px;';
       const title = el('strong', '', 'कोणतेही उत्पादन सापडले नाही / No products found');
       title.style.cssText = 'display:block;font-size:1.1rem;color:#04251a;margin-bottom:6px;';
-      const sub = el('p', '', 'कृपया वेगळा शब्द वापरून शोधा (उदा. तेल, साखर, आटा, तांदूळ)');
-      sub.style.cssText = 'font-size:0.9rem;';
-      msg.append(icon, title, sub);
+      const sub = el('p', '', `"${search}" साठी कॅटलॉगमध्ये वस्तू सापडली नाही. कृपया वेगळा शब्द वापरा किंवा व्हॉट्सॲपवर विचारा.`);
+      sub.style.cssText = 'font-size:0.9rem;margin-bottom:12px;';
+
+      const waNumber = (window._storeSettings && window._storeSettings.storeWhatsapp) || (typeof CONFIG !== 'undefined' ? CONFIG.STORE_NUM : '919860924504');
+      const waBtn = el('a', 'btn btn-outline', '💬 व्हॉट्सॲपवर विचारा / Ask on WhatsApp');
+      waBtn.href = `${CONFIG.WA_BASE}${waNumber}?text=` + encodeURIComponent(`नमस्कार! मला "${search}" हवे होते, तुमच्याकडे उपलब्ध आहे का? / Hi, do you have "${search}"?`);
+      waBtn.target = '_blank';
+      waBtn.rel = 'noopener';
+      waBtn.style.cssText = 'min-height:44px;display:inline-flex;align-items:center;margin-top:14px;text-decoration:none;font-weight:700;';
+
+      msg.append(icon, title, sub, waBtn);
       grid.appendChild(msg);
+
+      if (search && search.length >= 2) {
+        fetch(`${CONFIG.API_BASE}/products?search=${encodeURIComponent(search)}&limit=1`).catch(() => {});
+      }
       return;
     }
 

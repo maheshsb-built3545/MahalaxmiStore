@@ -72,7 +72,7 @@ const createOrder = async (req, res, next) => {
       await session.abortTransaction();
       session.endSession();
       const reason = settings.closureReason ? ` (${settings.closureReason})` : '';
-      return res.status(400).json({
+      return res.status(403).json({
         success: false,
         message: `दुकान सध्या बंद आहे${reason} / Store is currently closed${reason}. नवीन ऑर्डर्स तात्पुरत्या बंद आहेत.`,
         code: 'STORE_CLOSED',
@@ -575,6 +575,9 @@ const cancelOrder = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid order ID.' });
     }
 
+    const cancelReason = req.body && typeof req.body.reason === 'string' ? req.body.reason.trim() : '';
+    const cancelNote = cancelReason ? `Order cancelled by customer: ${cancelReason}` : 'Order cancelled by customer.';
+
     // Atomic: only cancel if status is new|confirmed AND stock not yet restored
     const order = await Order.findOneAndUpdate(
       {
@@ -593,7 +596,7 @@ const cancelOrder = async (req, res, next) => {
             status:    'cancelled',
             changedAt: new Date(),
             changedBy: 'customer',
-            note:      'Order cancelled by customer.',
+            note:      cancelNote,
           },
         },
       },
@@ -666,13 +669,14 @@ const cancelOrder = async (req, res, next) => {
     // R2: Trigger notification to owner about customer cancellation
     (async () => {
       try {
+        const reasonSnippet = cancelReason ? ` कारण: ${cancelReason}.` : '';
         await createNotification({
           recipientRole: 'all_admin',
           type: 'order_cancelled',
           title: `❌ ग्राहकाकडून ऑर्डर रद्द #${order.orderNumber}`,
-          body: `ग्राहक ${order.customerName} ने ऑर्डर रद्द केली. साठा पूर्ववत करण्यात आला आहे.`,
+          body: `ग्राहक ${order.customerName} ने ऑर्डर रद्द केली.${reasonSnippet} साठा पूर्ववत करण्यात आला आहे.`,
           link: `/admin/orders.html?search=${encodeURIComponent(order.orderNumber)}`,
-          metadata: { orderId: order._id, orderNumber: order.orderNumber },
+          metadata: { orderId: order._id, orderNumber: order.orderNumber, reason: cancelReason },
         });
       } catch (notifyErr) {
         console.warn('Cancel notification warning:', notifyErr.message);

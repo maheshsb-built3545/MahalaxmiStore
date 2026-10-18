@@ -7,7 +7,7 @@
 
 const auth = (() => {
   // Rule 4 & Stage 3: Exact whitelist for safe redirects (rejects external URLs or unapproved paths)
-  const REDIRECT_WHITELIST = ['checkout.html', 'orders.html', 'index.html', 'inbox.html', 'admin/dashboard.html', 'admin/inbox.html'];
+  const REDIRECT_WHITELIST = ['checkout.html', 'orders.html', 'index.html', 'inbox.html', 'account.html', 'admin/dashboard.html', 'admin/inbox.html'];
 
   function getToken() {
     return localStorage.getItem(CONFIG.AUTH_TOKEN_KEY);

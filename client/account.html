@@ -190,7 +190,12 @@
       <div class="profile-hero-card">
         <div class="profile-avatar-large" id="profileAvatar">C</div>
         <div class="profile-meta">
-          <h1 class="profile-name" id="profileName">ग्राहक / Customer</h1>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h1 class="profile-name" id="profileName" style="margin:0;">ग्राहक / Customer</h1>
+            <button type="button" id="editProfileBtn" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;">
+              ✏️ नाव बदला / Edit
+            </button>
+          </div>
           <p class="profile-phone" id="profilePhone">📞 9876543210</p>
           <div id="roleBadgeContainer"></div>
         </div>
@@ -234,6 +239,24 @@
             <span>→</span>
           </div>
         </a>
+        <button type="button" id="installAppBtn" class="menu-item" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;">
+          <div class="menu-item-left">
+            <span class="menu-icon">📲</span>
+            <span>ॲप इन्स्टॉल करा / Install Web App</span>
+          </div>
+          <div class="menu-item-right">
+            <span>PWA →</span>
+          </div>
+        </button>
+        <div class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">🌐</span>
+            <span>भाषा / Language</span>
+          </div>
+          <div class="menu-item-right">
+            <span style="font-weight:600;color:#047857;">मराठी + English</span>
+          </div>
+        </div>
         <a href="https://wa.me/919860924504?text=Hi%20Mahalaxmi%20Kirana,%20I%20need%20help%20with%20my%20account" target="_blank" class="menu-item">
           <div class="menu-item-left">
             <span class="menu-icon">💬</span>
@@ -389,6 +412,45 @@
               accountBadge.textContent = count;
               accountBadge.style.display = 'inline-block';
             }
+          }
+        });
+
+        // Edit Profile
+        document.getElementById('editProfileBtn')?.addEventListener('click', async () => {
+          const currentName = user.name || '';
+          const newName = prompt('तुमचे पूर्ण नाव टाका / Enter your full name:', currentName);
+          if (newName && newName.trim() && newName.trim() !== currentName) {
+            try {
+              const res = await fetch(`${CONFIG.API_BASE}/auth/profile`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${auth.getToken()}`,
+                },
+                body: JSON.stringify({ name: newName.trim() }),
+              });
+              const data = await res.json();
+              if (data.success && data.user) {
+                user.name = data.user.name;
+                localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(user));
+                document.getElementById('profileName').textContent = data.user.name;
+                document.getElementById('profileAvatar').textContent = data.user.name.trim().charAt(0).toUpperCase();
+                alert('प्रोफाईल यशस्वीरीत्या अपडेट केले! / Profile updated successfully.');
+              } else {
+                alert(data.message || 'Error updating profile');
+              }
+            } catch (e) {
+              alert('Network error updating profile');
+            }
+          }
+        });
+
+        // Install Web App button
+        document.getElementById('installAppBtn')?.addEventListener('click', () => {
+          if (window.PWA && typeof window.PWA.install === 'function') {
+            window.PWA.install();
+          } else {
+            alert('हे ॲप इन्स्टॉल करण्यासाठी ब्राऊझर मेन्यू (⋮) उघडून "Add to Home Screen" किंवा "Install App" निवडा.\nTo install this app, open browser menu (⋮) and tap "Add to Home screen".');
           }
         });
 

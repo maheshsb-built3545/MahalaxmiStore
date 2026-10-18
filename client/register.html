@@ -101,16 +101,22 @@
           Password <span class="mr">पासवर्ड</span>
           <span class="req">*</span>
         </label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          placeholder="Minimum 8 characters" 
-          minlength="8" 
-          maxlength="72" 
-          required 
-          autocomplete="new-password"
-        >
+        <div style="position:relative;display:flex;align-items:center;">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Minimum 8 characters" 
+            minlength="8" 
+            maxlength="72" 
+            required 
+            autocomplete="new-password"
+            style="width:100%;padding-right:44px;"
+          >
+          <button type="button" id="togglePasswordBtn" aria-label="Show or hide password" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;font-size:1.15rem;padding:6px;min-height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;">
+            👁️
+          </button>
+        </div>
       </div>
 
       <div class="form-group">
@@ -118,16 +124,22 @@
           Confirm Password <span class="mr">पासवर्ड पुन्हा टाका</span>
           <span class="req">*</span>
         </label>
-        <input 
-          type="password" 
-          id="confirmPassword" 
-          name="confirmPassword" 
-          placeholder="Repeat your password" 
-          minlength="8" 
-          maxlength="72" 
-          required 
-          autocomplete="new-password"
-        >
+        <div style="position:relative;display:flex;align-items:center;">
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            placeholder="Repeat your password" 
+            minlength="8" 
+            maxlength="72" 
+            required 
+            autocomplete="new-password"
+            style="width:100%;padding-right:44px;"
+          >
+          <button type="button" id="toggleConfirmBtn" aria-label="Show or hide confirm password" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;font-size:1.15rem;padding:6px;min-height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;">
+            👁️
+          </button>
+        </div>
       </div>
 
       <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
@@ -157,6 +169,26 @@
   const form = document.getElementById('registerForm');
   const errorAlert = document.getElementById('errorAlert');
   const submitBtn = document.getElementById('submitBtn');
+
+  const passInput = document.getElementById('password');
+  const togglePassBtn = document.getElementById('togglePasswordBtn');
+  if (togglePassBtn && passInput) {
+    togglePassBtn.addEventListener('click', () => {
+      const isPass = passInput.type === 'password';
+      passInput.type = isPass ? 'text' : 'password';
+      togglePassBtn.textContent = isPass ? '🙈' : '👁️';
+    });
+  }
+
+  const confirmInput = document.getElementById('confirmPassword');
+  const toggleConfirmBtn = document.getElementById('toggleConfirmBtn');
+  if (toggleConfirmBtn && confirmInput) {
+    toggleConfirmBtn.addEventListener('click', () => {
+      const isPass = confirmInput.type === 'password';
+      confirmInput.type = isPass ? 'text' : 'password';
+      toggleConfirmBtn.textContent = isPass ? '🙈' : '👁️';
+    });
+  }
 
   function showError(msg) {
     errorAlert.textContent = msg;

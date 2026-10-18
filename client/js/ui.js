@@ -766,9 +766,13 @@ const ui = (() => {
     tickDeals();
     setInterval(tickDeals, 1_000);
 
-    // Search input
+    // Search input (Debounced 250ms)
+    let searchDebounceTimer = null;
     document.getElementById('searchInput')?.addEventListener('input', () => {
-      catalog.renderProductGrid();
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        catalog.renderProductGrid();
+      }, 250);
     });
 
     // Keyboard shortcut Cmd/Ctrl+K → focus search
@@ -937,6 +941,7 @@ const ui = (() => {
     renderCartDrawer,
     openCart,
     closeCart,
+    checkout,
     showLoginPrompt,
     closeLoginPrompt,
     initSmartAiPromotion,
