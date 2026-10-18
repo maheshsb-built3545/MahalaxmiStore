@@ -80,6 +80,7 @@
           AdminToast.success('सर्व सूचना वाचल्याची नोंद केली / All notifications marked as read');
           notifications.forEach((n) => (n.readAt = new Date().toISOString()));
           renderNotificationsList();
+          if (window.shell?.fetchUnreadCount) window.shell.fetchUnreadCount();
         }
       } catch (err) {
         AdminToast.error(err.message || t('error_generic'));
@@ -280,7 +281,7 @@
               ${isUnread ? '<span style="width:8px;height:8px;background:var(--primary);border-radius:50%;display:inline-block;"></span>' : ''}
             </div>
             <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
-              ${AdminFormat.date(n.createdAt)}
+              ${window.AdminFormat?.relativeTime ? window.AdminFormat.relativeTime(n.createdAt) : window.AdminFormat?.dateIST(n.createdAt, 'full')}
             </span>
           </div>
 
@@ -309,6 +310,7 @@
           card.style.borderLeftColor = 'var(--border)';
           const dot = card.querySelector('span[style*="border-radius:50%"]');
           if (dot) dot.remove();
+          if (window.shell?.fetchUnreadCount) window.shell.fetchUnreadCount();
         } catch (_) {}
       }
     });

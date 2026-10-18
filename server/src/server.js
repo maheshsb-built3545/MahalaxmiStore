@@ -86,6 +86,7 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
@@ -141,6 +142,19 @@ app.get('/api/health', (_req, res) =>
   })
 );
 
+app.get('/api/version', (_req, res) =>
+  res.json({
+    success: true,
+    version: '1.0.6',
+    commit: '8c3b078',
+    branch: 'fix/owner-wiring',
+    nodeEnv: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+  })
+);
+
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 app.use('/api/auth', authRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/settings', settingsRoutes);
@@ -161,11 +175,16 @@ app.use(compression());
 const path = require('path');
 const clientDir = path.join(__dirname, '../../client');
 
+app.use('/admin/images', express.static(path.join(clientDir, 'images')));
+
 app.use(express.static(clientDir, {
   maxAge: '1d',
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.webmanifest')) {
       res.setHeader('Cache-Control', 'no-cache');
+    } else if (filePath.includes(path.sep + 'admin' + path.sep) || filePath.includes('/admin/')) {
+      // Admin JS/CSS must revalidate immediately to prevent stale UI
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     } else if (filePath.match(/\.(css|js|svg|png|jpg|jpeg|webp|woff2?|ico)$/)) {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
@@ -177,9 +196,12 @@ app.get('/', (_req, res) => {
   res.sendFile(path.join(clientDir, 'index.html'));
 });
 
-// 404 – no route matched
+// 404 – no route matched (Bilingual JSON response for API and unhandled requests)
 app.use((_req, res) =>
-  res.status(404).json({ success: false, message: 'Route not found.' })
+  res.status(404).json({
+    success: false,
+    message: 'मार्ग सापडला नाही / Route not found.',
+  })
 );
 
 // Central error handler (must be last)

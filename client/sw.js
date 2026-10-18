@@ -7,7 +7,7 @@
  * NEVER caches mutations, auth tokens, or order placement.
  */
 
-const CACHE_NAME = 'mk-cache-v1.0.5';
+const CACHE_NAME = 'mk-cache-v1.0.6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -75,6 +75,22 @@ self.addEventListener('fetch', (event) => {
 
   // 2. Auth routes: always strictly network, never cached
   if (url.pathname.startsWith('/api/auth')) {
+    return;
+  }
+
+  // 2b. Admin panel routes & APIs: Network-first with cache fallback, never serve stale assets
+  if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/api/admin')) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.status === 200) {
+            const resClone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
     return;
   }
 

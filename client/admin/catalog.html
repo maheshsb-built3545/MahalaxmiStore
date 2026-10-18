@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="mr" dir="ltr">
+<html lang="mr" translate="no" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="google" content="notranslate">
   <title>उत्पादने व वर्ग — महालक्ष्मी किराणा / Catalog</title>
   <meta name="description" content="Mahalaxmi Kirana Store catalog manager: products, categories, pricing, and bulk tools.">
 
@@ -21,14 +22,14 @@
 
   <div id="app-shell">
     <!-- Top Catalog Tabs -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid var(--border-subtle);padding-bottom:8px;">
-      <button type="button" class="btn btn-secondary active" id="tabBtnCatalog_products" style="flex:1;border-radius:10px;">
+    <div class="tab-scroll-row" id="catalogModeTabs" role="tablist">
+      <button type="button" class="btn btn-secondary active" id="tabBtnCatalog_products" style="border-radius:10px;">
         🏷️ उत्पादने (Products)
       </button>
-      <button type="button" class="btn btn-secondary" id="tabBtnCatalog_categories" style="flex:1;border-radius:10px;">
+      <button type="button" class="btn btn-secondary" id="tabBtnCatalog_categories" style="border-radius:10px;">
         🗂️ वर्ग (Categories)
       </button>
-      <button type="button" class="btn btn-secondary" id="tabBtnCatalog_bulk" style="flex:1;border-radius:10px;">
+      <button type="button" class="btn btn-secondary" id="tabBtnCatalog_bulk" style="border-radius:10px;">
         ⚖️ घाऊक दर बदल (Bulk Tools)
       </button>
     </div>

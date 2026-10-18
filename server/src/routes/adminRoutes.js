@@ -16,6 +16,7 @@ const requireOwnerOnly = requireRole('owner');
 
 // ─── Dashboard & Polling ──────────────────────────────────────────────────────
 router.get('/dashboard/stats', admin.getStats);
+router.get('/stats', admin.getStats);
 router.get('/dashboard/check-new', admin.checkNewOrders);
 
 // ─── Orders Management ────────────────────────────────────────────────────────
@@ -28,6 +29,7 @@ router.post('/orders/packing-list', admin.getPackingList);
 
 // ─── Products Catalog ─────────────────────────────────────────────────────────
 router.get('/products', admin.getProducts);
+router.get('/products/:id', admin.getProductById);
 router.post('/products', validateProductBody, admin.createProduct);
 router.put('/products/:id', validateProductBody, admin.updateProduct);
 router.patch('/products/:id/toggle-stock', admin.toggleStock);
@@ -38,6 +40,7 @@ router.get('/categories', admin.getCategories);
 router.post('/categories', admin.createCategory);
 router.put('/categories/:id', admin.updateCategory);
 router.patch('/categories/:id/toggle-active', admin.toggleCategoryActive);
+router.delete('/categories/:id', admin.deleteCategory);
 
 // ─── Store Settings (Owner Only) ──────────────────────────────────────────────
 router.get('/settings', admin.getSettings);

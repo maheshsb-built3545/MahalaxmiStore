@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="mr" dir="ltr">
+<html lang="mr" translate="no" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="google" content="notranslate">
   <title>ऑर्डर्स व पॅकिंग — महालक्ष्मी किराणा / Orders & Packing</title>
   <meta name="description" content="Mahalaxmi Kirana Store order fulfillment queue, packing checklist, and delivery dispatch.">
 
@@ -21,11 +22,11 @@
 
   <div id="app-shell">
     <!-- Top Mode Switch Tabs: Live Queue vs Packing List -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid var(--border-subtle);padding-bottom:8px;">
-      <button type="button" class="btn btn-secondary active" id="tabQueueBtn" style="flex:1;border-radius:10px;">
+    <div class="tab-scroll-row" id="ordersModeTabs" role="tablist">
+      <button type="button" class="btn btn-secondary active" id="tabQueueBtn" style="border-radius:10px;">
         📦 थेट ऑर्डर्स (Live Queue)
       </button>
-      <button type="button" class="btn btn-secondary" id="tabPackingBtn" style="flex:1;border-radius:10px;">
+      <button type="button" class="btn btn-secondary" id="tabPackingBtn" style="border-radius:10px;">
         📋 पॅकिंग यादी (Packing List)
       </button>
     </div>

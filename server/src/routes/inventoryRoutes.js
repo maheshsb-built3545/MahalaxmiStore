@@ -19,7 +19,8 @@ router.get('/low-stock', inv.getLowStock);
 // R5: Near-expiry list (products expiring within 30 days) (INV-08)
 router.get('/near-expiry', inv.getNearExpiry);
 
-// Stock log (history) for a specific product
+// Stock log (history) for a specific product or all products
+router.get('/stock-log', (req, res, next) => { req.params.productId = 'all'; return inv.getStockLog(req, res, next); });
 router.get('/stock-log/:productId', inv.getStockLog);
 
 // Fast stock-in (phone-friendly: search product, enter qty, save)

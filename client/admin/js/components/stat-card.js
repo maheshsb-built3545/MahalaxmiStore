@@ -1,13 +1,20 @@
 /**
  * Mahalaxmi Kirana Store — Stat Card Component
+ * Tappable KPI card with optional deep-link href or onClick.
  */
 
 'use strict';
 
-function renderStatCard({ label, value, delta = null, note = '', icon = '', onClick = null }) {
-  const card = document.createElement('div');
+function renderStatCard({ label, value, delta = null, note = '', icon = '', onClick = null, href = '' }) {
+  const card = document.createElement(href ? 'a' : 'div');
   card.className = 'stat-card';
-  if (typeof onClick === 'function') {
+  if (href) {
+    card.href = href;
+    card.style.textDecoration = 'none';
+    card.style.color = 'inherit';
+    card.style.display = 'block';
+    card.style.cursor = 'pointer';
+  } else if (typeof onClick === 'function') {
     card.style.cursor = 'pointer';
     card.onclick = onClick;
   }
@@ -22,12 +29,12 @@ function renderStatCard({ label, value, delta = null, note = '', icon = '', onCl
   }
 
   card.innerHTML = `
-    <div class="flex items-center justify-between">
-      <span class="stat-card-label">${window.esc ? window.esc(label) : label}</span>
-      ${icon ? `<span style="font-size: 1.25rem;">${icon}</span>` : ''}
+    <div class="flex items-center justify-between" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <span class="stat-card-label" style="font-size:0.825rem;font-weight:600;color:var(--text-secondary);">${window.esc ? window.esc(label) : label}</span>
+      ${icon ? `<span style="font-size: 1.35rem;">${icon}</span>` : ''}
     </div>
-    <div class="stat-card-value">${window.esc ? window.esc(value) : value}</div>
-    ${deltaHtml || (note ? `<div class="text-xs text-muted">${window.esc ? window.esc(note) : note}</div>` : '')}
+    <div class="stat-card-value" style="font-size:1.4rem;font-weight:800;color:var(--text-primary);margin-bottom:4px;">${window.esc ? window.esc(value) : value}</div>
+    ${deltaHtml || (note ? `<div class="text-xs text-muted" style="font-size:0.75rem;color:var(--text-muted);">${window.esc ? window.esc(note) : note}</div>` : '')}
   `;
 
   return card;

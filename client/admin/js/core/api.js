@@ -175,6 +175,7 @@ window.AdminAPI = {
   request,
   get: (url, opts) => request(url, { ...opts, method: 'GET' }),
   post: (url, body, opts) => request(url, { ...opts, method: 'POST', body: typeof body === 'string' || body instanceof FormData ? body : JSON.stringify(body) }),
+  postForm: (url, formData, opts) => request(url, { ...opts, method: 'POST', body: formData }),
   put: (url, body, opts) => request(url, { ...opts, method: 'PUT', body: typeof body === 'string' || body instanceof FormData ? body : JSON.stringify(body) }),
   patch: (url, body, opts) => request(url, { ...opts, method: 'PATCH', body: typeof body === 'string' || body instanceof FormData ? body : JSON.stringify(body) }),
   delete: (url, opts) => request(url, { ...opts, method: 'DELETE' }),

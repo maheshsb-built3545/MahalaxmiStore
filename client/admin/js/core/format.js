@@ -90,6 +90,8 @@ function formatPhone(phone) {
 
 window.AdminFormat = {
   currency: formatCurrency,
+  date: formatDateIST,
+  formatDate: formatDateIST,
   dateIST: formatDateIST,
   relativeTime: formatRelativeTime,
   phone: formatPhone,

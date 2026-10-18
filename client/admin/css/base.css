@@ -31,7 +31,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   touch-action: manipulation;
-  overflow-x: hidden;
 }
 
 /* ── 2. Accessible Focus Ring ── */
