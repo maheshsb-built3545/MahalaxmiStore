@@ -7,7 +7,7 @@
  * NEVER caches mutations, auth tokens, or order placement.
  */
 
-const CACHE_NAME = 'mk-cache-v1.0.2';
+const CACHE_NAME = 'mk-cache-v1.0.4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -20,6 +20,7 @@ const STATIC_ASSETS = [
   '/offline.html',
   '/css/style.css',
   '/css/motion.css',
+  '/css/mobile-app.css',
   '/js/config.js',
   '/js/auth.js',
   '/js/cart.js',

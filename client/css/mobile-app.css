@@ -6,7 +6,7 @@
 
 /* ── 1. App-Feel Reset & Safe Areas ───────────────────────── */
 :root {
-  --bottom-nav-height: 60px;
+  --bottom-nav-height: 66px;
   --bottom-bar-space: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
   --brand-green: #064e3b;
   --brand-green-light: #10b981;
@@ -19,6 +19,7 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   overscroll-behavior-y: none;
+  overflow-x: hidden;
 }
 
 body {
@@ -68,11 +69,11 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   justify-content: center;
   text-decoration: none;
   color: #64748b;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
-  min-height: 48px;
+  min-height: 54px;
   min-width: 48px;
-  padding: 4px 0;
+  padding: 6px 0;
   position: relative;
   background: transparent;
   border: none;
@@ -81,9 +82,9 @@ button:active, .btn:active, .dept:active, .card-btn:active {
 }
 
 .mbn-item .mbn-icon {
-  font-size: 20px;
+  font-size: 24px;
   line-height: 1;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
   transition: transform 0.15s ease;
 }
 
@@ -91,13 +92,17 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  line-height: 1.1;
+  line-height: 1.3;
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .mbn-item .mbn-mr {
   font-family: 'Noto Sans Devanagari', sans-serif;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .mbn-item.active {
@@ -127,14 +132,14 @@ button:active, .btn:active, .dept:active, .card-btn:active {
 
 .mbn-badge {
   position: absolute;
-  top: -4px;
-  right: -8px;
+  top: -5px;
+  right: -9px;
   background: #dc2626;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  min-width: 17px;
-  height: 17px;
+  min-width: 19px;
+  height: 19px;
   border-radius: 9px;
   padding: 0 4px;
   display: none;
@@ -147,8 +152,8 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   display: flex;
 }
 
-/* Hide bottom nav on desktop/tablet */
-@media (min-width: 768px) {
+/* Hide bottom nav on desktop (>=1024px) where header carries full navigation */
+@media (min-width: 1024px) {
   .mobile-bottom-nav {
     display: none !important;
   }
@@ -266,6 +271,7 @@ button:active, .btn:active, .dept:active, .card-btn:active {
 }
 
 /* ── 5. Category Chips Horizontal Scroll-Snap ─────────────── */
+.dept-row,
 .depts-row {
   display: flex !important;
   overflow-x: auto !important;
@@ -276,17 +282,36 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   gap: 8px !important;
 }
 
+.dept-row::-webkit-scrollbar,
 .depts-row::-webkit-scrollbar {
   display: none !important;
 }
 
+.dept-row .dept,
 .depts-row .dept {
-  scroll-snap-align: start !important;
-  flex-shrink: 0 !important;
-  min-height: 42px !important;
-  padding: 8px 16px !important;
-  font-size: 13px !important;
-  border-radius: 20px !important;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 10px 16px;
+  font-size: 14px;
+  line-height: 1.3;
+  border-radius: 20px;
+}
+
+@media (min-width: 1024px) {
+  .dept-row,
+  .depts-row {
+    overflow-x: visible !important;
+    scroll-snap-type: none !important;
+    padding: 0 !important;
+  }
+  .dept-row .dept,
+  .depts-row .dept {
+    min-height: auto;
+    padding: 7px 14px;
+    font-size: 12.5px;
+    line-height: inherit;
+  }
 }
 
 /* ── 6. In-Card Quantity Stepper (Blinkit / Zepto Tier) ────── */
@@ -297,7 +322,7 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   background: var(--brand-green);
   border-radius: 24px;
   padding: 2px;
-  min-height: 44px;
+  min-height: 48px;
   width: 100%;
   box-shadow: 0 4px 10px rgba(6, 78, 59, 0.25);
   transition: all 0.15s ease;
@@ -307,10 +332,12 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   background: transparent;
   color: #ffffff;
   border: none;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   min-width: 44px;
-  min-height: 40px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -323,15 +350,16 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   color: #ffffff;
   font-weight: 800;
   font-size: 16px;
-  padding: 0 8px;
+  padding: 0 10px;
 }
 
 .card .add-btn {
-  min-height: 44px;
+  min-height: 46px;
   font-weight: 800;
-  font-size: 14.5px;
-  border-radius: 24px;
+  font-size: 15px;
+  border-radius: 14px;
   letter-spacing: 0.3px;
+  padding: 11px 16px;
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
@@ -676,7 +704,7 @@ button:active, .btn:active, .dept:active, .card-btn:active {
 /* ── 11. Floating Smart List Button (Task 2) ─────────────────── */
 .floating-smart-list-btn {
   position: fixed;
-  bottom: 84px;
+  bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 12px);
   right: 16px;
   z-index: 990;
   display: flex;
@@ -717,7 +745,7 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   opacity: 0.9;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .floating-smart-list-btn {
     bottom: 24px;
     right: 24px;
