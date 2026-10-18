@@ -7,12 +7,13 @@
  * NEVER caches mutations, auth tokens, or order placement.
  */
 
-const CACHE_NAME = 'mk-cache-v1.0.6';
+const CACHE_NAME = 'mk-cache-v1.0.7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/checkout.html',
   '/orders.html',
+  '/account.html',
   '/inbox.html',
   '/login.html',
   '/register.html',

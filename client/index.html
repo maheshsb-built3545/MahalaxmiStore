@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="mr" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google" content="notranslate">
 <title>Mahalaxmi Kirana Store • महालक्ष्मी किराणा दुकान</title>
 <meta name="description" content="Order fresh groceries online from Mahalaxmi Kirana Store, Yesgaon, Kopargaon. 500+ items, 30-minute delivery. Order on WhatsApp.">
 <meta name="keywords" content="grocery, kirana store, Yesgaon, Kopargaon, online grocery, daily essentials, atta, dal, oil, spices, fresh delivery">
@@ -86,7 +87,7 @@
 </div>
 
 <!-- ── Header ────────────────────────────────────────────────── -->
-<header>
+<header id="siteHeader">
   <div class="wrap hdr-row">
     <a href="#top" class="brand">
       <div class="brand-mark">M</div>
@@ -98,9 +99,10 @@
 
     <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
 
-    <div class="search">
+    <div class="search" id="headerSearch">
       <input type="search" id="searchInput" placeholder="Search atta, oil, dal…" aria-label="Search products">
-      <span class="kbd">⌘K</span>
+      <span class="kbd hide-mobile">⌘K</span>
+      <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">✕</button>
     </div>
 
     <nav class="hide-mobile">
@@ -110,10 +112,11 @@
     </nav>
 
     <div class="hdr-actions">
-      <div id="userHeaderArea"></div>
+      <button type="button" class="search-toggle-btn mobile-only" id="searchToggleBtn" aria-label="Open search">🔍</button>
+      <div id="userHeaderArea" class="desktop-only-user"></div>
 
       <button class="cart-btn" id="cartBtn" aria-label="Open cart">
-        🛒 Cart<span class="badge" id="cartBadge">0</span>
+        🛒 <span class="hide-mobile">Cart</span><span class="badge" id="cartBadge">0</span>
       </button>
     </div>
   </div>
@@ -126,14 +129,14 @@
   <div class="hero-bg-layer" aria-hidden="true"></div>
   <div class="wrap">
     <div class="hero-content">
-      <div class="trust hero-animate-1">🤝 Trusted by 2,500+ local families</div>
+      <div class="trust hero-animate-1">🏪 येसगाव व कोपरगावचे विश्वासू किराणा दुकान • Trusted Local Kirana</div>
       <h1 class="hero-animate-2">Fresh groceries from your neighbourhood dukan
         <span class="mr">तुमच्या शेजारच्या दुकानातून ताजा किराणा</span>
       </h1>
-      <p class="lede hero-animate-3">Order atta, dal, oil and daily essentials online — packed fresh at our Yesgaon store and delivered to your door in 30 minutes.</p>
+      <p class="lede hero-animate-3">ताजी धान्ये, डाळी, खाद्यतेल आणि किराणा सामान घरपोच मिळवा — ऑर्डर करा आणि ३० मिनिटांत मिळवा.<br><span class="en-sub" style="font-size:0.9em;opacity:0.9;">Order atta, dal, oil &amp; daily essentials online — delivered fresh in 30 minutes.</span></p>
       <div class="cta-row hero-animate-4">
-        <a href="#catalog" class="btn btn-gold">Browse Catalog</a>
-        <a id="heroWaLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-white">Order on WhatsApp</a>
+        <a href="#catalog" class="btn btn-gold">सामान पहा / Browse Catalog</a>
+        <a id="heroWaLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-white">व्हॉट्सॲपवर ऑर्डर करा / WhatsApp Order</a>
       </div>
     </div>
   </div>
@@ -148,8 +151,8 @@
 <!-- ── Photo-list banner ──────────────────────────────────────── -->
 <section class="snap" data-reveal>
   <div class="wrap">
-    <p>📸 Got a handwritten list? Snap a photo and send it — we'll pack it for you.</p>
-    <a id="snapWaLink" href="#" target="_blank" rel="noopener" class="btn">Send list on WhatsApp</a>
+    <p>📸 हाताने लिहिलेली यादी आहे? फोटो पाठवा — आम्ही सामान भरून ठेवू. <span class="hide-mobile">/ Snap a photo of your list and WhatsApp us.</span></p>
+    <a id="snapWaLink" href="#" target="_blank" rel="noopener" class="btn">व्हॉट्सॲपवर यादी पाठवा / Send list on WhatsApp</a>
   </div>
 </section>
 
@@ -346,7 +349,10 @@
 <!-- ── Categories ─────────────────────────────────────────────── -->
 <section class="section" id="categories">
   <div class="wrap">
-    <div class="section-head" data-reveal><h2>Shop by category</h2><p>Ten aisles, everything you need for the week.</p></div>
+    <div class="section-head" data-reveal>
+      <h2>वर्गवारीनुसार खरेदी <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Shop by Category</span></h2>
+      <p>दैनंदिन गरजेच्या सर्व वस्तू • Everything you need for the week.</p>
+    </div>
     <div class="cat-grid" id="catGrid" data-reveal="stagger"></div>
   </div>
 </section>
@@ -356,7 +362,7 @@
   <div class="wrap">
     <div class="section-head" data-reveal>
       <h2>🔥 सर्वाधिक पसंतीची उत्पादने <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Best Sellers</span></h2>
-      <p>Popular grocery items frequently ordered by families in Yesgaon this month.</p>
+      <p>येसगावमधील कुटुंबांनी या महिन्यात सर्वाधिक मागवलेला किराणा माल • Frequently ordered items this month.</p>
     </div>
     <div class="prod-grid" id="bestSellerGrid"></div>
   </div>
@@ -365,7 +371,10 @@
 <!-- ── Product catalog ────────────────────────────────────────── -->
 <section class="section" id="catalog">
   <div class="wrap">
-    <div class="section-head" data-reveal><h2>Product catalog</h2><p>Fresh stock, updated daily.</p></div>
+    <div class="section-head" data-reveal>
+      <h2>किराणा कॅटलॉग <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Product Catalog</span></h2>
+      <p>ताजा साठा, दररोज नवीन भाव • Fresh stock, updated daily.</p>
+    </div>
     <div class="filters" id="filterRow" data-reveal></div>
     <div class="prod-grid" id="prodGrid"></div>
   </div>
@@ -374,7 +383,10 @@
 <!-- ── Deals ──────────────────────────────────────────────────── -->
 <section class="section deals" id="deals">
   <div class="wrap">
-    <div class="section-head" data-reveal><h2>Today's mega deals</h2><p>Grab these before the clock runs out.</p></div>
+    <div class="section-head" data-reveal>
+      <h2>आजच्या खास ऑफर्स <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Today's Mega Deals</span></h2>
+      <p>सवलतीच्या दरात किराणा खरेदी करा • Special discounts on daily essentials.</p>
+    </div>
     <div class="deal-grid" id="dealGrid"></div>
   </div>
 </section>
@@ -444,10 +456,28 @@
 <script src="js/pwa.js"></script>
 <script>
   // Wire up remaining inline event handlers safely
-  document.getElementById('cartBtn')    .addEventListener('click', () => ui.openCart());
-  document.getElementById('closeCartBtn').addEventListener('click', () => ui.closeCart());
-  document.getElementById('overlay')   .addEventListener('click', () => ui.closeCart());
-  document.getElementById('checkoutBtn').addEventListener('click', () => window.checkout());
+  document.getElementById('cartBtn')?.addEventListener('click', () => ui.openCart());
+  document.getElementById('closeCartBtn')?.addEventListener('click', () => ui.closeCart());
+  document.getElementById('overlay')?.addEventListener('click', () => ui.closeCart());
+  document.getElementById('checkoutBtn')?.addEventListener('click', () => ui.checkout());
+  document.getElementById('stickyCartBar')?.addEventListener('click', () => ui.openCart());
+
+  const searchToggle = document.getElementById('searchToggleBtn');
+  const searchClose = document.getElementById('searchCloseBtn');
+  const siteHeader = document.getElementById('siteHeader');
+  const searchInput = document.getElementById('searchInput');
+
+  if (searchToggle && siteHeader) {
+    searchToggle.addEventListener('click', () => {
+      siteHeader.classList.add('search-open');
+      searchInput?.focus();
+    });
+  }
+  if (searchClose && siteHeader) {
+    searchClose.addEventListener('click', () => {
+      siteHeader.classList.remove('search-open');
+    });
+  }
 
   // Boot sequence: init cart (validates via API), then boot UI and catalog
   cart.init(() => {

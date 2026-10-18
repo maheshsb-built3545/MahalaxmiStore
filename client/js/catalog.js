@@ -139,6 +139,8 @@ const catalog = (() => {
       const img = document.createElement('img');
       img.src   = p.imageUrl;
       img.alt   = p.nameEn;
+      img.width = 200;
+      img.height = 200;
       img.className = 'card-img';
       img.loading   = 'lazy';
       img.decoding  = 'async';
@@ -150,7 +152,7 @@ const catalog = (() => {
     card.appendChild(imgWrap);
 
     card.appendChild(el('h4', null, p.nameEn));
-    const mrEl = el('div', 'wt', p.nameMr + ' · ' + p.packSize);
+    const mrEl = el('div', 'wt', (p.nameMr ? p.nameMr + ' · ' : '') + p.packSize);
     card.appendChild(mrEl);
 
     const priceRow = el('div', 'price-row');
@@ -168,11 +170,11 @@ const catalog = (() => {
     }
 
     // Out-of-stock (R1: based on virtual inStock which checks stockQuantity + unavailableFlag)
-    if (!p.inStock) {
+    if (!p.inStock || stock <= 0) {
       card.classList.add('out-of-stock');
-      const oos = el('button', 'add-btn', 'स्टॉक संपला');
+      const oos = el('button', 'add-btn', 'संपले / Out of stock');
       oos.disabled = true;
-      oos.style.opacity = '0.5';
+      oos.style.opacity = '0.55';
       oos.style.cursor  = 'not-allowed';
       card.appendChild(oos);
       return card;
@@ -199,9 +201,12 @@ const catalog = (() => {
       // R1: disable + if cart qty already equals available stock
       if (qty >= stock) {
         plus.disabled = true;
-        plus.title    = `Only ${stock} available`;
+        plus.title    = `फक्त ${stock} उपलब्ध / Only ${stock} available`;
         plus.style.opacity = '0.4';
         plus.style.cursor  = 'not-allowed';
+        plus.addEventListener('click', () => {
+          ui.showToast(`फक्त ${stock} उपलब्ध आहेत / Only ${stock} available in stock.`);
+        });
       } else {
         plus.addEventListener('click', () => {
           if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
@@ -220,7 +225,7 @@ const catalog = (() => {
       stepper.append(minus, qtySpan, plus);
       card.appendChild(stepper);
     } else {
-      const addBtn = el('button', 'add-btn', '+ Add');
+      const addBtn = el('button', 'add-btn', '+ जोडा / Add');
       addBtn.setAttribute('aria-label', 'Add ' + p.nameEn + ' to cart');
       addBtn.addEventListener('click', () => {
         if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
@@ -294,7 +299,7 @@ const catalog = (() => {
 
   async function fetchBestSellers() {
     try {
-      const res = await fetch(`${CONFIG.API_BASE}/products/bestsellers`);
+      const res = await fetch(`${CONFIG.API_BASE}/products/best-sellers`);
       const data = await res.json();
       if (data.success) _bestSellers = data.data;
     } catch (_) {}
@@ -357,6 +362,8 @@ const catalog = (() => {
         const dImg = document.createElement('img');
         dImg.src = p.imageUrl;
         dImg.alt = p.nameEn;
+        dImg.width = 180;
+        dImg.height = 180;
         dImg.className = 'deal-card-img';
         dImg.loading = 'lazy';
         dImg.decoding = 'async';
@@ -367,9 +374,8 @@ const catalog = (() => {
       }
       card.appendChild(el('h4', null, `${p.nameEn} ${p.packSize}`));
       card.appendChild(el('div', 'save', (p.offerPercent ? `${p.offerPercent}% OFF · ` : '') + 'Save ₹' + save));
-      const timer = el('div', 'timer', 'Mega Deal • महा ऑफर');
-      timer.dataset.deal = '1';
-      card.appendChild(timer);
+      const dealBadge = el('div', 'timer', '🔥 महा ऑफर • Mega Deal');
+      card.appendChild(dealBadge);
       grid.appendChild(card);
     });
 
