@@ -120,3 +120,18 @@ MahalaxmiStore/
     ├── .env.example          # All configuration keys (placeholders only)
     └── package.json          # Server dependencies & test scripts
 ```
+
+---
+
+## 6. Database Indexing & Hardening Strategy
+
+- **Order Collection:** Compound index on `{ userId: 1, createdAt: -1 }` (for rapid customer order history paging) and `{ status: 1, createdAt: -1 }` (for owner dashboard order streams and status filters).
+- **Product Collection:** Compound indexes on `{ categoryId: 1, active: 1 }` (for category filtering) and `{ active: 1, sortOrder: 1 }` (for default catalog ordering), plus text search indexes on `nameEn`, `nameMr`, `nameHi`, `aliases`, `search_keywords` with phonetic variant mapping.
+- **Error Format Standard:** All endpoints respond with uniform JSON `{ success: boolean, message: string, code?: string, data?: any }`. Unhandled `/api/*` and 404 paths consistently return bilingual JSON.
+- **Rate Limiting:** Multi-tiered defense via `express-rate-limit`:
+  - `authLimiter`: 5 failed attempts per 15 min per IP+phone.
+  - `orderLimiter`: Max 10 orders per hour per customer.
+  - `aiLimiter`: 60 list-parsing requests per 15 min per IP.
+  - `adminLimiter`: 600 requests per 15 min per IP.
+  - `apiLimiter`: 300 general requests per 15 min per IP.
+

@@ -145,9 +145,9 @@ app.get('/api/health', (_req, res) =>
 app.get('/api/version', (_req, res) =>
   res.json({
     success: true,
-    version: '1.0.6',
-    commit: '8c3b078',
-    branch: 'fix/owner-wiring',
+    version: '1.0.7',
+    commit: 'ef5b945',
+    branch: 'fix/customer-mobile',
     nodeEnv: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
   })
