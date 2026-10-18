@@ -112,7 +112,7 @@ const createOrder = async (req, res, next) => {
         return res.status(400).json({ success: false, message: 'One or more items contain an invalid product ID.' });
       }
 
-      const qty = parseFloat(item.qty);
+      const qty = parseFloat(item.qty !== undefined ? item.qty : item.quantity);
       if (isNaN(qty) || qty <= 0 || qty > 50) {
         await session.abortTransaction();
         session.endSession();

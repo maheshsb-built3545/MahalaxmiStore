@@ -24,8 +24,10 @@ const getAddresses = async (req, res, next) => {
  */
 const createAddress = async (req, res, next) => {
   try {
-    const line = ensureString(req.body.line);
+    const line = ensureString(req.body.line || req.body.addressLine);
     const landmark = ensureString(req.body.landmark) || '';
+    const village = ensureString(req.body.village) || '';
+    const locationPin = ensureString(req.body.locationPin) || '';
     const pincode = ensureString(req.body.pincode);
     const isDefault = Boolean(req.body.isDefault);
 
@@ -57,6 +59,8 @@ const createAddress = async (req, res, next) => {
       userId: req.user._id,
       line,
       landmark,
+      village,
+      locationPin,
       pincode,
       isDefault,
     });

@@ -9,7 +9,7 @@
     "seed": "node seed/seed.js",
     "seed:owner": "node seed/seedOwner.js",
     "backup": "node scripts/backup.js",
-    "test": "node tests/test_playbook_fixes.js && node tests/test_audit_items.js && node tests/test-r5-r6.js && node tests/verify_stage2.js && node tests/test_ai_cart_fixes.js && node tests/test_owner_rebuild_verification.js",
+    "test": "node tests/test_playbook_fixes.js && node tests/test_audit_items.js && node tests/test-r5-r6.js && node tests/verify_stage2.js && node tests/test_ai_cart_fixes.js && node tests/test_owner_rebuild_verification.js && node tests/test_customer_wiring.js",
     "test:rebuild": "node tests/test_owner_rebuild_verification.js",
     "test:all": "npm test && node tests/verify_stage3.js",
     "i18n:check": "node scripts/check_i18n.js"

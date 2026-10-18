@@ -929,9 +929,11 @@ const ui = (() => {
   }
 
   // Re-render cart badge whenever cart changes
-  cart.onUpdate(() => {
-    updateCartBadge();
-  });
+  if (typeof cart !== 'undefined' && typeof cart.onUpdate === 'function') {
+    cart.onUpdate(() => {
+      updateCartBadge();
+    });
+  }
 
   return {
     init,

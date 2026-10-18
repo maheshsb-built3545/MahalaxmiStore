@@ -36,8 +36,12 @@ const checkoutApp = (() => {
 
     // Check cart has items
     if (cart.itemCount() === 0) {
-      alert('Your cart is empty. Please add items before checking out.');
-      window.location.href = 'index.html';
+      if (typeof ui !== 'undefined' && ui.showToast) {
+        ui.showToast('आपली कार्ट रिकामी आहे / Your cart is empty. Please add items before checking out.', 'warning');
+      }
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 600);
       return;
     }
 

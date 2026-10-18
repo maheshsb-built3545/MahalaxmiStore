@@ -133,6 +133,8 @@ async function runTests() {
         servicePincodes: ['423601', '423602'],
         slots: ['Morning (7:00 AM – 11:00 AM)', 'Afternoon (12:00 PM – 4:00 PM)', 'Evening (5:00 PM – 9:00 PM)'],
       });
+    } else {
+      await Settings.updateOne({}, { minOrder: 100 });
     }
 
     let products = await Product.find({ active: true, stockQuantity: { $gt: 5 } });

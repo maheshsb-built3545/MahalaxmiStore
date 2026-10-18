@@ -247,10 +247,14 @@ body.drawer-open {
     display: flex;
     flex-direction: column;
     z-index: 1100 !important;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .drawer.open {
     transform: translateY(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
   .sheet-drag-handle {

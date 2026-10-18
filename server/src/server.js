@@ -119,7 +119,7 @@ app.use(mongoSanitize());
 // General API rate limit: 300 requests per 15 minutes per IP (skips /api/admin so adminLimiter applies there)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300,
+  max: process.env.NODE_ENV === 'test' ? 10000 : 1500,
   skip: (req) => req.originalUrl.startsWith('/api/admin'),
   standardHeaders: true,
   legacyHeaders: false,
@@ -146,7 +146,7 @@ app.get('/api/version', (_req, res) =>
   res.json({
     success: true,
     version: '1.0.7',
-    commit: 'ef5b945',
+    commit: 'c521220',
     branch: 'fix/customer-mobile',
     nodeEnv: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
