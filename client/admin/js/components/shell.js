@@ -42,20 +42,21 @@ class AppShell {
   }
 
   getDefaultTitle(route) {
+    const isNarrow = typeof window !== 'undefined' && window.innerWidth <= 480;
     const titles = {
-      dashboard: 'डॅशबोर्ड / Dashboard',
-      orders: 'ऑर्डर्स / Orders',
-      inventory: 'स्टॉक व माल / Inventory',
-      catalog: 'उत्पादने व वर्ग / Catalog',
-      udhar: 'उधारी वही / Udhar Khata',
-      customers: 'ग्राहक / Customers',
-      reports: 'अहवाल व नफा / Reports',
-      'ai-corrections': 'AI सुधारणा / AI Misses',
-      inbox: 'सूचना / Inbox',
-      settings: 'सेटिंग्ज / Settings',
-      staff: 'कर्मचारी / Staff',
+      dashboard: isNarrow ? 'डॅशबोर्ड' : 'डॅशबोर्ड / Dashboard',
+      orders: isNarrow ? 'ऑर्डर्स व पॅकिंग' : 'ऑर्डर्स व पॅकिंग / Orders',
+      inventory: isNarrow ? 'स्टॉक व माल' : 'स्टॉक व माल / Inventory',
+      catalog: isNarrow ? 'उत्पादने व वर्ग' : 'उत्पादने व वर्ग / Catalog',
+      udhar: isNarrow ? 'उधारी वही' : 'उधारी वही / Udhar Khata',
+      customers: isNarrow ? 'ग्राहक व्यवस्थापन' : 'ग्राहक / Customers',
+      reports: isNarrow ? 'अहवाल व नफा' : 'अहवाल व नफा / Reports',
+      'ai-corrections': isNarrow ? 'AI सुधारणा' : 'AI सुधारणा / AI Misses',
+      inbox: isNarrow ? 'सूचना' : 'सूचना / Inbox',
+      settings: isNarrow ? 'सेटिंग्ज' : 'सेटिंग्ज / Settings',
+      staff: isNarrow ? 'कर्मचारी' : 'कर्मचारी / Staff',
     };
-    return titles[route] || 'महालक्ष्मी किराणा / Mahalaxmi Kirana';
+    return titles[route] || 'महालक्ष्मी किराणा';
   }
 
   getNavSections() {
@@ -170,7 +171,7 @@ class AppShell {
         <!-- Store Open/Closed Toggle Chip -->
         <button type="button" class="store-status-pill open" id="storeStatusToggle" title="Toggle Store Open/Closed">
           <span class="status-dot"></span>
-          <span id="storeStatusLabel">दुकान सुरू / Open</span>
+          <span id="storeStatusLabel">सुरू / Open</span>
         </button>
 
         <!-- Audio Alert Toggle -->
@@ -200,6 +201,8 @@ class AppShell {
     mainWrapper.appendChild(contentArea);
 
     // 3. Mobile Bottom Nav (< 768px: Home, Orders, Stock, Udhar, More)
+    const isMoreActive = ['catalog', 'customers', 'reports', 'ai-corrections', 'inbox', 'settings', 'staff'].includes(this.activeRoute);
+
     const bottomNav = document.createElement('nav');
     bottomNav.className = 'app-bottom-nav';
     bottomNav.innerHTML = `
@@ -220,7 +223,7 @@ class AppShell {
         <span class="tab-icon">📝</span>
         <span>उधारी</span>
       </a>
-      <button type="button" class="bottom-tab" id="bottomMoreBtn">
+      <button type="button" class="bottom-tab ${isMoreActive ? 'active' : ''}" id="bottomMoreBtn">
         <span class="tab-icon">☰</span>
         <span>अधिक (More)</span>
       </button>
@@ -396,15 +399,33 @@ class AppShell {
 
     if (this.isStoreOpen) {
       pill.className = 'store-status-pill open';
-      label.textContent = 'दुकान सुरू / Open';
+      label.textContent = 'सुरू / Open';
     } else {
       pill.className = 'store-status-pill closed';
-      label.textContent = 'दुकान बंद / Closed';
+      label.textContent = 'बंद / Closed';
     }
   }
 
   // ── Sound Chime & Audio Context ──
   initAudioContext() {
+    const unlock = () => {
+      try {
+        if (!this.audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.audioCtx = new AudioContext();
+          }
+        }
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume();
+        }
+        localStorage.setItem('admin_audio_unlocked', 'true');
+      } catch (_) {}
+    };
+
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('keydown', unlock, { once: true });
+
     const isMuted = localStorage.getItem('admin_audio_muted') === 'true';
     const audioBtn = document.getElementById('audioToggleBtn');
     if (audioBtn) {

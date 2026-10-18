@@ -136,6 +136,8 @@
   --touch-min-size: 44px; /* WCAG 2.5.5 minimum */
   --header-height:  56px;
   --bottom-bar-height: 60px;
+  --save-bar-height:   60px;
+  --admin-bottom-padding: calc(var(--bottom-bar-height) + var(--save-bar-height) + 16px);
   --sidebar-width: 250px;
   --sidebar-rail-width: 72px;
 

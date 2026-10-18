@@ -630,6 +630,25 @@ const getProducts = async (req, res, next) => {
 };
 
 /**
+ * GET /api/admin/products/:id
+ */
+const getProductById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID / अमान्य उत्पादन आयडी' });
+    }
+    const product = await Product.findById(id).populate('categoryId', 'nameEn nameMr emoji');
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found / उत्पादन आढळले नाही' });
+    }
+    res.status(200).json({ success: true, data: product });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
  * POST /api/admin/products
  */
 const createProduct = async (req, res, next) => {
@@ -2438,6 +2457,7 @@ module.exports = {
   updatePaymentStatus,
   getPackingList,
   getProducts,
+  getProductById,
   createProduct,
   updateProduct,
   toggleStock,
