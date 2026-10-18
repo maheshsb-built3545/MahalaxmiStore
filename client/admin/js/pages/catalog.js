@@ -1,7 +1,8 @@
 /**
  * Mahalaxmi Kirana Store — Catalog Controller (Products + Categories + Bulk Tools)
- * Mobile-friendly cards, inline stock steppers, complete product form with costPrice,
- * category reordering (touch up/down + drag), and bulk price adjustments.
+ * Mobile-friendly cards, inline stock quick adjustments, complete product form with costPrice,
+ * client-side image compression & Cloudinary upload, category reordering & deletion,
+ * and bulk price adjustments with live preview.
  */
 
 'use strict';
@@ -13,6 +14,7 @@ let activeCategoryFilter = 'all';
 let catalogSearchQuery = '';
 let productModal = null;
 let categoryModal = null;
+let stockAdjustSheet = null;
 let editingProductId = null;
 let editingCategoryId = null;
 
@@ -74,12 +76,28 @@ function initModals() {
     title: 'वर्ग तपशील / Category Details',
     isSheetOnMobile: true,
   });
+
+  stockAdjustSheet = new window.AdminBottomSheet({
+    title: 'साठा व्यवस्थापन / Stock Adjust',
+    isSheetOnMobile: true,
+  });
 }
 
 async function loadCatalogData() {
+  const container = document.getElementById('catalogProductsContainer');
+  if (container) {
+    container.innerHTML = `
+      <div class="flex flex-col gap-3">
+        <div class="skeleton" style="height: 90px; border-radius: 12px;"></div>
+        <div class="skeleton" style="height: 90px; border-radius: 12px;"></div>
+        <div class="skeleton" style="height: 90px; border-radius: 12px;"></div>
+      </div>
+    `;
+  }
+
   try {
     const [prodRes, catRes] = await Promise.all([
-      window.AdminAPI.get('/admin/products?limit=100'),
+      window.AdminAPI.get('/admin/products?limit=200'),
       window.AdminAPI.get('/admin/categories'),
     ]);
 
@@ -89,8 +107,17 @@ async function loadCatalogData() {
     renderCategoryChips();
     if (currentCatalogTab === 'products') renderProductsView();
     else if (currentCatalogTab === 'categories') renderCategoriesView();
+    else if (currentCatalogTab === 'bulk') renderBulkView();
   } catch (err) {
-    console.error('Catalog load error:', err);
+    if (container) {
+      container.innerHTML = '';
+      const errEl = window.AdminEmptyState.renderError({
+        title: 'माहिती लोड करण्यात त्रुटी / Failed to load catalog',
+        description: err.message,
+        onRetry: () => loadCatalogData(),
+      });
+      container.appendChild(errEl);
+    }
   }
 }
 
@@ -138,8 +165,9 @@ function renderProductsView() {
       const en = String(p.nameEn || '').toLowerCase();
       const mr = String(p.nameMr || '').toLowerCase();
       const hi = String(p.nameHi || '').toLowerCase();
+      const pack = String(p.packSize || '').toLowerCase();
       const aliases = (p.aliases || []).join(' ').toLowerCase();
-      return en.includes(q) || mr.includes(q) || hi.includes(q) || aliases.includes(q);
+      return en.includes(q) || mr.includes(q) || hi.includes(q) || pack.includes(q) || aliases.includes(q);
     });
   }
 
@@ -148,6 +176,7 @@ function renderProductsView() {
       <div class="empty-state">
         <div class="empty-state-icon">🏷️</div>
         <div class="empty-state-title">कोणतेही उत्पादन सापडले नाही / No products found</div>
+        <div class="empty-state-desc">शोध संज्ञा बदला किंवा नवीन उत्पादन जोडा.</div>
         <button type="button" class="btn btn-primary" onclick="openProductModal()">➕ नवीन उत्पादन जोडा</button>
       </div>
     `;
@@ -184,8 +213,9 @@ function renderProductsView() {
         field: 'stockQuantity',
         label: 'साठा / Stock',
         render: (v, p) => `
-          <strong>${v} ${p.unitType}</strong>
-          ${v <= (p.reorderLevel ?? 5) ? `<span class="badge badge-warning" style="margin-left:4px;">कमी</span>` : ''}
+          <button type="button" class="badge ${(v ?? 0) === 0 ? 'badge-danger' : (v <= (p.reorderLevel ?? 5) ? 'badge-warning' : 'badge-success')}" style="cursor:pointer;border:none;font-size:0.85rem;" onclick="openStockAdjustSheet('${p._id}')" title="साठा बदला / Adjust Stock">
+            ${v} ${p.unitType || 'piece'} ✏️
+          </button>
         `,
       },
       {
@@ -201,7 +231,10 @@ function renderProductsView() {
         field: 'actions',
         label: 'कृती / Action',
         render: (_, p) => `
-          <button type="button" class="btn btn-sm btn-secondary" onclick="openProductModal('${p._id}')">✏️ Edit</button>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="openProductModal('${p._id}')">✏️ Edit</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="openStockAdjustSheet('${p._id}')" title="साठा / Stock">📦</button>
+          </div>
         `,
       },
     ],
@@ -215,6 +248,7 @@ function renderProductCardMobile(p) {
 
   const isLow = (p.stockQuantity ?? 0) <= (p.reorderLevel ?? 5);
   const isOut = (p.stockQuantity ?? 0) === 0 || p.unavailableFlag;
+  const margin = p.price > 0 && p.costPrice > 0 ? Math.round(((p.price - p.costPrice) / p.price) * 100) : null;
 
   card.innerHTML = `
     <div class="flex items-center gap-3">
@@ -222,18 +256,19 @@ function renderProductCardMobile(p) {
       <div style="flex:1;min-width:0;">
         <div style="font-weight:700;font-size:0.95rem;" class="truncate">${window.esc(p.nameMr || p.nameEn)}</div>
         <div class="text-xs text-muted">${window.esc(p.nameEn)} • ${window.esc(p.packSize)}</div>
-        <div style="margin-top:2px;">
+        <div style="margin-top:2px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
           <strong style="color:var(--color-primary-800);font-size:1rem;">₹${p.price}</strong>
-          <span class="text-xs text-muted" style="text-decoration:line-through;margin-left:4px;">₹${p.mrp}</span>
-          ${p.costPrice ? `<span class="text-xs" style="color:#0284c7;margin-left:6px;">खरेदी: ₹${p.costPrice}</span>` : ''}
+          <span class="text-xs text-muted" style="text-decoration:line-through;">₹${p.mrp}</span>
+          ${p.costPrice ? `<span class="text-xs" style="color:#0284c7;">खरेदी: ₹${p.costPrice}</span>` : ''}
+          ${margin !== null ? `<span class="text-xs" style="color:${margin >= 15 ? '#16a34a' : '#d97706'};font-weight:600;">(${margin}% नफा)</span>` : ''}
         </div>
       </div>
     </div>
-    <div class="item-card-footer flex justify-between items-center" style="margin-top:4px;">
+    <div class="item-card-footer flex justify-between items-center" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border-subtle);">
       <div style="display:flex;align-items:center;gap:6px;">
-        <span class="badge ${isOut ? 'badge-danger' : isLow ? 'badge-warning' : 'badge-success'}">
-          ${isOut ? 'साठा संपला' : `${p.stockQuantity} ${p.unitType}`}
-        </span>
+        <button type="button" class="badge ${isOut ? 'badge-danger' : isLow ? 'badge-warning' : 'badge-success'}" style="cursor:pointer;border:none;padding:6px 10px;" onclick="openStockAdjustSheet('${p._id}')" title="साठा बदला / Adjust Stock">
+          ${isOut ? 'साठा संपला ✏️' : `${p.stockQuantity} ${p.unitType || 'pcs'} ✏️`}
+        </button>
         <button type="button" class="btn btn-sm ${p.unavailableFlag ? 'btn-danger' : 'btn-outline'}" onclick="toggleProductAvailability('${p._id}', ${Boolean(p.unavailableFlag)})">
           ${p.unavailableFlag ? '🚫 बंद' : '✅ चालू'}
         </button>
@@ -256,12 +291,187 @@ window.toggleProductAvailability = async (id, currentFlag) => {
     const p = allProducts.find((x) => x._id === id);
     if (p) p.unavailableFlag = !currentFlag;
     renderProductsView();
+    if (window.AdminToast) {
+      window.AdminToast.show(currentFlag ? 'उत्पादन आता उपलब्ध केले / Set In Stock' : 'उत्पादन तात्पुरते बंद केले / Set Out of Stock', 'info');
+    }
   } catch (err) {
-    alert(`Error: ${err.message}`);
+    if (window.AdminToast) window.AdminToast.show('Error: ' + err.message, 'danger');
   }
 };
 
-// ── 2. PRODUCT FORM MODAL (with costPrice and validation) ──
+// ── QUICK STOCK ADJUST SHEET ──
+window.openStockAdjustSheet = (productId) => {
+  const p = allProducts.find((x) => x._id === productId);
+  if (!p) return;
+
+  const body = document.createElement('div');
+  body.className = 'flex flex-col gap-3';
+  body.style.padding = '8px 0';
+
+  body.innerHTML = `
+    <div style="background:var(--bg-subtle);padding:12px;border-radius:10px;">
+      <div style="font-weight:700;font-size:1rem;">${window.esc(p.nameMr || p.nameEn)}</div>
+      <div class="text-xs text-muted">${window.esc(p.nameEn)} — ${window.esc(p.packSize)}</div>
+      <div style="margin-top:6px;font-size:0.9rem;">
+        चालू साठा (Current Stock): <strong style="font-size:1.1rem;color:var(--color-primary-800);">${p.stockQuantity} ${p.unitType || 'piece'}</strong>
+      </div>
+    </div>
+
+    <!-- Quick Stepper Options -->
+    <div>
+      <label class="form-label">कृती प्रकार निवडा (Action Type)</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <button type="button" class="btn btn-secondary active" id="btnModeIn" onclick="setAdjustMode('in')">📥 साठा वाढवा</button>
+        <button type="button" class="btn btn-secondary" id="btnModeOut" onclick="setAdjustMode('out')">📉 साठा कमी</button>
+        <button type="button" class="btn btn-secondary" id="btnModeSet" onclick="setAdjustMode('set')">✏️ अचूक संख्या</button>
+      </div>
+    </div>
+
+    <form id="quickAdjustForm" class="flex flex-col gap-3">
+      <div>
+        <label class="form-label" id="adjustQuantityLabel">वाढवायची संख्या / Quantity to Add *</label>
+        <input type="number" class="form-input" id="adjustQuantityInput" min="0.1" step="0.5" value="10" required />
+      </div>
+
+      <div id="adjustReasonWrap" style="display:none;">
+        <label class="form-label">कमी करण्याचे कारण / Reason Code *</label>
+        <select class="form-select" id="adjustReasonSelect">
+          <option value="damage">तूटफूट / खराब झाले (Damage / Spoilage)</option>
+          <option value="expiry">मुदत संपली (Expired / Discarded)</option>
+          <option value="theft">चोरी / गहाळ (Theft / Shrinkage)</option>
+          <option value="customer_return">ग्राहक रिटर्न (Customer Return)</option>
+          <option value="correction">मोजणी दुरुस्ती (Stock Count Correction)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">पर्यायी टीप / Note (Optional)</label>
+        <input type="text" class="form-input" id="adjustNoteInput" placeholder="उदा. नवीन माल आला किंवा नुकसान" />
+      </div>
+
+      <div class="modal-footer" style="padding-top:8px;">
+        <button type="button" class="btn btn-secondary" onclick="stockAdjustSheet.close()">रद्द करा / Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveQuickAdjustBtn">✅ साठा जतन करा (Save)</button>
+      </div>
+    </form>
+  `;
+
+  stockAdjustSheet.setTitle(`📦 साठा दुरुस्ती — ${window.esc(p.nameMr || p.nameEn)}`);
+  stockAdjustSheet.setContent(body);
+  stockAdjustSheet.open();
+
+  let activeMode = 'in'; // 'in' | 'out' | 'set'
+
+  window.setAdjustMode = (mode) => {
+    activeMode = mode;
+    body.querySelector('#btnModeIn').classList.toggle('active', mode === 'in');
+    body.querySelector('#btnModeOut').classList.toggle('active', mode === 'out');
+    body.querySelector('#btnModeSet').classList.toggle('active', mode === 'set');
+
+    const lbl = body.querySelector('#adjustQuantityLabel');
+    const reasonWrap = body.querySelector('#adjustReasonWrap');
+    const qtyInput = body.querySelector('#adjustQuantityInput');
+
+    if (mode === 'in') {
+      lbl.textContent = 'वाढवायची संख्या / Quantity to Add *';
+      reasonWrap.style.display = 'none';
+      qtyInput.value = '10';
+      qtyInput.min = '0.1';
+    } else if (mode === 'out') {
+      lbl.textContent = 'कमी करायची संख्या / Quantity to Deduct *';
+      reasonWrap.style.display = 'block';
+      qtyInput.value = '1';
+      qtyInput.min = '0.1';
+    } else {
+      lbl.textContent = 'अचूक नवीन संख्या / Absolute New Stock Count *';
+      reasonWrap.style.display = 'none';
+      qtyInput.value = String(p.stockQuantity ?? 0);
+      qtyInput.min = '0';
+    }
+  };
+
+  body.querySelector('#quickAdjustForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const qtyVal = parseFloat(body.querySelector('#adjustQuantityInput').value);
+    const noteVal = body.querySelector('#adjustNoteInput').value.trim();
+    const reasonCode = body.querySelector('#adjustReasonSelect').value;
+    const saveBtn = body.querySelector('#saveQuickAdjustBtn');
+
+    if (isNaN(qtyVal)) return;
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'जतन होत आहे... / Saving...';
+
+    try {
+      if (activeMode === 'in') {
+        await window.AdminAPI.post('/inventory/stock-in', {
+          productId: p._id,
+          quantity: qtyVal,
+          note: noteVal || 'Stock Inward via quick adjust',
+        });
+      } else if (activeMode === 'out') {
+        await window.AdminAPI.post('/inventory/adjust', {
+          productId: p._id,
+          quantity: -qtyVal,
+          reason: reasonCode,
+          note: `[${reasonCode.toUpperCase()}] ${noteVal || 'Quick deduct'}`,
+        });
+      } else {
+        await window.AdminAPI.post('/inventory/adjust', {
+          productId: p._id,
+          newQuantity: qtyVal,
+          note: noteVal || 'Direct stock count set',
+        });
+      }
+
+      stockAdjustSheet.close();
+      loadCatalogData();
+      if (window.AdminToast) {
+        window.AdminToast.show('✅ साठा यशस्वीरीत्या अद्यतनित केला! / Stock updated', 'success');
+      }
+    } catch (err) {
+      if (window.AdminToast) window.AdminToast.show('Error: ' + err.message, 'danger');
+      saveBtn.disabled = false;
+      saveBtn.textContent = '✅ साठा जतन करा (Save)';
+    }
+  };
+};
+
+// ── 2. PRODUCT FORM MODAL (with image upload, costPrice, validation, and delete) ──
+function compressImageFile(file, maxWidth = 800, maxHeight = 800, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas to blob conversion failed'));
+        }, 'image/jpeg', quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 window.openProductModal = (id = null) => {
   editingProductId = id;
   const p = id ? allProducts.find((x) => x._id === id) : null;
@@ -269,6 +479,36 @@ window.openProductModal = (id = null) => {
   const body = document.createElement('div');
   body.innerHTML = `
     <form id="productEditForm" class="flex flex-col gap-3">
+      <!-- Image Upload Section -->
+      <div style="background:var(--bg-subtle);padding:12px;border-radius:10px;">
+        <label class="form-label" style="margin-bottom:6px;">उत्पादन फोटो (Product Image)</label>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <img
+            id="formImagePreview"
+            src="${p?.imageUrl || '../images/placeholder-store.svg'}"
+            alt="Product Preview"
+            style="width:68px;height:68px;border-radius:10px;object-fit:cover;border:1px solid var(--border-subtle);background:#f1f5f9;flex-shrink:0;"
+            onerror="this.src='../images/placeholder-store.svg';"
+          />
+          <div style="flex:1;">
+            <input type="file" id="formImageFile" accept="image/*" style="display:none;" />
+            <button type="button" class="btn btn-sm btn-secondary" id="btnUploadImageTrigger">
+              📷 फोटो निवडा / कॅमेरा (Upload Image)
+            </button>
+            <div id="imageUploadStatus" class="text-xs text-muted" style="margin-top:4px;">फोन कॅमेरा फोटो आपोआप कॉम्प्रेस केला जाईल.</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <input
+            type="url"
+            class="form-input"
+            id="formImageUrl"
+            value="${window.esc(p?.imageUrl || '')}"
+            placeholder="किंवा थेट Cloudinary/Web फोटो URL पेस्ट करा..."
+          />
+        </div>
+      </div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div>
           <label class="form-label">मराठी नाव (Marathi Name) *</label>
@@ -296,22 +536,22 @@ window.openProductModal = (id = null) => {
 
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
         <div>
-          <label class="form-label">विक्री दर (Selling Price ₹) *</label>
+          <label class="form-label">विक्री दर (Selling ₹) *</label>
           <input type="number" class="form-input" id="formPrice" value="${p?.price || ''}" min="0" step="0.5" required />
         </div>
         <div>
-          <label class="form-label">छापील किंमत (MRP ₹) *</label>
+          <label class="form-label">छापील दर (MRP ₹) *</label>
           <input type="number" class="form-input" id="formMrp" value="${p?.mrp || ''}" min="0" step="0.5" required />
         </div>
         <div>
-          <label class="form-label">खरेदी दर (Cost Price ₹) *</label>
+          <label class="form-label">खरेदी दर (Cost ₹)</label>
           <input type="number" class="form-input" id="formCostPrice" value="${p?.costPrice || 0}" min="0" step="0.5" placeholder="नफा हिशोबासाठी" />
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
         <div>
-          <label class="form-label">एकक प्रकार (Unit Type)</label>
+          <label class="form-label">एकक प्रकार (Unit)</label>
           <select class="form-select" id="formUnitType">
             <option value="piece" ${p?.unitType === 'piece' ? 'selected' : ''}>नग / piece</option>
             <option value="kg" ${p?.unitType === 'kg' ? 'selected' : ''}>किलो / kg</option>
@@ -322,7 +562,11 @@ window.openProductModal = (id = null) => {
           </select>
         </div>
         <div>
-          <label class="form-label">पुनर्खरेदी मर्यादा (Reorder Alert)</label>
+          <label class="form-label">साठा (Stock Quantity)</label>
+          <input type="number" class="form-input" id="formStockQuantity" value="${p?.stockQuantity ?? 10}" min="0" step="0.5" />
+        </div>
+        <div>
+          <label class="form-label">पुनर्खरेदी इशारा (Alert Level)</label>
           <input type="number" class="form-input" id="formReorderLevel" value="${p?.reorderLevel ?? 5}" min="0" />
         </div>
       </div>
@@ -330,17 +574,21 @@ window.openProductModal = (id = null) => {
       <div>
         <label class="form-label">सर्च टोपणनावे (Aliases / Keywords)</label>
         <input type="text" class="form-input" id="formAliases" value="${window.esc((p?.aliases || []).join(', '))}" placeholder="उदा. sakhar, chini, sugar" />
-        <span class="form-hint">अल्पविरामाने (comma) वेगळे करा. ग्राहक या नावाने शोधू शकतील.</span>
+        <span class="form-hint">अल्पविरामाने (comma) वेगळे करा. AI शोध व व्हॉईस सर्चसाठी उपयुक्त.</span>
       </div>
 
-      <div>
-        <label class="form-label">फोटो URL (Image URL)</label>
-        <input type="url" class="form-input" id="formImageUrl" value="${window.esc(p?.imageUrl || '')}" placeholder="https://res.cloudinary.com/..." />
-      </div>
-
-      <div class="modal-footer" style="padding:12px 0 0;margin-top:12px;">
-        <button type="button" class="btn btn-secondary" onclick="productModal.close()">रद्द करा / Cancel</button>
-        <button type="submit" class="btn btn-primary" id="saveProductBtn">✅ जतन करा (Save Product)</button>
+      <div class="modal-footer" style="padding:12px 0 0;margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          ${p ? `
+            <button type="button" class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="deleteProductPrompt('${p._id}', '${window.esc(p.nameEn)}')">
+              🗑️ हटवा (Delete)
+            </button>
+          ` : ''}
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn btn-secondary" onclick="productModal.close()">रद्द करा / Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveProductBtn">✅ जतन करा (Save Product)</button>
+        </div>
       </div>
     </form>
   `;
@@ -348,6 +596,52 @@ window.openProductModal = (id = null) => {
   productModal.setTitle(id ? '✏️ उत्पादन बदला (Edit Product)' : '➕ नवीन उत्पादन जोडा (Add Product)');
   productModal.setContent(body);
   productModal.open();
+
+  // Image Upload wiring
+  const fileInput = body.querySelector('#formImageFile');
+  const triggerBtn = body.querySelector('#btnUploadImageTrigger');
+  const urlInput = body.querySelector('#formImageUrl');
+  const previewImg = body.querySelector('#formImagePreview');
+  const statusEl = body.querySelector('#imageUploadStatus');
+
+  if (triggerBtn && fileInput) {
+    triggerBtn.onclick = () => fileInput.click();
+  }
+
+  if (urlInput) {
+    urlInput.oninput = () => {
+      previewImg.src = urlInput.value || '../images/placeholder-store.svg';
+    };
+  }
+
+  if (fileInput) {
+    fileInput.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      if (triggerBtn) triggerBtn.disabled = true;
+      if (statusEl) statusEl.textContent = '⏳ फोटो कॉम्प्रेस व अपलोड होत आहे... / Uploading...';
+
+      try {
+        const compressedBlob = await compressImageFile(file, 800, 800, 0.82);
+        const formData = new FormData();
+        formData.append('image', compressedBlob, file.name || 'product.jpg');
+
+        const res = await window.AdminAPI.postForm('/admin/upload', formData);
+        if (res.success && res.url) {
+          urlInput.value = res.url;
+          previewImg.src = res.url;
+          if (statusEl) statusEl.textContent = '✅ फोटो अपलोड यशस्वी! / Uploaded to Cloudinary';
+        } else {
+          throw new Error(res.message || 'Upload failed');
+        }
+      } catch (err) {
+        if (statusEl) statusEl.textContent = `❌ अपलोड अयशस्वी: ${err.message}`;
+      } finally {
+        if (triggerBtn) triggerBtn.disabled = false;
+      }
+    };
+  }
 
   body.querySelector('#productEditForm').onsubmit = async (e) => {
     e.preventDefault();
@@ -358,6 +652,7 @@ window.openProductModal = (id = null) => {
     const price = parseFloat(body.querySelector('#formPrice').value);
     const mrp = parseFloat(body.querySelector('#formMrp').value);
     const costPrice = parseFloat(body.querySelector('#formCostPrice').value) || 0;
+    const stockQuantity = parseFloat(body.querySelector('#formStockQuantity').value) || 0;
     const unitType = body.querySelector('#formUnitType').value;
     const reorderLevel = parseInt(body.querySelector('#formReorderLevel').value, 10) || 5;
     const aliases = body.querySelector('#formAliases').value.split(',').map((s) => s.trim()).filter(Boolean);
@@ -376,6 +671,7 @@ window.openProductModal = (id = null) => {
       price,
       mrp,
       costPrice,
+      stockQuantity,
       unitType,
       reorderLevel,
       aliases,
@@ -403,7 +699,30 @@ window.openProductModal = (id = null) => {
   };
 };
 
-// ── 3. CATEGORIES MANAGEMENT VIEW (Reorder + Product Counts) ──
+window.deleteProductPrompt = async (id, name) => {
+  const confirmed = await window.AdminConfirm({
+    title: 'उत्पादन कायमचे हटवा / Delete Product',
+    message: `तुम्हाला खात्री आहे का "${name}" हे उत्पादन कायमचे हटवायचे आहे?\nAre you sure you want to permanently delete this product?`,
+    confirmText: 'होय, हटवा / Yes, Delete',
+    isDestructive: true,
+  });
+  if (!confirmed) return;
+
+  try {
+    const res = await window.AdminAPI.delete(`/admin/products/${id}`);
+    if (res.success) {
+      if (productModal) productModal.close();
+      loadCatalogData();
+      if (window.AdminToast) {
+        window.AdminToast.show('उत्पादन यशस्वीरीत्या हटवले / Product deleted', 'success');
+      }
+    }
+  } catch (err) {
+    if (window.AdminToast) window.AdminToast.show('Error: ' + err.message, 'danger');
+  }
+};
+
+// ── 3. CATEGORIES MANAGEMENT VIEW (Reorder, Active Toggle, and Deletion) ──
 function renderCategoriesView() {
   const container = document.getElementById('catalogCategoriesContainer');
   if (!container) return;
@@ -421,19 +740,23 @@ function renderCategoriesView() {
     <div class="flex flex-col gap-2" id="categoriesListTarget">
       ${allCategories.map((c, idx) => {
         const prodCount = allProducts.filter((p) => p.categoryId && (p.categoryId._id === c._id || p.categoryId === c._id)).length;
+        const isActive = c.active !== false;
+
         return `
-          <div class="flex items-center justify-between" style="padding:12px 14px;background:#ffffff;border:1px solid var(--border-subtle);border-radius:12px;">
+          <div class="flex items-center justify-between" style="padding:12px 14px;background:#ffffff;border:1px solid var(--border-subtle);border-radius:12px;${!isActive ? 'opacity:0.6;background:#f8fafc;' : ''}">
             <div style="display:flex;align-items:center;gap:12px;">
               <span style="font-size:1.5rem;">${c.emoji || '🏷️'}</span>
               <div>
                 <strong style="font-size:1rem;">${window.esc(c.nameMr || c.nameEn)}</strong>
                 <div class="text-xs text-muted">${window.esc(c.nameEn)} • ${prodCount} उत्पादने (Products)</div>
+                ${!isActive ? '<span class="badge badge-warning" style="margin-top:2px;">अक्रिय / Inactive</span>' : ''}
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
               <button type="button" class="btn btn-sm btn-secondary" onclick="moveCategory(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="वर हलवा / Move Up">↑</button>
               <button type="button" class="btn btn-sm btn-secondary" onclick="moveCategory(${idx}, 1)" ${idx === allCategories.length - 1 ? 'disabled' : ''} title="खाली हलवा / Move Down">↓</button>
-              <button type="button" class="btn btn-sm btn-outline" onclick="openCategoryModal('${c._id}')">✏️</button>
+              <button type="button" class="btn btn-sm btn-outline" onclick="openCategoryModal('${c._id}')" title="बदला / Edit">✏️</button>
+              <button type="button" class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="deleteCategoryPrompt('${c._id}', '${window.esc(c.nameMr || c.nameEn)}', ${prodCount})" title="हटवा / Delete">🗑️</button>
             </div>
           </div>
         `;
@@ -455,10 +778,10 @@ window.moveCategory = async (index, delta) => {
 
   try {
     await Promise.all(allCategories.map((c) =>
-      window.AdminAPI.put(`/admin/categories/${c._id}`, { sortOrder: c.sortOrder })
+      window.AdminAPI.put(`/admin/categories/${c._id}`, { sortOrder: c.sortOrder, nameEn: c.nameEn, nameMr: c.nameMr, emoji: c.emoji })
     ));
     if (window.AdminToast) {
-      window.AdminToast.show('✅ वर्गांचा क्रम जतन केला / Order saved', 'success', 1500);
+      window.AdminToast.show('वर्गांचा क्रम जतन केला / Order saved', 'success', 1500);
     }
   } catch (_) {}
 };
@@ -482,9 +805,15 @@ window.openCategoryModal = (id = null) => {
         <label class="form-label">English Name *</label>
         <input type="text" class="form-input" id="formCatNameEn" value="${window.esc(c?.nameEn || '')}" placeholder="e.g. Daily Groceries" required />
       </div>
+      <div>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="checkbox" id="formCatActive" style="width:20px;height:20px;accent-color:#16a34a;" ${c?.active !== false ? 'checked' : ''} />
+          <span>स्टोअरवर सक्रिय ठेवा (Active on Storefront)</span>
+        </label>
+      </div>
       <div class="modal-footer" style="padding:12px 0 0;margin-top:12px;">
         <button type="button" class="btn btn-secondary" onclick="categoryModal.close()">रद्द करा / Cancel</button>
-        <button type="submit" class="btn btn-primary">✅ जतन करा (Save Category)</button>
+        <button type="submit" class="btn btn-primary" id="saveCatBtn">✅ जतन करा (Save Category)</button>
       </div>
     </form>
   `;
@@ -498,104 +827,215 @@ window.openCategoryModal = (id = null) => {
     const emoji = body.querySelector('#formCatEmoji').value.trim() || '🏷️';
     const nameMr = body.querySelector('#formCatNameMr').value.trim();
     const nameEn = body.querySelector('#formCatNameEn').value.trim();
+    const active = body.querySelector('#formCatActive').checked;
+    const saveBtn = body.querySelector('#saveCatBtn');
+
+    saveBtn.disabled = true;
 
     try {
       if (editingCategoryId) {
-        await window.AdminAPI.put(`/admin/categories/${editingCategoryId}`, { emoji, nameMr, nameEn });
+        await window.AdminAPI.put(`/admin/categories/${editingCategoryId}`, { emoji, nameMr, nameEn, active });
       } else {
-        await window.AdminAPI.post('/admin/categories', { emoji, nameMr, nameEn });
+        await window.AdminAPI.post('/admin/categories', { emoji, nameMr, nameEn, active });
       }
       categoryModal.close();
       loadCatalogData();
       if (window.AdminToast) window.AdminToast.show('✅ वर्ग जतन केला!', 'success');
     } catch (err) {
       alert(`Error: ${err.message}`);
+      saveBtn.disabled = false;
     }
   };
 };
 
-// ── 4. BULK PRICE TOOLS ──
+window.deleteCategoryPrompt = async (id, name, prodCount) => {
+  if (prodCount > 0) {
+    alert(`या वर्गामध्ये ${prodCount} उत्पादने आहेत, म्हणून हा वर्ग हटवता येणार नाही. आधी त्या उत्पादनांचा वर्ग बदला.\nCannot delete category containing ${prodCount} products.`);
+    return;
+  }
+
+  const confirmed = await window.AdminConfirm({
+    title: 'वर्ग हटवा / Delete Category',
+    message: `तुम्हाला खात्री आहे का "${name}" हा वर्ग हटवायचा आहे?\nAre you sure you want to delete this category?`,
+    confirmText: 'होय, हटवा / Yes, Delete',
+    isDestructive: true,
+  });
+  if (!confirmed) return;
+
+  try {
+    const res = await window.AdminAPI.delete(`/admin/categories/${id}`);
+    if (res.success) {
+      loadCatalogData();
+      if (window.AdminToast) {
+        window.AdminToast.show('वर्ग यशस्वीरीत्या हटवला / Category deleted', 'success');
+      }
+    }
+  } catch (err) {
+    if (window.AdminToast) window.AdminToast.show('Error: ' + err.message, 'danger');
+  }
+};
+
+// ── 4. BULK PRICE TOOLS WITH LIVE PREVIEW ──
 function renderBulkView() {
   const container = document.getElementById('catalogBulkContainer');
   if (!container) return;
 
   container.innerHTML = `
-    <div class="chart-card" style="max-width:540px;margin:0 auto;">
-      <h3 style="font-size:1.1rem;margin-bottom:12px;">⚖️ घाऊक दर बदल साधन (Bulk Price Adjustment)</h3>
+    <div class="chart-card" style="max-width:580px;margin:0 auto;">
+      <h3 style="font-size:1.15rem;margin-bottom:8px;">⚖️ घाऊक दर बदल साधन (Bulk Price Adjustment)</h3>
       <p class="text-sm text-muted" style="margin-bottom:16px;">
-        निवडलेल्या वर्गातील सर्व उत्पादनांची किंमत एकाच वेळी टक्केवारीने (%) किंवा ठराविक रकमेने (+/- ₹) बदला.
+        निवडलेल्या वर्गातील उत्पादनांची किंमत एकाच वेळी टक्केवारीने (%) किंवा ठराविक रकमेने (+/- ₹) बदला. खाली थेट पूर्वावलोकन दिसेल.
       </p>
       <form id="bulkPriceForm" class="flex flex-col gap-3">
         <div>
           <label class="form-label">वर्ग निवडा / Select Category</label>
           <select class="form-select" id="bulkCategorySelect" required>
-            <option value="all">सर्व उत्पादने (All Products)</option>
+            <option value="all">सर्व उत्पादने (All Products - ${allProducts.length})</option>
             ${allCategories.map((c) => `<option value="${c._id}">${c.emoji || '🏷️'} ${window.esc(c.nameMr || c.nameEn)}</option>`).join('')}
           </select>
         </div>
-        <div>
-          <label class="form-label">बदलाचा प्रकार / Adjustment Type</label>
-          <select class="form-select" id="bulkTypeSelect">
-            <option value="percent_inc">टक्केवारी वाढ (+ % Increase)</option>
-            <option value="percent_dec">टक्केवारी घट (- % Decrease)</option>
-            <option value="flat_inc">ठराविक रक्कम वाढ (+ ₹ Amount)</option>
-            <option value="flat_dec">ठराविक रक्कम घट (- ₹ Amount)</option>
-          </select>
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:10px;">
+          <div>
+            <label class="form-label">बदलाचा प्रकार / Adjustment Type</label>
+            <select class="form-select" id="bulkTypeSelect">
+              <option value="percent_inc">टक्केवारी वाढ (+ % Increase)</option>
+              <option value="percent_dec">टक्केवारी घट (- % Decrease)</option>
+              <option value="flat_inc">ठराविक रक्कम वाढ (+ ₹ Amount)</option>
+              <option value="flat_dec">ठराविक रक्कम घट (- ₹ Amount)</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">मूल्य / Value</label>
+            <input type="number" class="form-input" id="bulkValueInput" min="0.5" step="0.5" value="5" placeholder="5" required />
+          </div>
         </div>
-        <div>
-          <label class="form-label">मूल्य / Value</label>
-          <input type="number" class="form-input" id="bulkValueInput" min="0.5" step="0.5" placeholder="उदा. 5 (5% किंवा ₹5)" required />
+
+        <!-- Live Preview Box -->
+        <div id="bulkPreviewBox" style="background:var(--bg-subtle);border-radius:10px;padding:12px;margin-top:6px;">
+          <strong style="font-size:0.85rem;color:var(--text-secondary);">पूर्वावलोकन नमुना (Sample Preview):</strong>
+          <div id="bulkPreviewTable" style="margin-top:8px;"></div>
         </div>
-        <button type="submit" class="btn btn-primary" style="margin-top:12px;">
-          🔍 बदल तपासा व जतन करा (Preview & Apply)
+
+        <button type="submit" class="btn btn-primary" id="btnSubmitBulkPrice" style="margin-top:12px;min-height:48px;">
+          🔍 बदल तपासा व जतन करा (Confirm & Apply)
         </button>
       </form>
     </div>
   `;
 
   const form = container.querySelector('#bulkPriceForm');
-  if (form) {
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const catId = container.querySelector('#bulkCategorySelect').value;
-      const type = container.querySelector('#bulkTypeSelect').value;
-      const val = parseFloat(container.querySelector('#bulkValueInput').value);
+  const catSelect = container.querySelector('#bulkCategorySelect');
+  const typeSelect = container.querySelector('#bulkTypeSelect');
+  const valInput = container.querySelector('#bulkValueInput');
+  const previewTarget = container.querySelector('#bulkPreviewTable');
 
-      const targetProducts = catId === 'all'
-        ? allProducts
-        : allProducts.filter((p) => p.categoryId && (p.categoryId._id === catId || p.categoryId === catId));
-
-      const confirmed = await window.AdminConfirm({
-        title: 'घाऊक दर बदल खात्री करा / Confirm Bulk Price Change',
-        message: `${targetProducts.length} उत्पादनांच्या किमती बदलल्या जातील. खात्री करा?\nApply price change to ${targetProducts.length} items?`,
-        confirmText: 'होय, बदला / Yes, Apply',
-      });
-      if (!confirmed) return;
-
-      let count = 0;
-      for (const p of targetProducts) {
-        let newPrice = p.price;
-        if (type === 'percent_inc') newPrice = Math.round(p.price * (1 + val / 100));
-        else if (type === 'percent_dec') newPrice = Math.max(1, Math.round(p.price * (1 - val / 100)));
-        else if (type === 'flat_inc') newPrice = p.price + val;
-        else if (type === 'flat_dec') newPrice = Math.max(1, p.price - val);
-
-        try {
-          await window.AdminAPI.put(`/admin/products/${p._id}`, { price: newPrice });
-          p.price = newPrice;
-          count++;
-        } catch (_) {}
-      }
-
-      loadCatalogData();
-      if (window.AdminToast) {
-        window.AdminToast.show(`✅ ${count} उत्पादनांचे दर यशस्वीरीत्या बदलले!`, 'success');
-      }
-    };
+  function calculateNewPrice(currentPrice, type, val) {
+    if (type === 'percent_inc') return Math.round(currentPrice * (1 + val / 100));
+    if (type === 'percent_dec') return Math.max(1, Math.round(currentPrice * (1 - val / 100)));
+    if (type === 'flat_inc') return currentPrice + val;
+    if (type === 'flat_dec') return Math.max(1, currentPrice - val);
+    return currentPrice;
   }
+
+  function updatePreview() {
+    const catId = catSelect.value;
+    const type = typeSelect.value;
+    const val = parseFloat(valInput.value) || 0;
+
+    const targets = catId === 'all'
+      ? allProducts
+      : allProducts.filter((p) => p.categoryId && (p.categoryId._id === catId || p.categoryId === catId));
+
+    if (!targets.length) {
+      previewTarget.innerHTML = `<span class="text-xs text-muted">या वर्गात उत्पादने नाहीत.</span>`;
+      return;
+    }
+
+    const samples = targets.slice(0, 4);
+    previewTarget.innerHTML = `
+      <table style="width:100%;font-size:0.85rem;border-collapse:collapse;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border-subtle);color:var(--text-muted);text-align:left;">
+            <th>उत्पादन</th>
+            <th>सध्याचा दर</th>
+            <th>नवीन दर</th>
+            <th>तफावत</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${samples.map((p) => {
+            const nextPrice = calculateNewPrice(p.price, type, val);
+            const diff = nextPrice - p.price;
+            return `
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:4px 0;">${window.esc(p.nameMr || p.nameEn)}</td>
+                <td>₹${p.price}</td>
+                <td><strong style="color:var(--color-primary-800);">₹${nextPrice}</strong></td>
+                <td style="color:${diff >= 0 ? '#16a34a' : '#dc2626'};font-weight:600;">${diff >= 0 ? `+₹${diff}` : `-₹${Math.abs(diff)}`}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+      <div class="text-xs text-muted" style="margin-top:8px;">
+        एकूण ${targets.length} उत्पादनांचे दर बदलले जातील.
+      </div>
+    `;
+  }
+
+  catSelect.onchange = updatePreview;
+  typeSelect.onchange = updatePreview;
+  valInput.oninput = updatePreview;
+  updatePreview();
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const catId = catSelect.value;
+    const type = typeSelect.value;
+    const val = parseFloat(valInput.value) || 0;
+
+    const targets = catId === 'all'
+      ? allProducts
+      : allProducts.filter((p) => p.categoryId && (p.categoryId._id === catId || p.categoryId === catId));
+
+    if (!targets.length) {
+      alert('बदल करण्यासाठी उत्पादने नाहीत.');
+      return;
+    }
+
+    const confirmed = await window.AdminConfirm({
+      title: 'घाऊक दर बदल खात्री करा / Confirm Bulk Price Change',
+      message: `${targets.length} उत्पादनांच्या किमती बदलल्या जातील. खात्री करा?\nApply price change to ${targets.length} items?`,
+      confirmText: 'होय, दर बदला / Yes, Apply',
+    });
+    if (!confirmed) return;
+
+    const submitBtn = form.querySelector('#btnSubmitBulkPrice');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'दर बदल चालू आहे... / Applying...';
+
+    let count = 0;
+    for (const p of targets) {
+      const newPrice = calculateNewPrice(p.price, type, val);
+      try {
+        await window.AdminAPI.put(`/admin/products/${p._id}`, { price: newPrice });
+        p.price = newPrice;
+        count++;
+      } catch (_) {}
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🔍 बदल तपासा व जतन करा (Confirm & Apply)';
+    loadCatalogData();
+
+    if (window.AdminToast) {
+      window.AdminToast.show(`✅ ${count} उत्पादनांचे दर यशस्वीरीत्या बदलले! / Updated ${count} products`, 'success', 3500);
+    }
+  };
 }
 
-// Search input
+// Search input with debounce
+let catalogSearchDebounce = null;
 document.addEventListener('input', (e) => {
   if (e.target && e.target.id === 'catalogSearchInput') {
     catalogSearchQuery = e.target.value.trim();

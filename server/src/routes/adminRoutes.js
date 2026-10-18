@@ -40,6 +40,7 @@ router.get('/categories', admin.getCategories);
 router.post('/categories', admin.createCategory);
 router.put('/categories/:id', admin.updateCategory);
 router.patch('/categories/:id/toggle-active', admin.toggleCategoryActive);
+router.delete('/categories/:id', admin.deleteCategory);
 
 // ─── Store Settings (Owner Only) ──────────────────────────────────────────────
 router.get('/settings', admin.getSettings);

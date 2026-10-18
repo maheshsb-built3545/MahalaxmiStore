@@ -70,7 +70,8 @@ const getLowStock = async (req, res, next) => {
 const getStockLog = async (req, res, next) => {
   try {
     const { productId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
+    const isAll = !productId || productId === 'all';
+    if (!isAll && !mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).json({ success: false, message: 'Invalid product ID.' });
     }
 
@@ -78,12 +79,15 @@ const getStockLog = async (req, res, next) => {
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 30));
     const skip  = (page - 1) * limit;
 
+    const filter = isAll ? {} : { product: productId };
+
     const [logs, total] = await Promise.all([
-      StockLog.find({ product: productId })
+      StockLog.find(filter)
+        .populate('product', 'nameEn nameMr packSize unitType')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
-      StockLog.countDocuments({ product: productId }),
+      StockLog.countDocuments(filter),
     ]);
 
     res.json({
@@ -201,19 +205,12 @@ const adjustStock = async (req, res, next) => {
   session.startTransaction();
   try {
     const productId   = typeof req.body.productId === 'string' ? req.body.productId.trim() : null;
-    const newQuantity = Number(req.body.newQuantity);
     const note        = typeof req.body.note === 'string' ? req.body.note.trim() : '';
 
     if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
       await session.abortTransaction();
       session.endSession();
       return res.status(400).json({ success: false, message: 'Invalid product ID.' });
-    }
-
-    if (isNaN(newQuantity) || newQuantity < 0) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({ success: false, message: 'New quantity must be a non-negative number.' });
     }
 
     if (!note) {
@@ -229,11 +226,30 @@ const adjustStock = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
 
-    const delta = newQuantity - oldProduct.stockQuantity;
+    let targetQuantity;
+    if (req.body.newQuantity !== undefined && !isNaN(Number(req.body.newQuantity))) {
+      targetQuantity = Number(req.body.newQuantity);
+    } else if (req.body.quantity !== undefined && !isNaN(Number(req.body.quantity))) {
+      targetQuantity = oldProduct.stockQuantity + Number(req.body.quantity);
+    } else if (req.body.delta !== undefined && !isNaN(Number(req.body.delta))) {
+      targetQuantity = oldProduct.stockQuantity + Number(req.body.delta);
+    } else {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ success: false, message: 'Valid newQuantity or delta quantity is required.' });
+    }
+
+    if (targetQuantity < 0) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ success: false, message: 'Resulting stock quantity cannot be negative.' });
+    }
+
+    const delta = targetQuantity - oldProduct.stockQuantity;
 
     const product = await Product.findByIdAndUpdate(
       productId,
-      { $set: { stockQuantity: newQuantity } },
+      { $set: { stockQuantity: targetQuantity } },
       { new: true, session }
     );
 

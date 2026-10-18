@@ -578,27 +578,39 @@ async function loadStockLogs() {
   }
 }
 
-window.openManualAdjustModal = () => {
+window.openAdjustModal = (id) => {
+  window.openManualAdjustModal(id);
+};
+
+window.openManualAdjustModal = async (preselectedProductId = null) => {
   const sheet = new window.AdminBottomSheet({
     title: '⚖️ साठा दुरुस्ती नोंद (Stock Adjustment)',
   });
+
+  let productOptions = lowStockItems;
+  try {
+    const res = await window.AdminAPI.get('/admin/products?limit=200');
+    if (res.success && res.data) {
+      productOptions = res.data;
+    }
+  } catch (_) {}
 
   const body = document.createElement('div');
   body.innerHTML = `
     <form id="adjustStockForm" class="flex flex-col gap-3">
       <div>
-        <label class="form-label">उत्पादन निवडा / Select Product</label>
+        <label class="form-label">उत्पादन निवडा / Select Product *</label>
         <select class="form-select" id="adjustProductSelect" required>
           <option value="">-- उत्पादन निवडा --</option>
-          ${lowStockItems.map((p) => `<option value="${p._id}">${window.esc(p.nameMr || p.nameEn)} (${window.esc(p.packSize)})</option>`).join('')}
+          ${productOptions.map((p) => `<option value="${p._id}" ${preselectedProductId === p._id ? 'selected' : ''}>${window.esc(p.nameMr || p.nameEn)} (${window.esc(p.packSize || '')}) — शिल्लक: ${p.stockQuantity ?? 0}</option>`).join('')}
         </select>
       </div>
       <div>
-        <label class="form-label">बदल संख्या / Adjustment Quantity (+ किंवा -)</label>
+        <label class="form-label">बदल संख्या / Adjustment Quantity (+ किंवा -) *</label>
         <input type="number" class="form-input" id="adjustQtyInput" step="0.5" placeholder="उदा. -2 (नुकसान) किंवा +5" required />
       </div>
       <div>
-        <label class="form-label">कारण कोड / Reason Code (Mandatory)</label>
+        <label class="form-label">कारण कोड / Reason Code (Mandatory) *</label>
         <select class="form-select" id="adjustReasonCode" required>
           <option value="damage">तूटफूट / खराब झाले (Damage / Spoilage)</option>
           <option value="expiry">मुदत संपली (Expired / Discarded)</option>

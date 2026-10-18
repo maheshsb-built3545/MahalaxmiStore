@@ -1031,6 +1031,35 @@ const toggleCategoryActive = async (req, res, next) => {
   }
 };
 
+/**
+ * DELETE /api/admin/categories/:id
+ */
+const deleteCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid category ID.' });
+    }
+
+    const productCount = await Product.countDocuments({ categoryId: id });
+    if (productCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `या वर्गामध्ये ${productCount} उत्पादने आहेत, म्हणून हा वर्ग हटवता येणार नाही. आधी उत्पादने दुसऱ्या वर्गात हलवा.\nCannot delete category containing ${productCount} products. Reassign them first.`,
+      });
+    }
+
+    const category = await Category.findByIdAndDelete(id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category not found.' });
+    }
+
+    res.status(200).json({ success: true, message: 'Category deleted successfully.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ─── SETTINGS MANAGEMENT ───────────────────────────────────────────────────────
 
 /**
@@ -2468,6 +2497,7 @@ module.exports = {
   createCategory,
   updateCategory,
   toggleCategoryActive,
+  deleteCategory,
   getSettings,
   updateSettings,
   getCustomers,
