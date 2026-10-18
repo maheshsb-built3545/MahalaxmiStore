@@ -383,6 +383,94 @@ const recordPayment = async (req, res, next) => {
 };
 
 /**
+ * Admin: POST /api/udhar/admin/accounts/:id/debit
+ * Record manual purchase / debit on customer's credit balance.
+ */
+const recordDebit = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { id } = req.params;
+    const amount = parseFloat(req.body.amount);
+    const note = (req.body.note || '').trim();
+
+    if (isNaN(amount) || amount <= 0) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ success: false, message: 'Valid positive debit amount is required.' });
+    }
+
+    const account = await UdharAccount.findById(id).populate('customer', 'name phone preferredLanguage').session(session);
+    if (!account) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ success: false, message: 'Udhar account not found.' });
+    }
+
+    const previousBalance = account.balance;
+    const newBalance = previousBalance + amount;
+    account.balance = newBalance;
+    await account.save({ session });
+
+    const entry = await UdharEntry.create(
+      [
+        {
+          account: account._id,
+          customer: account.customer._id,
+          type: 'order',
+          amount,
+          balanceAfter: newBalance,
+          note: note || `Manual purchase recorded by ${req.user.name}`,
+          actor: { id: req.user._id, name: req.user.name, role: req.user.role },
+        },
+      ],
+      { session }
+    );
+
+    await AuditLog.create(
+      [
+        {
+          actor: { id: req.user._id, name: req.user.name, role: req.user.role },
+          action: 'udhar_manual_debit_recorded',
+          target: { collection: 'UdharAccount', id: account._id, name: account.customer.name },
+          before: { balance: previousBalance },
+          after: { balance: newBalance, amountAdded: amount },
+          note: note || `Manual debit ₹${amount}`,
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    createNotification({
+      recipient: account.customer._id,
+      recipientRole: 'customer',
+      type: 'udhar_update',
+      title: `नवीन उधारी खरेदी: ₹${amount}`,
+      body: `महालक्ष्मी किराणा: आपल्या खात्यावर ₹${amount} ची नवीन नोंद झाली आहे. चालू शिल्लक बाकी: ₹${newBalance}.`,
+      link: '/profile.html',
+    }).catch((e) => console.warn('Debit notify error:', e.message));
+
+    res.status(200).json({
+      success: true,
+      message: `₹${amount} उधारी खात्यावर नोंदवले. चालू बाकी: ₹${newBalance}.`,
+      data: {
+        account,
+        entry: entry[0],
+      },
+    });
+  } catch (err) {
+    try {
+      await session.abortTransaction();
+      session.endSession();
+    } catch (_) {}
+    next(err);
+  }
+};
+
+/**
  * Admin: GET /api/udhar/admin/accounts/:id/ledger
  * Return full audit ledger for a customer.
  */
@@ -468,6 +556,7 @@ module.exports = {
   getAdminAccounts,
   updateAccountStatus,
   recordPayment,
+  recordDebit,
   getCustomerLedger,
   getWhatsAppReminder,
 };

@@ -39,7 +39,10 @@
             ग्राहकांची उधारी नोंद, जमा पावती व आठवण संदेश / Customer credit ledger, payments & reminders
           </p>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary" id="btn-new-udhar-entry" style="min-height:44px;font-weight:700;">
+            ➕ नवीन नोंद / New Entry
+          </button>
           <button type="button" class="btn btn-secondary" id="btn-export-udhar" style="min-height:44px;">
             <svg class="icon icon-sm"><use href="assets/icons.svg#icon-reports"></use></svg>
             ${t('export_csv')}
@@ -63,6 +66,8 @@
         ${AdminSkeleton.cardList(4)}
       </div>
     `;
+
+    document.getElementById('btn-new-udhar-entry')?.addEventListener('click', openNewEntrySheet);
 
     document.getElementById('btn-export-udhar')?.addEventListener('click', () => {
       AdminAPI.downloadAuthed('/api/admin/export/udhar-ledger.csv', 'mahalaxmi-udhar-ledger.csv');
@@ -325,6 +330,156 @@
     card.querySelector('.btn-edit-account')?.addEventListener('click', () => openEditAccountModal(acc));
 
     return card;
+  }
+
+  // ── Global New Entry BottomSheet (Debit or Payment) ──
+  function openNewEntrySheet() {
+    if (!accounts.length) {
+      AdminToast.warning('कोणतेही उधारी खाते उपलब्ध नाही / No credit accounts available');
+      return;
+    }
+
+    const sheetContent = document.createElement('div');
+    sheetContent.innerHTML = `
+      <div style="padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:16px;">
+        <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;">
+          ➕ नवीन उधारी नोंद / New Entry
+        </h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin:4px 0 0;">
+          उधारी खरेदी (Debit) किंवा जमा पावती (Payment) नोंदवा.
+        </p>
+      </div>
+
+      <form id="new-entry-form" style="display:flex;flex-direction:column;gap:14px;">
+        <!-- Customer Select -->
+        <div class="form-group">
+          <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">
+            ग्राहक निवडा (Select Customer) *
+          </label>
+          <select id="new-entry-account" class="input" style="height:46px;padding:8px 12px;font-size:0.95rem;" required>
+            <option value="">-- ग्राहक निवडा --</option>
+            ${accounts.map((a) => {
+              const c = a.customer || {};
+              return `<option value="${a._id}">${AdminDOM.escape(c.name || 'ग्राहक')} (${c.phone || ''}) — चालू बाकी: ₹${a.balance || 0}</option>`;
+            }).join('')}
+          </select>
+        </div>
+
+        <!-- Entry Type: Debit vs Payment -->
+        <div class="form-group">
+          <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">
+            नोंदीचा प्रकार (Entry Type) *
+          </label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
+              <input type="radio" name="new-entry-type" value="debit" checked />
+              <span style="font-weight:600;font-size:0.85rem;">🛒 उधारी खरेदी (Debit)</span>
+            </label>
+            <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
+              <input type="radio" name="new-entry-type" value="payment" />
+              <span style="font-weight:600;font-size:0.85rem;">💰 जमा पावती (Payment)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Amount -->
+        <div class="form-group">
+          <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">
+            रक्कम (Amount ₹) *
+          </label>
+          <input type="number" id="new-entry-amount" class="input" step="1" min="1" placeholder="रक्कम टाका (e.g. 250)" required style="font-size:1.3rem;font-weight:800;padding:10px 14px;height:48px;" />
+        </div>
+
+        <!-- Method (only for payment) -->
+        <div class="form-group" id="new-entry-method-wrap" style="display:none;">
+          <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">
+            जमा माध्यम (Method)
+          </label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
+              <input type="radio" name="new-entry-method" value="cash" checked />
+              <span style="font-weight:600;font-size:0.85rem;">💵 रोख (Cash)</span>
+            </label>
+            <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
+              <input type="radio" name="new-entry-method" value="upi" />
+              <span style="font-weight:600;font-size:0.85rem;">📱 UPI / ऑनलाईन</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Note -->
+        <div class="form-group">
+          <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px;">
+            तपशील / टीप (Note)
+          </label>
+          <input type="text" id="new-entry-note" class="input" placeholder="उदा. किराणा सामान किंवा दुकानात रोख जमा" style="height:42px;" />
+        </div>
+
+        <!-- Submit -->
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <button type="button" class="btn btn-secondary" id="new-entry-cancel" style="flex:1;min-height:46px;">
+            ${t('cancel')}
+          </button>
+          <button type="submit" class="btn btn-primary" id="new-entry-submit" style="flex:2;min-height:46px;font-weight:700;">
+            ✓ नोंद जतन करा / Save Entry
+          </button>
+        </div>
+      </form>
+    `;
+
+    const sheet = AdminBottomSheet.open({ content: sheetContent });
+
+    const form = sheetContent.querySelector('#new-entry-form');
+    const methodWrap = sheetContent.querySelector('#new-entry-method-wrap');
+
+    sheetContent.querySelectorAll('input[name="new-entry-type"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        methodWrap.style.display = radio.value === 'payment' ? 'block' : 'none';
+      });
+    });
+
+    sheetContent.querySelector('#new-entry-cancel')?.addEventListener('click', () => sheet.close());
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const accountId = sheetContent.querySelector('#new-entry-account').value;
+      const amount = parseFloat(sheetContent.querySelector('#new-entry-amount').value);
+      const type = form.querySelector('input[name="new-entry-type"]:checked')?.value || 'debit';
+      const method = form.querySelector('input[name="new-entry-method"]:checked')?.value || 'cash';
+      const note = sheetContent.querySelector('#new-entry-note')?.value.trim();
+
+      if (!accountId || isNaN(amount) || amount <= 0) {
+        AdminToast.warning('कृपया ग्राहक आणि योग्य रक्कम निवडा');
+        return;
+      }
+
+      const submitBtn = sheetContent.querySelector('#new-entry-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'नोंदणी सुरू आहे... / Saving...';
+
+      try {
+        if (type === 'payment') {
+          await AdminAPI.post(`/api/udhar/admin/accounts/${accountId}/payment`, {
+            amount,
+            paymentMethod: method,
+            note,
+          });
+          AdminToast.success(`₹${amount} जमा पावती यशस्वीरित्या नोंदवली!`);
+        } else {
+          await AdminAPI.post(`/api/udhar/admin/accounts/${accountId}/debit`, {
+            amount,
+            note,
+          });
+          AdminToast.success(`₹${amount} उधारी खरेदी यशस्वीरित्या नोंदवली!`);
+        }
+        sheet.close();
+        await loadAccounts();
+      } catch (err) {
+        AdminToast.error(err.message || t('error_generic'));
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✓ नोंद जतन करा / Save Entry';
+      }
+    });
   }
 
   // ── Record Payment BottomSheet ──

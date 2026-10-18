@@ -8,6 +8,15 @@
 'use strict';
 
 class BottomSheet {
+  static open(options = {}) {
+    const sheet = new BottomSheet(options);
+    if (options.content) {
+      sheet.setContent(options.content);
+    }
+    sheet.open();
+    return sheet;
+  }
+
   constructor(options = {}) {
     this.options = {
       title: '',

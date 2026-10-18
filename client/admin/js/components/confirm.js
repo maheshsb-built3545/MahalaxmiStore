@@ -18,9 +18,9 @@ function confirmDialog(options = {}) {
   const {
     title = 'खात्री करा / Confirm Action',
     message = 'तुम्हाला ही कृती करायची आहे का? / Are you sure you want to proceed?',
-    confirmText = 'होय, सुरू ठेवा / Yes, Proceed',
-    cancelText = 'रद्द करा / Cancel',
-    isDestructive = false,
+    confirmText = options.confirmLabel || options.confirmText || 'होय, सुरू ठेवा / Yes, Proceed',
+    cancelText = options.cancelLabel || options.cancelText || 'रद्द करा / Cancel',
+    isDestructive = options.isDanger || options.isDestructive || false,
   } = options;
 
   return new Promise((resolve) => {
@@ -73,4 +73,5 @@ function confirmDialog(options = {}) {
   });
 }
 
+confirmDialog.show = confirmDialog;
 window.AdminConfirm = confirmDialog;
