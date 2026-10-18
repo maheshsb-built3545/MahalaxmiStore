@@ -155,4 +155,54 @@ const getMe = async (req, res) => {
   });
 };
 
-module.exports = { register, login, getMe };
+/**
+ * PUT /api/auth/profile
+ * Update logged-in user profile (name, optional password update)
+ */
+const updateProfile = async (req, res, next) => {
+  try {
+    const rawName = ensureString(req.body.name);
+    if (!rawName || rawName.length < 2 || rawName.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name must be between 2 and 100 characters / नाव २ ते १०० अक्षरांचे असावे.',
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    user.name = rawName;
+
+    if (req.body.password) {
+      const rawPassword = ensureString(req.body.password);
+      if (rawPassword.length < 8 || rawPassword.length > 72) {
+        return res.status(400).json({
+          success: false,
+          message: 'Password must be between 8 and 72 characters / पासवर्ड ८ ते ७२ अक्षरांचा असावा.',
+        });
+      }
+      const salt = await bcrypt.genSalt(10);
+      user.passwordHash = await bcrypt.hash(rawPassword, salt);
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully / प्रोफाईल यशस्वीरीत्या अपडेट केले.',
+      user: {
+        _id: user._id,
+        name: user.name,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { register, login, getMe, updateProfile };

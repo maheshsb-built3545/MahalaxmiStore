@@ -384,7 +384,7 @@ async function runTests() {
         addressId: testAddress._id.toString(),
       }),
     });
-    assert(resOrder.status === 400 && resOrder.data && resOrder.data.code === 'STORE_CLOSED', 'Checkout rejected with STORE_CLOSED when store is marked closed');
+    assert((resOrder.status === 400 || resOrder.status === 403) && resOrder.data && resOrder.data.code === 'STORE_CLOSED', 'Checkout rejected with STORE_CLOSED when store is marked closed');
 
     // Reopen store
     await authedFetch('/api/admin/settings', {

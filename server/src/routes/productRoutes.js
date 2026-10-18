@@ -5,6 +5,7 @@ const { getProducts, getProduct, getBestSellers, getOffers } = require('../contr
 
 router.get('/',            getProducts);
 router.get('/bestsellers', getBestSellers); // R2 (CAT-07)
+router.get('/best-sellers', getBestSellers);
 router.get('/offers',      getOffers);      // R2 (CAT-06)
 router.get('/:id',         getProduct);
 

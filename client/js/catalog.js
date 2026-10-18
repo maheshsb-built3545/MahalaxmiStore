@@ -134,23 +134,26 @@ const catalog = (() => {
     card.appendChild(offEl);
 
     // Product image wrapper with 1:1 ratio
+    const catEmoji = (p.categoryId && p.categoryId.emoji) || p.emoji || '🛒';
     const imgWrap = el('div', 'card-img-wrap');
     if (p.imageUrl) {
       const img = document.createElement('img');
       img.src   = p.imageUrl;
       img.alt   = p.nameEn;
+      img.width = 200;
+      img.height = 200;
       img.className = 'card-img';
       img.loading   = 'lazy';
       img.decoding  = 'async';
-      img.onerror   = () => { img.replaceWith(el('div', 'em', p.emoji || '🛒')); };
+      img.onerror   = () => { img.replaceWith(el('div', 'em', catEmoji)); };
       imgWrap.appendChild(img);
     } else {
-      imgWrap.appendChild(el('div', 'em', p.emoji || '🛒'));
+      imgWrap.appendChild(el('div', 'em', catEmoji));
     }
     card.appendChild(imgWrap);
 
     card.appendChild(el('h4', null, p.nameEn));
-    const mrEl = el('div', 'wt', p.nameMr + ' · ' + p.packSize);
+    const mrEl = el('div', 'wt', (p.nameMr ? p.nameMr + ' · ' : '') + p.packSize);
     card.appendChild(mrEl);
 
     const priceRow = el('div', 'price-row');
@@ -168,11 +171,11 @@ const catalog = (() => {
     }
 
     // Out-of-stock (R1: based on virtual inStock which checks stockQuantity + unavailableFlag)
-    if (!p.inStock) {
+    if (!p.inStock || stock <= 0) {
       card.classList.add('out-of-stock');
-      const oos = el('button', 'add-btn', 'स्टॉक संपला');
+      const oos = el('button', 'add-btn', 'संपले / Out of stock');
       oos.disabled = true;
-      oos.style.opacity = '0.5';
+      oos.style.opacity = '0.55';
       oos.style.cursor  = 'not-allowed';
       card.appendChild(oos);
       return card;
@@ -189,6 +192,7 @@ const catalog = (() => {
         cart.change(p, -1);
         ui.renderCartDrawer();
         renderProductGrid();
+        renderBestSellers();
         ui.updateCartBadge();
       });
 
@@ -199,19 +203,19 @@ const catalog = (() => {
       // R1: disable + if cart qty already equals available stock
       if (qty >= stock) {
         plus.disabled = true;
-        plus.title    = `Only ${stock} available`;
+        plus.title    = `फक्त ${stock} उपलब्ध / Only ${stock} available`;
         plus.style.opacity = '0.4';
         plus.style.cursor  = 'not-allowed';
+        plus.addEventListener('click', () => {
+          ui.showToast(`फक्त ${stock} उपलब्ध आहेत / Only ${stock} available in stock.`);
+        });
       } else {
         plus.addEventListener('click', () => {
-          if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
-            ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1 });
-            return;
-          }
           if (window.PWA) window.PWA.haptic(20);
           cart.change(p, 1);
           ui.renderCartDrawer();
           renderProductGrid();
+          renderBestSellers();
           ui.updateCartBadge();
           ui.showToast(p.nameEn + ' added to cart');
         });
@@ -220,13 +224,9 @@ const catalog = (() => {
       stepper.append(minus, qtySpan, plus);
       card.appendChild(stepper);
     } else {
-      const addBtn = el('button', 'add-btn', '+ Add');
+      const addBtn = el('button', 'add-btn', '+ जोडा / Add');
       addBtn.setAttribute('aria-label', 'Add ' + p.nameEn + ' to cart');
       addBtn.addEventListener('click', () => {
-        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
-          ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1 });
-          return;
-        }
         if (window.PWA) window.PWA.haptic(25);
         addBtn.classList.remove('btn-pop');
         void addBtn.offsetWidth;
@@ -234,6 +234,7 @@ const catalog = (() => {
         cart.change(p, 1);
         ui.renderCartDrawer();
         renderProductGrid();
+        renderBestSellers();
         ui.updateCartBadge();
         ui.showToast(p.nameEn + ' added to cart');
       });
@@ -276,10 +277,22 @@ const catalog = (() => {
       icon.style.cssText = 'font-size:2.4rem;margin-bottom:8px;';
       const title = el('strong', '', 'कोणतेही उत्पादन सापडले नाही / No products found');
       title.style.cssText = 'display:block;font-size:1.1rem;color:#04251a;margin-bottom:6px;';
-      const sub = el('p', '', 'कृपया वेगळा शब्द वापरून शोधा (उदा. तेल, साखर, आटा, तांदूळ)');
-      sub.style.cssText = 'font-size:0.9rem;';
-      msg.append(icon, title, sub);
+      const sub = el('p', '', `"${search}" साठी कॅटलॉगमध्ये वस्तू सापडली नाही. कृपया वेगळा शब्द वापरा किंवा व्हॉट्सॲपवर विचारा.`);
+      sub.style.cssText = 'font-size:0.9rem;margin-bottom:12px;';
+
+      const waNumber = (window._storeSettings && window._storeSettings.storeWhatsapp) || (typeof CONFIG !== 'undefined' ? CONFIG.STORE_NUM : '919860924504');
+      const waBtn = el('a', 'btn btn-outline', '💬 व्हॉट्सॲपवर विचारा / Ask on WhatsApp');
+      waBtn.href = `${CONFIG.WA_BASE}${waNumber}?text=` + encodeURIComponent(`नमस्कार! मला "${search}" हवे होते, तुमच्याकडे उपलब्ध आहे का? / Hi, do you have "${search}"?`);
+      waBtn.target = '_blank';
+      waBtn.rel = 'noopener';
+      waBtn.style.cssText = 'min-height:44px;display:inline-flex;align-items:center;margin-top:14px;text-decoration:none;font-weight:700;';
+
+      msg.append(icon, title, sub, waBtn);
       grid.appendChild(msg);
+
+      if (search && search.length >= 2) {
+        fetch(`${CONFIG.API_BASE}/products?search=${encodeURIComponent(search)}&limit=1`).catch(() => {});
+      }
       return;
     }
 
@@ -294,7 +307,7 @@ const catalog = (() => {
 
   async function fetchBestSellers() {
     try {
-      const res = await fetch(`${CONFIG.API_BASE}/products/bestsellers`);
+      const res = await fetch(`${CONFIG.API_BASE}/products/best-sellers`);
       const data = await res.json();
       if (data.success) _bestSellers = data.data;
     } catch (_) {}
@@ -357,6 +370,8 @@ const catalog = (() => {
         const dImg = document.createElement('img');
         dImg.src = p.imageUrl;
         dImg.alt = p.nameEn;
+        dImg.width = 180;
+        dImg.height = 180;
         dImg.className = 'deal-card-img';
         dImg.loading = 'lazy';
         dImg.decoding = 'async';
@@ -367,9 +382,8 @@ const catalog = (() => {
       }
       card.appendChild(el('h4', null, `${p.nameEn} ${p.packSize}`));
       card.appendChild(el('div', 'save', (p.offerPercent ? `${p.offerPercent}% OFF · ` : '') + 'Save ₹' + save));
-      const timer = el('div', 'timer', 'Mega Deal • महा ऑफर');
-      timer.dataset.deal = '1';
-      card.appendChild(timer);
+      const dealBadge = el('div', 'timer', '🔥 महा ऑफर • Mega Deal');
+      card.appendChild(dealBadge);
       grid.appendChild(card);
     });
 

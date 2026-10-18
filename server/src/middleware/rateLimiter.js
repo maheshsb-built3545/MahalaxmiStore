@@ -28,7 +28,7 @@ const authLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       success: false,
-      message: 'Too many failed login attempts. Please wait 15 minutes before trying again.',
+      message: 'खूप अयशस्वी प्रयत्न. कृपया १५ मिनिटे थांबा / Too many failed login attempts. Please wait 15 minutes before trying again.',
     });
   },
 });
@@ -46,7 +46,7 @@ const orderLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       success: false,
-      message: 'Order creation limit reached (maximum 10 orders per hour). Please try again later.',
+      message: 'ऑर्डर मर्यादा गाठली आहे (ताशी कमाल १०). कृपया थोड्या वेळाने प्रयत्न करा / Order limit reached (max 10 per hour). Please try again later.',
     });
   },
 });

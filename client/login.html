@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="mr" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google" content="notranslate">
 <title>Customer Login • ग्राहक लॉगिन • Mahalaxmi Kirana Store</title>
 <meta name="description" content="Log in to your Mahalaxmi Kirana Store account to place grocery orders and track delivery in Yesgaon & Kopargaon.">
 <meta name="theme-color" content="#064e3b">
@@ -80,20 +81,38 @@
       </div>
 
       <div class="form-group">
-        <label for="password">
-          Password <span class="mr">पासवर्ड</span>
-          <span class="req">*</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <label for="password" style="margin:0;">
+            Password <span class="mr">पासवर्ड</span>
+            <span class="req">*</span>
+          </label>
+          <a id="forgotPassLink" href="https://wa.me/919860924504?text=Hi%20Mahalaxmi%20Kirana,%20I%20forgot%20my%20password%20and%20need%20a%20reset" target="_blank" rel="noopener" style="font-size:0.8rem;color:#047857;text-decoration:underline;font-weight:600;">
+            पासवर्ड विसरलात? (Reset via WhatsApp)
+          </a>
+        </div>
+        <div style="position:relative;display:flex;align-items:center;margin-top:6px;">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="••••••••" 
+            minlength="8" 
+            maxlength="72" 
+            required 
+            autocomplete="current-password"
+            style="width:100%;padding-right:44px;"
+          >
+          <button type="button" id="togglePasswordBtn" aria-label="Show or hide password" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;font-size:1.15rem;padding:6px;min-height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;">
+            👁️
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.25rem;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:#475569;cursor:pointer;font-weight:500;">
+          <input type="checkbox" id="rememberMe" checked style="width:18px;height:18px;accent-color:#047857;">
+          <span>मला लक्षात ठेवा / Remember me on this device</span>
         </label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          placeholder="••••••••" 
-          minlength="8" 
-          maxlength="72" 
-          required 
-          autocomplete="current-password"
-        >
       </div>
 
       <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
@@ -125,6 +144,17 @@
   const form = document.getElementById('loginForm');
   const errorAlert = document.getElementById('errorAlert');
   const submitBtn = document.getElementById('submitBtn');
+  const passInput = document.getElementById('password');
+  const togglePassBtn = document.getElementById('togglePasswordBtn');
+
+  if (togglePassBtn && passInput) {
+    togglePassBtn.addEventListener('click', () => {
+      const isPass = passInput.type === 'password';
+      passInput.type = isPass ? 'text' : 'password';
+      togglePassBtn.textContent = isPass ? '🙈' : '👁️';
+      togglePassBtn.setAttribute('aria-label', isPass ? 'Hide password' : 'Show password');
+    });
+  }
 
   function showError(msg) {
     errorAlert.textContent = msg;

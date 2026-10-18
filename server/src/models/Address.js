@@ -22,6 +22,18 @@ const addressSchema = new mongoose.Schema(
       default: '',
       maxlength: [100, 'Landmark cannot exceed 100 characters.'],
     },
+    village: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [100, 'Village cannot exceed 100 characters.'],
+    },
+    locationPin: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [500, 'Location pin URL cannot exceed 500 characters.'],
+    },
     pincode: {
       type: String,
       required: [true, 'Pincode is required.'],

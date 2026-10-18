@@ -58,6 +58,9 @@ productSchema.set('toJSON',   { virtuals: true });
 productSchema.set('toObject', { virtuals: true });
 
 // ── Indexes ───────────────────────────────────────────────────────────────────
+// Compound index for fast category filtering and sorting
+productSchema.index({ categoryId: 1, active: 1 });
+productSchema.index({ active: 1, sortOrder: 1 });
 // Compound index for fast bilingual search queries
 productSchema.index({ nameEn: 1, nameMr: 1 });
 // Low-stock list query: active products where stockQuantity <= reorderLevel

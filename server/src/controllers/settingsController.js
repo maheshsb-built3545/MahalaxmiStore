@@ -27,6 +27,7 @@ const getPublicSettings = async (req, res, next) => {
         slots: settings.slots,
         storeHours: settings.storeHours,
         upiMobile: settings.upiMobile,
+        upiId: settings.upiId || (settings.upiMobile ? `${settings.upiMobile}@ybl` : '9860924504@ybl'),
         upiQrImage: settings.upiQrImage,
         storeWhatsapp: settings.storeWhatsapp,
         isStoreOpen: settings.isStoreOpen !== false,

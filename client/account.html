@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="mr" translate="no" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="google" content="notranslate">
+  <title>माझे खाते (My Account) — Mahalaxmi Kirana Store</title>
+  <meta name="description" content="Manage your Mahalaxmi Kirana account, delivery addresses, order history, and notifications.">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/motion.css">
+  <link rel="stylesheet" href="css/mobile-app.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="images/icon-192.svg">
+  <link rel="apple-touch-icon" href="images/icon-192.svg">
+
+  <style>
+    .account-page-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 16px 100px;
+    }
+    .profile-hero-card {
+      background: linear-gradient(135deg, var(--forest-950, #04251a), var(--forest-800, #064e3b));
+      color: #fff;
+      border-radius: 20px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px -5px rgba(4, 37, 26, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .profile-avatar-large {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--gold-500, #f59e0b);
+      color: var(--forest-950, #04251a);
+      font-size: 28px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .profile-meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .profile-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0 0 4px;
+      color: #fff;
+      word-break: break-word;
+    }
+    .profile-phone {
+      font-size: 0.9rem;
+      color: #a7f3d0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .role-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      margin-top: 6px;
+    }
+    .menu-group {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .menu-group-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      padding: 12px 16px 6px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      min-height: 52px;
+      color: #1e293b;
+      text-decoration: none;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.15s;
+    }
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    .menu-item:hover, .menu-item:active {
+      background: #f8fafc;
+    }
+    .menu-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .menu-icon {
+      font-size: 1.25rem;
+      width: 28px;
+      text-align: center;
+    }
+    .menu-item-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+    .badge-counter {
+      background: #ef4444;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .logout-btn {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #fca5a5;
+      background: #fef2f2;
+      color: #dc2626;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background 0.15s;
+    }
+    .logout-btn:active {
+      background: #fee2e2;
+    }
+    .guest-card {
+      text-align: center;
+      padding: 32px 20px;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+  </style>
+</head>
+<body class="has-bottom-nav">
+
+  <!-- Header -->
+  <header style="position:sticky;top:0;z-index:100;background:rgba(248, 250, 252, 0.92);backdrop-filter:blur(14px);border-bottom:1px solid #e2e8f0;">
+    <div class="wrap hdr-row" style="display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:8px 16px;">
+      <a href="index.html" class="brand" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div class="brand-mark" style="width:36px;height:36px;border-radius:10px;background:#04251a;color:#f59e0b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;">M</div>
+        <div class="brand-text">
+          <span class="en" style="font-weight:700;font-size:15px;color:#04251a;display:block;">Mahalaxmi Kirana</span>
+          <span class="mr" style="font-size:11.5px;color:#064e3b;font-weight:600;">महालक्ष्मी किराणा दुकान</span>
+        </div>
+      </a>
+      <button class="cart-btn" id="cartBtn" aria-label="Open cart" style="min-height:42px;padding:8px 16px;font-size:14px;">
+        🛒 Cart<span class="badge" id="cartBadge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="account-page-wrap">
+    <!-- Logged in view -->
+    <div id="accountUserView" style="display:none;">
+      <div class="profile-hero-card">
+        <div class="profile-avatar-large" id="profileAvatar">C</div>
+        <div class="profile-meta">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h1 class="profile-name" id="profileName" style="margin:0;">ग्राहक / Customer</h1>
+            <button type="button" id="editProfileBtn" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;">
+              ✏️ नाव बदला / Edit
+            </button>
+          </div>
+          <p class="profile-phone" id="profilePhone">📞 9876543210</p>
+          <div id="roleBadgeContainer"></div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="menu-group">
+        <div class="menu-group-title">माझी खरेदी व संदेश / Orders & Messages</div>
+        <a href="orders.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">📦</span>
+            <span>माझ्या ऑर्डर्स / My Orders</span>
+          </div>
+          <div class="menu-item-right">
+            <span>इतिहास व ट्रॅकिंग</span>
+            <span>→</span>
+          </div>
+        </a>
+        <a href="inbox.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">🔔</span>
+            <span>सूचना व संदेश / Inbox</span>
+          </div>
+          <div class="menu-item-right">
+            <span class="badge-counter" id="accountInboxBadge" style="display:none;">0</span>
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Addresses & Settings -->
+      <div class="menu-group">
+        <div class="menu-group-title">पत्ता व माहिती / Addresses & Settings</div>
+        <a href="checkout.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">📍</span>
+            <span>डिलिव्हरी पत्ते / Delivery Addresses</span>
+          </div>
+          <div class="menu-item-right">
+            <span>व्यवस्थापन</span>
+            <span>→</span>
+          </div>
+        </a>
+        <button type="button" id="installAppBtn" class="menu-item" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;">
+          <div class="menu-item-left">
+            <span class="menu-icon">📲</span>
+            <span>ॲप इन्स्टॉल करा / Install Web App</span>
+          </div>
+          <div class="menu-item-right">
+            <span>PWA →</span>
+          </div>
+        </button>
+        <div class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">🌐</span>
+            <span>भाषा / Language</span>
+          </div>
+          <div class="menu-item-right">
+            <span style="font-weight:600;color:#047857;">मराठी + English</span>
+          </div>
+        </div>
+        <a href="https://wa.me/919860924504?text=Hi%20Mahalaxmi%20Kirana,%20I%20need%20help%20with%20my%20account" target="_blank" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">💬</span>
+            <span>दुकानदाराशी संपर्क / WhatsApp Support</span>
+          </div>
+          <div class="menu-item-right">
+            <span>+91 98609 24504</span>
+            <span>→</span>
+          </div>
+        </a>
+        <a href="privacy.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">🔒</span>
+            <span>गोपनीयता धोरण / Privacy Policy</span>
+          </div>
+          <div class="menu-item-right">
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Owner / Staff Admin Link (Only visible if owner or staff) -->
+      <div class="menu-group" id="ownerAdminGroup" style="display:none;border-color:#86efac;background:#f0fdf4;">
+        <div class="menu-group-title" style="color:#166534;">दुकान व्यवस्थापन / Store Management</div>
+        <a href="admin/dashboard.html" class="menu-item" style="color:#166534;font-weight:700;">
+          <div class="menu-item-left">
+            <span class="menu-icon">🛠️</span>
+            <span>मालक डॅशबोर्ड / Admin Panel</span>
+          </div>
+          <div class="menu-item-right" style="color:#166534;">
+            <span>प्रवेश करा</span>
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Logout -->
+      <button type="button" class="logout-btn" id="logoutBtn">
+        🚪 बाहेर पडा / Log Out
+      </button>
+    </div>
+
+    <!-- Guest / Not logged in view -->
+    <div id="accountGuestView" style="display:none;">
+      <div class="guest-card">
+        <span style="font-size:3rem;display:block;margin-bottom:12px;">👤</span>
+        <h2 style="font-size:1.3rem;font-weight:800;color:#04251a;margin:0 0 6px;">
+          खात्यामध्ये प्रवेश करा / Welcome
+        </h2>
+        <p style="font-size:0.88rem;color:#64748b;margin:0 0 20px;line-height:1.5;">
+          ऑर्डर ट्रॅक करण्यासाठी व जतन केलेले पत्ते पाहण्यासाठी कृपया लॉगिन करा.<br>
+          <span style="font-size:0.8rem;">Log in to track orders and save your addresses.</span>
+        </p>
+        <div style="display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto;">
+          <a href="login.html?redirect=account.html" class="btn btn-primary" style="min-height:48px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;">
+            लॉगिन करा / Log In →
+          </a>
+          <a href="register.html?redirect=account.html" class="btn btn-outline" style="min-height:48px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;">
+            नवीन खाते तयार करा / Register
+          </a>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <div class="menu-group-title">मदत व माहिती / Help & Store Info</div>
+        <a href="https://wa.me/919860924504?text=Hi%20Mahalaxmi%20Kirana" target="_blank" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">💬</span>
+            <span>WhatsApp वर मदत / Help</span>
+          </div>
+          <div class="menu-item-right">
+            <span>+91 98609 24504 →</span>
+          </div>
+        </a>
+        <a href="privacy.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">🔒</span>
+            <span>गोपनीयता धोरण / Privacy Policy</span>
+          </div>
+          <div class="menu-item-right">
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Cart Drawer -->
+  <div class="drawer-overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Shopping Cart">
+    <div class="sheet-drag-handle" aria-hidden="true"></div>
+    <div class="drawer-head">
+      <div>
+        <h2 style="font-size:1.15rem;font-weight:800;color:var(--forest-950);margin:0;">तुमची कार्ट (Your Cart)</h2>
+        <span style="font-size:0.8rem;color:#64748b;">महालक्ष्मी किराणा दुकान</span>
+      </div>
+      <button class="drawer-close" onclick="closeCart()" aria-label="Close cart">✕</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+    <div class="drawer-foot" id="drawerFoot">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-weight:600;color:#64748b;font-size:0.95rem;">एकूण रक्कम (Total)</span>
+        <strong id="totalAmt" style="font-size:1.35rem;font-weight:800;color:var(--forest-950);">₹0</strong>
+      </div>
+      <button type="button" class="btn btn-primary" id="checkoutBtn" onclick="checkout()" style="width:100%;min-height:50px;font-size:1rem;font-weight:800;">
+        ऑर्डर करा / Proceed to Checkout →
+      </button>
+    </div>
+  </aside>
+
+  <!-- Core Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/pwa.js"></script>
+
+  <script>
+    (function initAccountPage() {
+      const isAuth = auth.isLoggedIn();
+      const user = auth.getUser();
+
+      const userView = document.getElementById('accountUserView');
+      const guestView = document.getElementById('accountGuestView');
+
+      if (isAuth && user) {
+        userView.style.display = 'block';
+        guestView.style.display = 'none';
+
+        const name = user.name || 'Customer';
+        document.getElementById('profileName').textContent = name;
+        document.getElementById('profilePhone').textContent = `📞 ${user.phone || ''}`;
+        document.getElementById('profileAvatar').textContent = name.trim().charAt(0).toUpperCase();
+
+        const roleContainer = document.getElementById('roleBadgeContainer');
+        if (user.role === 'owner') {
+          roleContainer.innerHTML = '<span class="role-badge" style="background:#dcfce7;color:#15803d;border-color:#86efac;">👑 दुकान मालक / Store Owner</span>';
+          document.getElementById('ownerAdminGroup').style.display = 'block';
+        } else if (user.role === 'staff') {
+          roleContainer.innerHTML = '<span class="role-badge" style="background:#e0f2fe;color:#0369a1;border-color:#bae6fd;">👔 कर्मचारी / Staff</span>';
+          document.getElementById('ownerAdminGroup').style.display = 'block';
+        } else {
+          roleContainer.innerHTML = '<span class="role-badge">⭐ नियमित ग्राहक / Member</span>';
+        }
+
+        // Fetch unread count for badge
+        auth.updateCustomerUnreadBadge().then(() => {
+          const countBadge = document.getElementById('customerUnreadBadge');
+          const accountBadge = document.getElementById('accountInboxBadge');
+          if (countBadge && accountBadge) {
+            const count = parseInt(countBadge.textContent, 10) || 0;
+            if (count > 0) {
+              accountBadge.textContent = count;
+              accountBadge.style.display = 'inline-block';
+            }
+          }
+        });
+
+        // Edit Profile
+        document.getElementById('editProfileBtn')?.addEventListener('click', async () => {
+          const currentName = user.name || '';
+          const newName = prompt('तुमचे पूर्ण नाव टाका / Enter your full name:', currentName);
+          if (newName && newName.trim() && newName.trim() !== currentName) {
+            try {
+              const res = await fetch(`${CONFIG.API_BASE}/auth/profile`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${auth.getToken()}`,
+                },
+                body: JSON.stringify({ name: newName.trim() }),
+              });
+              const data = await res.json();
+              if (data.success && data.user) {
+                user.name = data.user.name;
+                localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(user));
+                document.getElementById('profileName').textContent = data.user.name;
+                document.getElementById('profileAvatar').textContent = data.user.name.trim().charAt(0).toUpperCase();
+                alert('प्रोफाईल यशस्वीरीत्या अपडेट केले! / Profile updated successfully.');
+              } else {
+                alert(data.message || 'Error updating profile');
+              }
+            } catch (e) {
+              alert('Network error updating profile');
+            }
+          }
+        });
+
+        // Install Web App button
+        document.getElementById('installAppBtn')?.addEventListener('click', () => {
+          if (window.PWA && typeof window.PWA.install === 'function') {
+            window.PWA.install();
+          } else {
+            alert('हे ॲप इन्स्टॉल करण्यासाठी ब्राऊझर मेन्यू (⋮) उघडून "Add to Home Screen" किंवा "Install App" निवडा.\nTo install this app, open browser menu (⋮) and tap "Add to Home screen".');
+          }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+          if (confirm('तुम्हाला बाहेर पडायचे आहे का? / Are you sure you want to log out?')) {
+            auth.clearSession();
+            window.location.href = 'index.html';
+          }
+        });
+      } else {
+        userView.style.display = 'none';
+        guestView.style.display = 'block';
+      }
+
+      // Init cart badge & bottom nav
+      ui.updateCartBadge();
+      document.getElementById('cartBtn')?.addEventListener('click', () => ui.openCart());
+    })();
+  </script>
+</body>
+</html>

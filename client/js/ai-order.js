@@ -160,8 +160,11 @@ const aiOrderBox = (() => {
 
       _recognition.onerror = (err) => {
         console.warn('Speech recognition error:', err.error);
-        // Fallback to next supported language if language not supported
-        if (err.error === 'language-not-supported' && currentLangIndex < fallbackLangs.length - 1) {
+        if (err.error === 'not-allowed' || err.error === 'service-not-allowed') {
+          if (window.ui && window.ui.showToast) {
+            ui.showToast('मायक्रोफोन परवानगी नाकारली गेली आहे. कृपया ब्राऊझर सेटिंग्जमध्ये मायक्रोफोन सुरू करा. / Microphone permission denied. Please allow microphone in browser settings.');
+          }
+        } else if (err.error === 'language-not-supported' && currentLangIndex < fallbackLangs.length - 1) {
           currentLangIndex++;
           _recognition.lang = fallbackLangs[currentLangIndex];
           try {
@@ -232,6 +235,9 @@ const aiOrderBox = (() => {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
+        if (res.status === 429) {
+          throw new Error('तुम्ही खूप कमी वेळात अनेक विनंत्या पाठवल्या आहेत. कृपया १ मिनिट थांबून प्रयत्न करा. / Too many requests. Please wait a minute.');
+        }
         throw new Error(data.message || 'यादी वाचण्यात अडचण आली / Failed to parse list');
       }
 
@@ -530,24 +536,6 @@ const aiOrderBox = (() => {
     if (!inStockItems.length) {
       if (window.ui && window.ui.showToast) {
         ui.showToast('कार्टमध्ये जोडण्यासाठी कोणतीही उपलब्ध वस्तू नाही / No in-stock items to add');
-      }
-      return;
-    }
-
-    // Task 1: If guest, prompt login with pending action and resume after login
-    if (window.auth && !window.auth.isLoggedIn()) {
-      if (window.ui && window.ui.showLoginPrompt) {
-        window.ui.showLoginPrompt({
-          type: 'ai_list',
-          items: inStockItems.map((i) => ({
-            product: i.product,
-            productId: i.product.productId || i.product._id,
-            qty: i.qty,
-            unit: i.unit || i.product.unitType || 'unit',
-          })),
-          rawInput: $input ? $input.value : '',
-          logId: _currentLogId,
-        });
       }
       return;
     }

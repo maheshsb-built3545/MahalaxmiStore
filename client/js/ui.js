@@ -35,40 +35,87 @@ const ui = (() => {
 
   // ── Store open/closed ─────────────────────────────────────────────────────
 
-  function updateStoreStatus() {
-    const hr   = new Date().getHours();
-    const open = hr >= 7 && hr < 22;
-    const dot  = document.getElementById('statusDot');
+  // ── Store open/closed (Live from Settings) ────────────────────────────────
+
+  async function updateStoreStatus() {
+    try {
+      const res = await fetch(`${CONFIG.API_BASE}/settings/public`);
+      const json = await res.json();
+      if (json.success && json.data) {
+        window._storeSettings = json.data;
+      }
+    } catch (err) {
+      console.warn('[ui] Could not load store settings, using defaults:', err.message);
+    }
+
+    const s = window._storeSettings || {};
+    const isOpen = s.isStoreOpen !== false;
+    const storeHours = s.storeHours || '7 AM – 10 PM';
+    const whatsappNum = s.storeWhatsapp || CONFIG.STORE_NUM || '919860924504';
+
+    const dot = document.getElementById('statusDot');
     const text = document.getElementById('statusText');
-    if (dot)  dot.classList.toggle('closed', !open);
-    if (text) text.textContent = open
-      ? 'Store is open now · 7 AM – 10 PM'
-      : 'Store is closed · opens 7 AM';
+    if (dot) dot.classList.toggle('closed', !isOpen);
+    if (text) {
+      text.textContent = isOpen
+        ? `दुकान सुरू आहे · ${storeHours} (Open now)`
+        : `दुकान सध्या बंद आहे · ${s.closureReason || 'Store is closed'}`;
+    }
+
+    // Closed banner if store is closed
+    let closedBanner = document.getElementById('storeClosedBanner');
+    if (!isOpen) {
+      if (!closedBanner) {
+        closedBanner = document.createElement('div');
+        closedBanner.id = 'storeClosedBanner';
+        closedBanner.style.cssText = 'background:#fef2f2;border-bottom:1.5px solid #f87171;color:#991b1b;padding:10px 16px;text-align:center;font-size:13.5px;font-weight:600;z-index:99;position:relative;';
+        closedBanner.innerHTML = `⚠️ दुकान सध्या बंद आहे (${s.closureReason || 'तात्पुरते बंद'}). आपण कॅटलॉग पाहू शकता, पण ऑर्डर स्वीकारणे बंद आहे.<br><span style="font-size:12px;opacity:0.9;">Store is currently closed. Browsing is open, but checkout is temporarily paused.</span>`;
+        const header = document.querySelector('header');
+        if (header && header.parentNode) {
+          header.parentNode.insertBefore(closedBanner, header.nextSibling);
+        }
+      }
+    } else if (closedBanner) {
+      closedBanner.remove();
+    }
+
+    setWaLinks(whatsappNum);
   }
 
   // ── WhatsApp links ────────────────────────────────────────────────────────
 
-  function setWaLinks() {
-    const base = `${CONFIG.WA_BASE}${CONFIG.STORE_NUM}?text=`;
+  function setWaLinks(storeNum) {
+    const num = storeNum || (window._storeSettings && window._storeSettings.storeWhatsapp) || CONFIG.STORE_NUM || '919860924504';
+    const base = `${CONFIG.WA_BASE}${num}?text=`;
     const heroLink = document.getElementById('heroWaLink');
     const snapLink = document.getElementById('snapWaLink');
     const fab      = document.getElementById('fabWa');
-    if (heroLink) heroLink.href = base + encodeURIComponent("Hi! I'd like to place a grocery order from Mahalaxmi Kirana Store.");
-    if (snapLink) snapLink.href = base + encodeURIComponent("Hi! I'm sending a photo of my grocery list.");
-    if (fab)      fab.href      = base + encodeURIComponent("Hi! I'd like to place an order.");
+
+    let cartSummary = '';
+    if (typeof cart !== 'undefined' && cart.itemCount() > 0) {
+      const items = cart.getAll();
+      const itemsText = items.map(i => `- ${i.product.nameEn} (${i.qty})`).join('%0A');
+      cartSummary = `%0A%0A*माझी कार्ट यादी / My Cart:*%0A${itemsText}%0A*एकूण रक्कम / Total:* ₹${cart.total()}`;
+    }
+
+    if (heroLink) heroLink.href = base + encodeURIComponent("नमस्कार! मला महालक्ष्मी किराणा दुकानातून किराणा सामान मागवायचे आहे. / Hi! I'd like to place a grocery order.") + cartSummary;
+    if (snapLink) snapLink.href = base + encodeURIComponent("नमस्कार! मी माझ्या किराणा मालाच्या यादीचा फोटो पाठवत आहे. / Hi! I'm sending a photo of my grocery list.") + cartSummary;
+    if (fab)      fab.href      = base + encodeURIComponent("नमस्कार! मला ऑर्डर द्यायची आहे. / Hi! I'd like to place an order.") + cartSummary;
+
+    // Update announcement phone link
+    const announcePhone = document.querySelector('.announce a[href^="tel:"]');
+    if (announcePhone && (window._storeSettings?.upiMobile || num)) {
+      const displayPhone = window._storeSettings?.upiMobile || num.replace(/^91/, '');
+      announcePhone.href = `tel:+91${displayPhone}`;
+      announcePhone.textContent = `📞 +91 ${displayPhone}`;
+    }
   }
 
-  // ── Deals countdown ───────────────────────────────────────────────────────
+  // ── Deals badge (No fake countdown) ───────────────────────────────────────
 
   function tickDeals() {
-    const end  = new Date();
-    end.setHours(23, 59, 59, 999);
-    const diff = Math.max(0, end - new Date());
-    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-    const m = String(Math.floor(diff / 60000) % 60).padStart(2, '0');
-    const s = String(Math.floor(diff / 1000) % 60).padStart(2, '0');
     document.querySelectorAll('[data-deal]').forEach((el) => {
-      el.textContent = `Ends in ${h}:${m}:${s}`;
+      el.textContent = '🔥 विशेष सवलत • Limited Deal';
     });
   }
 
@@ -181,7 +228,12 @@ const ui = (() => {
     const overlay = document.getElementById('overlay');
     drawer?.classList.add('open');
     overlay?.classList.add('open');
+    document.body.classList.add('drawer-open');
     if (drawer) setupSheetDrag(drawer, closeCart);
+
+    if (!window.location.hash.includes('cart-open')) {
+      try { history.pushState({ cartOpen: true }, '', '#cart-open'); } catch (_) {}
+    }
   }
 
   function closeCart() {
@@ -193,7 +245,26 @@ const ui = (() => {
       drawer.classList.remove('open');
     }
     overlay?.classList.remove('open');
+    document.body.classList.remove('drawer-open');
+
+    if (window.location.hash === '#cart-open') {
+      try { history.back(); } catch (_) {}
+    }
   }
+
+  window.addEventListener('popstate', () => {
+    const drawer = document.getElementById('drawer');
+    if (drawer && drawer.classList.contains('open')) {
+      drawer.style.transform = '';
+      drawer.classList.remove('open');
+      document.getElementById('overlay')?.classList.remove('open');
+      document.body.classList.remove('drawer-open');
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCart();
+  });
 
   // ── Login-to-Add Bottom Sheet (Task 1) ──────────────────────────────────
   let _previousActiveElement = null;
@@ -419,8 +490,76 @@ const ui = (() => {
       body.appendChild(row);
     });
 
-    const totalEl = document.getElementById('totalAmt');
-    if (totalEl) totalEl.textContent = fmt(cart.total());
+    // Render Full Sticky Footer (Playbook Mobile UX)
+    if (foot) {
+      const subtotal = cart.total();
+      const s = window._storeSettings || {};
+      const minOrder = typeof s.minOrder === 'number' ? s.minOrder : 200;
+      const freeAbove = typeof s.freeDeliveryAbove === 'number' ? s.freeDeliveryAbove : 1000;
+      const deliveryCharge = subtotal >= freeAbove ? 0 : (typeof s.deliveryCharge === 'number' ? s.deliveryCharge : 30);
+      const grandTotal = subtotal + deliveryCharge;
+      const isStoreOpen = s.isStoreOpen !== false;
+      const isUnderMin = subtotal < minOrder;
+
+      const remainingForFree = Math.max(0, freeAbove - subtotal);
+      const freePercent = Math.min(100, Math.round((subtotal / freeAbove) * 100));
+
+      foot.innerHTML = `
+        <div class="cart-free-delivery-box" style="margin-bottom:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:8px 12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:12px;font-weight:600;">
+            <span style="color:${remainingForFree === 0 ? '#166534' : '#04251a'};">
+              ${remainingForFree === 0
+                ? '🎉 मोफत डिलिव्हरी लागू! / Free Delivery Unlocked!'
+                : `मोफत डिलिव्हरीसाठी अजून <strong>₹${remainingForFree}</strong> ची खरेदी करा / Add ₹${remainingForFree} for Free Delivery`}
+            </span>
+            <span style="font-weight:800;color:#04251a;">${freePercent}%</span>
+          </div>
+          <div style="height:6px;width:100%;background:#e2e8f0;border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${freePercent}%;background:${remainingForFree === 0 ? '#10b981' : '#f59e0b'};border-radius:3px;transition:width 0.3s ease;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#64748b;margin-bottom:3px;">
+          <span>एकूण सामानाची किंमत (Subtotal)</span>
+          <span style="font-weight:700;color:#1e293b;">₹${subtotal}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#64748b;margin-bottom:6px;">
+          <span>डिलिव्हरी शुल्क (Delivery Fee)</span>
+          <span style="font-weight:700;color:${deliveryCharge === 0 ? '#16a34a' : '#1e293b'};">
+            ${deliveryCharge === 0 ? 'मोफत / FREE' : '₹' + deliveryCharge}
+          </span>
+        </div>
+
+        <div class="total-row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-top:6px;border-top:1px dashed #cbd5e1;">
+          <span style="font-weight:700;font-size:14.5px;color:#04251a;">एकूण देय रक्कम (Total)</span>
+          <strong id="totalAmt" style="font-size:1.3rem;font-weight:800;color:#04251a;">₹${grandTotal}</strong>
+        </div>
+
+        ${!isStoreOpen
+          ? `<div class="cart-min-notice" style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:600;margin-bottom:10px;text-align:center;">
+              ⚠️ दुकान सध्या बंद आहे (${s.closureReason || 'तात्पुरते बंद'}). ऑर्डर स्वीकारणे बंद आहे.<br>Store is closed. Checkout is paused.
+            </div>`
+          : (isUnderMin
+            ? `<div class="cart-min-notice" style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:600;margin-bottom:10px;text-align:center;">
+                ⚠️ किमान ऑर्डर रक्कम ₹${minOrder} आहे. कृपया अजून ₹${minOrder - subtotal} चे सामान जोडा.<br>Minimum order is ₹${minOrder}. Add ₹${minOrder - subtotal} more.
+              </div>`
+            : ''
+          )
+        }
+
+        <button class="checkout-btn btn btn-primary" id="checkoutBtn" ${(!isStoreOpen || isUnderMin) ? 'disabled style="opacity:0.6;cursor:not-allowed;"' : ''}>
+          ${!isStoreOpen
+            ? 'दुकान बंद आहे / Store Closed'
+            : (isUnderMin
+              ? `किमान ₹${minOrder} ची ऑर्डर आवश्यक / Min ₹${minOrder}`
+              : 'ऑर्डर पूर्ण करा / Proceed to Checkout →'
+            )
+          }
+        </button>
+      `;
+
+      foot.querySelector('#checkoutBtn')?.addEventListener('click', () => checkout());
+    }
   }
 
   // ── Checkout (Stage 2) ───────────────────────────────────────────────────
@@ -428,7 +567,19 @@ const ui = (() => {
   function checkout() {
     const items = cart.getAll();
     if (!items.length) {
-      showToast('Your cart is empty. Add items first!');
+      showToast('तुमची कार्ट रिकामी आहे! / Your cart is empty.');
+      return;
+    }
+
+    const s = window._storeSettings || {};
+    if (s.isStoreOpen === false) {
+      showToast('⚠️ दुकान सध्या बंद आहे. ऑर्डर स्वीकारणे बंद आहे. / Store is currently closed.');
+      return;
+    }
+
+    const minOrder = typeof s.minOrder === 'number' ? s.minOrder : 200;
+    if (cart.total() < minOrder) {
+      showToast(`⚠️ किमान ऑर्डर रक्कम ₹${minOrder} आहे. / Minimum order is ₹${minOrder}.`);
       return;
     }
 
@@ -615,9 +766,13 @@ const ui = (() => {
     tickDeals();
     setInterval(tickDeals, 1_000);
 
-    // Search input
+    // Search input (Debounced 250ms)
+    let searchDebounceTimer = null;
     document.getElementById('searchInput')?.addEventListener('input', () => {
-      catalog.renderProductGrid();
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        catalog.renderProductGrid();
+      }, 250);
     });
 
     // Keyboard shortcut Cmd/Ctrl+K → focus search
@@ -730,7 +885,7 @@ const ui = (() => {
           <span class="mbn-icon">📋</span>
           <span class="mbn-label"><span class="mbn-mr">ऑर्डर्स</span>Orders</span>
         </a>
-        <a href="login.html" class="mbn-item" id="mbnAccount" aria-label="Account">
+        <a href="account.html" class="mbn-item" id="mbnAccount" aria-label="Account">
           <span class="mbn-icon">👤</span>
           <span class="mbn-label"><span class="mbn-mr">खाते</span>Account</span>
         </a>
@@ -744,7 +899,7 @@ const ui = (() => {
     document.querySelectorAll('.mbn-item').forEach(el => el.classList.remove('active'));
     if (path.includes('orders') || path.includes('order-confirmation')) {
       document.getElementById('mbnOrders')?.classList.add('active');
-    } else if (path.includes('login') || path.includes('register')) {
+    } else if (path.includes('account') || path.includes('login') || path.includes('register')) {
       document.getElementById('mbnAccount')?.classList.add('active');
     } else if (hash.includes('catalog') || hash.includes('deals')) {
       document.getElementById('mbnCatalog')?.classList.add('active');
@@ -774,9 +929,11 @@ const ui = (() => {
   }
 
   // Re-render cart badge whenever cart changes
-  cart.onUpdate(() => {
-    updateCartBadge();
-  });
+  if (typeof cart !== 'undefined' && typeof cart.onUpdate === 'function') {
+    cart.onUpdate(() => {
+      updateCartBadge();
+    });
+  }
 
   return {
     init,
@@ -786,6 +943,7 @@ const ui = (() => {
     renderCartDrawer,
     openCart,
     closeCart,
+    checkout,
     showLoginPrompt,
     closeLoginPrompt,
     initSmartAiPromotion,

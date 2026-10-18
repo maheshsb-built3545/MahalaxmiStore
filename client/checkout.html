@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="mr" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google" content="notranslate">
 <title>Checkout • ऑर्डर पूर्ण करा • Mahalaxmi Kirana Store</title>
 <meta name="description" content="Complete your grocery order from Mahalaxmi Kirana Store, Yesgaon. Choose address, slot, and pay via UPI or Cash on Delivery.">
 <meta name="theme-color" content="#064e3b">
@@ -135,11 +136,15 @@
             <input type="text" id="orderNoteInput" placeholder="e.g. Please bring change for 500, call before coming" maxlength="200">
           </div>
           <div class="form-group">
-            <label for="orderLocationPinInput">
-              Village Landmark or Google Maps link / गावातील खूण किंवा मॅप लिंक:
-              <span class="mr" style="font-weight:400;color:#64748b;">(उदा. विठ्ठल मंदिराच्या मागे किंवा Maps Link)</span>
-            </label>
-            <input type="text" id="orderLocationPinInput" placeholder="e.g. Behind Vitthal Temple / https://maps.app.goo.gl/..." maxlength="300">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
+              <label for="orderLocationPinInput" style="margin:0;">
+                Village Landmark or Maps link / गावातील खूण किंवा नकाशा लिंक:
+              </label>
+              <button type="button" id="shareLocationBtn" class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:3px 10px;min-height:36px;display:inline-flex;align-items:center;gap:4px;">
+                📍 चालू लोकेशन जोडा (GPS) / Share Location
+              </button>
+            </div>
+            <input type="text" id="orderLocationPinInput" placeholder="e.g. Behind Vitthal Temple or https://maps.google.com/?q=..." maxlength="300">
           </div>
         </section>
 

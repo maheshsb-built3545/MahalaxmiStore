@@ -33,6 +33,8 @@ const ordersApp = (() => {
       .replace(/'/g, '&#039;');
   }
 
+  let _lastOrderStatuses = {};
+
   async function init() {
     if (!auth.isLoggedIn()) {
       window.location.href = 'login.html?redirect=orders.html';
@@ -41,6 +43,34 @@ const ordersApp = (() => {
 
     auth.renderAuthHeader();
     await Promise.all([loadOrders(), loadUdharStatus()]);
+    startStatusPolling();
+  }
+
+  function startStatusPolling() {
+    setInterval(async () => {
+      try {
+        const res = await authFetch(`${CONFIG.API_BASE}/orders`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          let hasChanges = false;
+          data.data.forEach((ord) => {
+            const prev = _lastOrderStatuses[ord._id];
+            if (prev && prev !== ord.status) {
+              hasChanges = true;
+              const meta = STATUS_LABELS[ord.status] || { mr: ord.status, en: ord.status };
+              if (window.ui && window.ui.showToast) {
+                ui.showToast(`🔔 ऑर्डर #${ord.orderNumber} स्थिती: ${meta.mr} (${meta.en})`);
+              }
+            }
+            _lastOrderStatuses[ord._id] = ord.status;
+          });
+          if (hasChanges) {
+            _orders = data.data;
+            renderOrdersList();
+          }
+        }
+      } catch (_) {}
+    }, 30000);
   }
 
   // ── Customer Udhar Account (UDH-01, UDH-04) ──────────────────────────────
@@ -365,6 +395,35 @@ const ordersApp = (() => {
       body.appendChild(metaRow);
       card.appendChild(body);
 
+      // ── Status Timeline ──────────────────────────────────────────
+      const timeline = document.createElement('div');
+      timeline.className = 'order-timeline';
+      timeline.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin:12px 0 8px;padding:8px 12px;background:#f8fafc;border-radius:10px;font-size:11px;overflow-x:auto;';
+      const steps = [
+        { key: 'new', label: 'नोंदवली\nNew' },
+        { key: 'confirmed', label: 'पुष्टी केली\nConfirmed' },
+        { key: 'packed', label: 'पॅक केली\nPacked' },
+        { key: 'out_for_delivery', label: 'डिलिव्हरी\nOut' },
+        { key: 'delivered', label: 'पोहोचवली\nDelivered' },
+      ];
+      const statusIdx = steps.findIndex((s) => s.key === order.status);
+      const isCancelled = order.status === 'cancelled';
+      if (isCancelled) {
+        timeline.innerHTML = '<div style="color:#dc2626;font-weight:700;">❌ ही ऑर्डर रद्द करण्यात आली आहे / This order was cancelled.</div>';
+      } else {
+        timeline.innerHTML = steps.map((s, idx) => {
+          const isDone = idx <= statusIdx;
+          const isCurrent = idx === statusIdx;
+          const color = isDone ? '#059669' : '#94a3b8';
+          const weight = isCurrent ? '800' : (isDone ? '700' : '500');
+          return `<div style="text-align:center;color:${color};font-weight:${weight};white-space:pre-line;flex:1;">
+            <div style="width:16px;height:16px;border-radius:50%;background:${isDone ? '#059669' : '#cbd5e1'};margin:0 auto 4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;">${isDone ? '✓' : idx + 1}</div>
+            ${s.label}
+          </div>`;
+        }).join('<div style="width:12px;height:2px;background:#e2e8f0;margin-top:-14px;"></div>');
+      }
+      body.appendChild(timeline);
+
       // ── Card Foot (Totals & Actions) ──────────────────────────────
       const foot = document.createElement('div');
       foot.className = 'order-card-foot';
@@ -375,18 +434,38 @@ const ordersApp = (() => {
       const totalStrong = document.createElement('strong');
       totalStrong.textContent = fmt(order.total);
       totalBox.appendChild(totalStrong);
-      totalBox.appendChild(document.createTextNode(` (${order.paymentMethod === 'upi_qr' ? 'UPI' : 'Cash'})`));
+      totalBox.appendChild(document.createTextNode(` (${order.paymentMethod === 'upi_qr' ? 'UPI' : (order.paymentMethod === 'udhar' ? 'Udhar' : 'Cash')})`));
       foot.appendChild(totalBox);
 
       const actions = document.createElement('div');
       actions.className = 'order-actions';
+      actions.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;';
+
+      // Call store button
+      const callStore = document.createElement('a');
+      callStore.href = 'tel:+919860924504';
+      callStore.className = 'btn btn-outline btn-sm';
+      callStore.style.cssText = 'text-decoration:none;font-size:12px;padding:5px 10px;';
+      callStore.textContent = '📞 कॉल करा / Call';
+      actions.appendChild(callStore);
+
+      // WhatsApp store button
+      const waMsg = encodeURIComponent(`नमस्कार! माझी ऑर्डर #${order.orderNumber} बद्दल चौकशी करायची आहे. / Hi, query regarding order #${order.orderNumber}`);
+      const waStore = document.createElement('a');
+      waStore.href = `https://wa.me/919860924504?text=${waMsg}`;
+      waStore.target = '_blank';
+      waStore.rel = 'noopener';
+      waStore.className = 'btn btn-outline btn-sm';
+      waStore.style.cssText = 'text-decoration:none;font-size:12px;padding:5px 10px;color:#15803d;border-color:#86efac;';
+      waStore.textContent = '💬 WhatsApp';
+      actions.appendChild(waStore);
 
       // Rule 11: Cancel button (only allowed for 'new' and 'confirmed')
       if (['new', 'confirmed'].includes(order.status)) {
         const cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
         cancelBtn.className = 'btn btn-outline btn-sm btn-danger-outline';
-        cancelBtn.textContent = 'Cancel Order / रद्द करा';
+        cancelBtn.textContent = 'Cancel / रद्द करा';
         cancelBtn.addEventListener('click', () => handleCancelOrder(order));
         actions.appendChild(cancelBtn);
       }
@@ -408,14 +487,17 @@ const ordersApp = (() => {
 
   // ── Handle Order Cancellation (Rule 11) ───────────────────────────────────
   async function handleCancelOrder(order) {
-    const confirmed = confirm(
-      `Are you sure you want to cancel order ${order.orderNumber}?\nतुम्हाला ही ऑर्डर नक्की रद्द करायची आहे का?`
+    const reason = prompt(
+      `ऑर्डर ${order.orderNumber} रद्द करण्याचे कारण लिहा:\nPlease enter cancellation reason:`,
+      'वेळ बदलली / Timing changed'
     );
-    if (!confirmed) return;
+    if (reason === null) return;
 
     try {
       const res = await authFetch(`${CONFIG.API_BASE}/orders/${order._id}/cancel`, {
         method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason.trim() || 'No reason provided' }),
       });
       const data = await res.json();
 
@@ -424,7 +506,7 @@ const ordersApp = (() => {
         return;
       }
 
-      alert(`Order ${order.orderNumber} has been cancelled successfully.`);
+      alert(`ऑर्डर ${order.orderNumber} रद्द झाली आहे / Order has been cancelled.`);
       await loadOrders();
     } catch (err) {
       alert('Network error. Could not cancel order.');
@@ -562,7 +644,7 @@ const ordersApp = (() => {
     }
   }
 
-  return { init };
+  return { init, loadOrders };
 })();
 
 // Boot orders app
