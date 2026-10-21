@@ -5,11 +5,12 @@
  * Bump CACHE_VERSION on every UI change.
  * Network-first for HTML, CSS, JS, and Catalog APIs to ensure recent UI changes show up immediately.
  * Cache-first only for static media (images, icons, fonts).
+ * All proxy /api/* requests (auth, orders, udhar, addresses, ai, health) strictly bypass cache.
  * Offline shell fallback for HTML navigation.
  * NEVER caches mutations, auth tokens, or order placement.
  */
 
-const CACHE_VERSION = 'v1.0.9';
+const CACHE_VERSION = 'v1.0.10';
 const CACHE_NAME = `mk-cache-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -128,6 +129,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 5. Read-only Catalog & Settings APIs: Network-first, cache fallback
+  // Only public read catalog & settings are cached for offline resilience
   if (
     url.pathname.startsWith('/api/products') ||
     url.pathname.startsWith('/api/categories') ||
@@ -147,8 +149,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 6. Code assets (CSS, JS, manifest): Network-first with cache fallback
-  // This ensures recent UI changes show up immediately without requiring site data clearing
+  // 5b. All other /api/* endpoints (orders, addresses, udhar, ai, health, version):
+  // Strictly bypass SW cache to pass through the Vercel/Render proxy directly.
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+
+  // 6. Code assets (CSS, JS, manifest, json): Network-first with cache fallback
   const isCodeAsset =
     url.pathname.endsWith('.css') ||
     url.pathname.endsWith('.js') ||
@@ -171,26 +178,30 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 7. Media & static assets (Images, Icons, SVG, Fonts): Cache-first with network fallback
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) {
-        // Background revalidation
-        fetch(req)
-          .then((networkRes) => {
-            if (networkRes.status === 200 && url.origin === self.location.origin) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(req, networkRes));
-            }
-          })
-          .catch(() => {});
-        return cached;
-      }
-      return fetch(req).then((networkRes) => {
-        if (networkRes.status === 200 && url.origin === self.location.origin) {
-          const resClone = networkRes.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+  const isMediaAsset = /\.(svg|png|jpg|jpeg|webp|gif|ico|woff2?|ttf|eot)$/i.test(url.pathname);
+  if (isMediaAsset) {
+    event.respondWith(
+      caches.match(req).then((cached) => {
+        if (cached) {
+          // Background revalidation
+          fetch(req)
+            .then((networkRes) => {
+              if (networkRes.status === 200 && url.origin === self.location.origin) {
+                caches.open(CACHE_NAME).then((cache) => cache.put(req, networkRes));
+              }
+            })
+            .catch(() => {});
+          return cached;
         }
-        return networkRes;
-      });
-    })
-  );
+        return fetch(req).then((networkRes) => {
+          if (networkRes.status === 200 && url.origin === self.location.origin) {
+            const resClone = networkRes.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+          }
+          return networkRes;
+        });
+      })
+    );
+    return;
+  }
 });

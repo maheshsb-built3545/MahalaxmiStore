@@ -140,3 +140,31 @@ npm run test:all
 - IP-based rate limiting on sensitive authentication and ordering endpoints.
 - Parameter sanitization against NoSQL injection via `express-mongo-sanitize`.
 - Zero credentials or tokens committed to source control.
+
+---
+
+## 🌐 Hosting: Vercel (Frontend) + Render (API)
+
+The application supports hybrid hosting: static client files hosted globally on **Vercel** with `/api/*` proxied to the backend on **Render**.
+
+### 1. Vercel Configuration (`vercel.json`)
+- **Output Directory:** `client/`
+- **Build Command:** None (Vanilla HTML5 / CSS3 / JavaScript)
+- **API Proxy:** In [vercel.json](file:///c:/Users/borde/OneDrive/Desktop/FSL/vercel.json), replace the placeholder `RENDER_URL` with your active Render web service address (e.g. `https://mahalaxmi-kirana-server.onrender.com`):
+  ```json
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://RENDER_URL/api/:path*"
+    }
+  ]
+  ```
+- **Service Worker & Cache Headers:** `vercel.json` sets `Cache-Control: no-cache, must-revalidate` on all HTML, CSS, JS, and Service Worker assets, with `Service-Worker-Allowed: /` on `/sw.js`.
+
+### 2. Render Environment Variables
+- In Render Dashboard $\to$ Environment Variables, set `CORS_ORIGIN` to your Vercel URL (e.g. `https://your-store.vercel.app`).
+- The backend in [server/src/server.js](file:///c:/Users/borde/OneDrive/Desktop/FSL/server/src/server.js#L73) sets `app.set('trust proxy', 1)` so real visitor IPs are preserved across Vercel and Render proxy layers for rate limiting.
+
+### 3. Local & Standalone Mode
+- Running `npm start` or `npm run dev` locally or deploying the container to Render continues to serve the client and API together on port `5000`.
+

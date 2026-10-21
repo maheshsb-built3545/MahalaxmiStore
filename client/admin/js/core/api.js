@@ -15,11 +15,7 @@ function getApiBase() {
   if (typeof CONFIG !== 'undefined' && CONFIG.API_BASE) {
     return CONFIG.API_BASE;
   }
-  if (typeof window !== 'undefined' && window.location.origin && window.location.origin.startsWith('http')) {
-    return `${window.location.origin}/api`;
-  }
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  return isLocal ? 'http://localhost:5000/api' : '/api';
+  return '/api';
 }
 
 /**
