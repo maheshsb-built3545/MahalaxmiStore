@@ -14,16 +14,17 @@
   --brand-gold-dark: #d97706;
 }
 
-html, body {
-  min-height: 100dvh;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  overscroll-behavior-y: none;
-}
+@media (max-width: 1023px) {
+  html, body {
+    min-height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+  }
 
-body {
-  padding-bottom: var(--bottom-bar-space);
-  overflow-x: clip;
+  body {
+    padding-bottom: var(--bottom-bar-space);
+  }
 }
 
 /* Ensure no input zoom on iOS / Android Chrome */
@@ -160,6 +161,10 @@ button:active, .btn:active, .dept:active, .card-btn:active {
   body {
     padding-bottom: 0 !important;
   }
+  html, body {
+    overscroll-behavior-y: auto;
+    touch-action: auto;
+  }
 }
 
 /* ── 3. Mini Floating Cart Bar ────────────────────────────── */
@@ -227,7 +232,7 @@ body.drawer-open {
   touch-action: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .overlay {
     z-index: 1090 !important;
   }
@@ -276,6 +281,7 @@ body.drawer-open {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 12px 16px !important;
+    overscroll-behavior: contain !important;
   }
 
   .drawer-foot {
@@ -294,6 +300,34 @@ body.drawer-open {
     font-weight: 800 !important;
     border-radius: 14px !important;
     width: 100% !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .drawer {
+    top: 0 !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: 0 !important;
+    width: min(420px, 90vw) !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease !important;
+    z-index: 1100 !important;
+    overscroll-behavior: contain !important;
+  }
+  .drawer.open {
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  .drawer-foot {
+    padding: 16px 20px !important;
+  }
+  .sheet-drag-handle {
+    display: none !important;
   }
 }
 

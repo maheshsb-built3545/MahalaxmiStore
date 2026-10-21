@@ -356,6 +356,7 @@ const ui = (() => {
     overlay.classList.add('open');
     sheet.classList.add('open');
     sheet.style.transform = '';
+    document.body.classList.add('sheet-open');
 
     // Focus primary action for accessibility
     setTimeout(() => {
@@ -401,6 +402,7 @@ const ui = (() => {
       }
     }
     overlay?.classList.remove('open');
+    document.body.classList.remove('sheet-open');
     if (_previousActiveElement && typeof _previousActiveElement.focus === 'function') {
       _previousActiveElement.focus();
     }
