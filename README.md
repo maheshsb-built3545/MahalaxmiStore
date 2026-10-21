@@ -114,6 +114,8 @@ npm start
 - **Owner Dashboard (Admin):** `http://localhost:5000/admin/dashboard.html`
 - **API Health Check:** `http://localhost:5000/api/health`
 
+> **Note for UI Developers:** Bump `CACHE_VERSION` in `client/sw.js` on every UI change so clients immediately receive updated assets without clearing cache.
+
 ---
 
 ## 🧪 Testing
