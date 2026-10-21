@@ -44,6 +44,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
+const compression = require('compression');
+
+// Read version dynamically from package.json (MAINT-01)
+const { version: PKG_VERSION } = require('../package.json');
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -67,6 +71,10 @@ const app = express();
 
 // Rule 2: trust proxy for accurate rate-limiting behind reverse proxies
 app.set('trust proxy', 1);
+
+// PERF-01: Compression MUST come before all route mounts and static serving
+// so that both API JSON responses and static files receive gzip/brotli compression.
+app.use(compression());
 
 // HTTPS-only redirect in production (Playbook Pass 4.3)
 if (process.env.NODE_ENV === 'production') {
@@ -145,9 +153,9 @@ app.get('/api/health', (_req, res) =>
 app.get('/api/version', (_req, res) =>
   res.json({
     success: true,
-    version: '1.0.7',
-    commit: 'c521220',
-    branch: 'fix/customer-mobile',
+    version: PKG_VERSION,
+    commit: process.env.GIT_COMMIT || process.env.RENDER_GIT_COMMIT || 'development',
+    branch: process.env.GIT_BRANCH || process.env.RENDER_GIT_BRANCH || 'unknown',
     nodeEnv: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
   })
@@ -168,8 +176,7 @@ app.use('/api/testimonials', testimonialRoutes);   // R2 — customer reviews & 
 app.use('/api/ai', aiRoutes);                       // R3 — grocery list parsing & substitutes
 app.use('/api/udhar', udharRoutes);                 // R4 — credit ledger & payments
 
-const compression = require('compression');
-app.use(compression());
+// compression is now mounted at the top of the middleware stack (see above, PERF-01)
 
 // ─── Client Static Files ────────────────────────────────────────────────────
 const path = require('path');
@@ -181,11 +188,14 @@ app.use(express.static(clientDir, {
   maxAge: '1d',
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.webmanifest')) {
-      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     } else if (filePath.includes(path.sep + 'admin' + path.sep) || filePath.includes('/admin/')) {
       // Admin JS/CSS must revalidate immediately to prevent stale UI
       res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-    } else if (filePath.match(/\.(css|js|svg|png|jpg|jpeg|webp|woff2?|ico)$/)) {
+    } else if (filePath.match(/\.(css|js)$/)) {
+      // Customer CSS and JS: must revalidate with server so UI updates show up immediately
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    } else if (filePath.match(/\.(svg|png|jpg|jpeg|webp|woff2?|ico)$/)) {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   }
