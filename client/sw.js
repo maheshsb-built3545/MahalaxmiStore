@@ -10,7 +10,7 @@
  * NEVER caches mutations, auth tokens, or order placement.
  */
 
-const CACHE_VERSION = 'v1.0.10';
+const CACHE_VERSION = 'v1.0.11';
 const CACHE_NAME = `mk-cache-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -37,6 +37,7 @@ const STATIC_ASSETS = [
   '/js/ui.js',
   '/js/ai-order.js',
   '/manifest.webmanifest',
+  '/images/icons.svg',
   '/images/icon-192.svg',
   '/images/icon-512.svg',
   '/images/placeholder-store.svg',

@@ -14,6 +14,25 @@
   --admin-radius: 12px;
 }
 
+/* ── Unified SVG Icon System ────────────────────────────── */
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.icon--sm { width: 14px; height: 14px; }
+.icon--md { width: 18px; height: 18px; }
+.icon--lg { width: 22px; height: 22px; }
+.icon--xl { width: 28px; height: 28px; }
+.icon--2xl { width: 40px; height: 40px; }
+
 * {
   box-sizing: border-box;
   margin: 0;
