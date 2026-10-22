@@ -92,6 +92,41 @@ button { font-family: inherit; cursor: pointer; }
 .icon--xl { width: 28px; height: 28px; }
 .icon--2xl { width: 40px; height: 40px; }
 
+/* ── Language Switcher & Single-Language Rules ─────────── */
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(4, 120, 87, 0.1);
+  color: var(--forest-800);
+  border: 1px solid rgba(4, 120, 87, 0.25);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 34px;
+}
+.lang-toggle-btn:hover {
+  background: rgba(4, 120, 87, 0.2);
+}
+
+/* Enforce ONE language display across UI */
+html[data-lang="mr"] .lang-en,
+html[data-lang="mr"] [data-lang="en"],
+html[data-lang="mr"] .en-sub,
+html[data-lang="mr"] .ai-box-sub,
+html[data-lang="mr"] .ai-hint-en {
+  display: none !important;
+}
+html[data-lang="en"] .lang-mr,
+html[data-lang="en"] [data-lang="mr"],
+html[data-lang="en"] .mr-sub,
+html[data-lang="en"] .mbn-mr {
+  display: none !important;
+}
+
 /* 1. Announcement bar ──────────────────────────────────── */
 .announce {
   background: var(--forest-950);
@@ -170,20 +205,29 @@ header.header-scrolled {
 }
 
 .search {
-  flex: 1; min-width: 160px; position: relative; max-width: 560px;
+  flex: 1 1 auto; min-width: 0; position: relative; max-width: 560px;
   transition: max-width var(--dur) var(--ease-out);
 }
 .search input {
   width: 100%; min-height: 48px; padding: 12px 46px 12px 18px;
   border-radius: var(--radius-pill); border: 1px solid var(--line);
   background: #fff; font-size: 16px; font-family: inherit;
+  box-sizing: border-box;
   transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+.hdr-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 @media (max-width: 1100px) {
   .loc-chip { display: none; }
+  .search { max-width: 280px; }
+  .hdr-row { gap: 10px; }
 }
 @media (max-width: 768px) {
-  .search { min-width: 140px; }
+  .search { min-width: 0; }
 }
 .search input:focus {
   outline: 2px solid var(--gold-500);

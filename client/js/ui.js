@@ -21,10 +21,16 @@ const ui = (() => {
 
   // ── Toast ─────────────────────────────────────────────────────────────────
 
-  function showToast(msg) {
+  function showToast(msg, type = 'info') {
     const wrap = document.getElementById('toastWrap');
     if (!wrap) return;
-    const div = el('div', 'toast', msg);
+    const div = el('div', 'toast');
+    let iconKey = 'info';
+    if (type === 'success' || /जोड|यशस्वी|सुरू|unlocked|added|saved/i.test(msg)) iconKey = 'check';
+    else if (type === 'warning' || type === 'warn' || /बंद|किमान|alert|warning|closed/i.test(msg)) iconKey = 'warning';
+    else if (type === 'error' || /चूक|error|failed/i.test(msg)) iconKey = 'close';
+    const cleanMsg = typeof msg === 'string' ? msg.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/ug, '').trim() : msg;
+    div.innerHTML = `<svg class="icon icon--sm" style="margin-right:6px;"><use href="/images/icons.svg#${iconKey}"></use></svg><span>${cleanMsg}</span>`;
     wrap.appendChild(div);
     requestAnimationFrame(() => div.classList.add('show'));
     setTimeout(() => {
@@ -69,7 +75,7 @@ const ui = (() => {
         closedBanner = document.createElement('div');
         closedBanner.id = 'storeClosedBanner';
         closedBanner.style.cssText = 'background:#fef2f2;border-bottom:1.5px solid #f87171;color:#991b1b;padding:10px 16px;text-align:center;font-size:13.5px;font-weight:600;z-index:99;position:relative;';
-        closedBanner.innerHTML = `⚠️ दुकान सध्या बंद आहे (${s.closureReason || 'तात्पुरते बंद'}). आपण कॅटलॉग पाहू शकता, पण ऑर्डर स्वीकारणे बंद आहे.<br><span style="font-size:12px;opacity:0.9;">Store is currently closed. Browsing is open, but checkout is temporarily paused.</span>`;
+        closedBanner.innerHTML = `<svg class="icon icon--sm" style="margin-right:5px;vertical-align:-2px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">दुकान सध्या बंद आहे (${s.closureReason || 'तात्पुरते बंद'}). ऑर्डर तात्पुरत्या बंद आहेत.</span><span class="lang-en">Store is closed (${s.closureReason || 'Temporarily closed'}). Ordering paused.</span>`;
         const header = document.querySelector('header');
         if (header && header.parentNode) {
           header.parentNode.insertBefore(closedBanner, header.nextSibling);
@@ -107,7 +113,7 @@ const ui = (() => {
     if (announcePhone && (window._storeSettings?.upiMobile || num)) {
       const displayPhone = window._storeSettings?.upiMobile || num.replace(/^91/, '');
       announcePhone.href = `tel:+91${displayPhone}`;
-      announcePhone.textContent = `📞 +91 ${displayPhone}`;
+      announcePhone.innerHTML = `<svg class="icon icon--sm"><use href="/images/icons.svg#phone"></use></svg> +91 ${displayPhone}`;
     }
   }
 
@@ -115,7 +121,7 @@ const ui = (() => {
 
   function tickDeals() {
     document.querySelectorAll('[data-deal]').forEach((el) => {
-      el.textContent = '🔥 विशेष सवलत • Limited Deal';
+      el.innerHTML = '<svg class="icon icon--sm"><use href="/images/icons.svg#badge-percent"></use></svg> <span class="lang-mr">विशेष सवलत</span><span class="lang-en">Special Offer</span>';
     });
   }
 
@@ -288,24 +294,24 @@ const ui = (() => {
       <div class="sheet-drag-handle" aria-hidden="true"></div>
       <div class="login-sheet-head">
         <div class="login-sheet-icon-wrap" aria-hidden="true">
-          <span class="login-sheet-icon">🔐</span>
+          <span class="login-sheet-icon"><svg class="icon icon--lg"><use href="/images/icons.svg#lock"></use></svg></span>
         </div>
         <div class="login-sheet-title-box">
           <h3 id="loginPromptTitle" class="login-sheet-title">
-            आधी लॉगिन करा <span class="en-sub">/ Please log in first</span>
+            <span class="lang-mr">आधी लॉगिन करा</span><span class="lang-en">Please log in first</span>
           </h3>
           <p class="login-sheet-body">
-            तुमचा कार्ट सुरक्षित राहील आणि ऑर्डर ट्रॅक करता येईल.<br>
-            <span class="en-sub">Log in to save your cart and track your orders.</span>
+            <span class="lang-mr">तुमचा कार्ट सुरक्षित राहील आणि ऑर्डर ट्रॅक करता येईल.</span>
+            <span class="lang-en">Log in to save your cart and track orders.</span>
           </p>
         </div>
-        <button type="button" class="login-sheet-close" id="loginPromptClose" aria-label="Close / बंद करा">✕</button>
+        <button type="button" class="login-sheet-close" id="loginPromptClose" aria-label="Close"><svg class="icon"><use href="/images/icons.svg#close"></use></svg></button>
       </div>
       <div class="login-sheet-reassurance">
-        <span class="reassurance-sparkle">✨</span>
+        <span class="reassurance-sparkle"><svg class="icon icon--sm"><use href="/images/icons.svg#check"></use></svg></span>
         <span class="reassurance-text">
-          तुम्ही निवडलेली वस्तू लॉगिननंतर आपोआप कार्टमध्ये येईल.<br>
-          <span class="en-sub">Your item will be added automatically after login.</span>
+          <span class="lang-mr">निवडलेली वस्तू लॉगिननंतर आपोआप कार्टमध्ये येईल.</span>
+          <span class="lang-en">Your item will be added automatically after login.</span>
         </span>
       </div>
       <div class="login-sheet-actions">
@@ -419,13 +425,16 @@ const ui = (() => {
     if (!items.length) {
       const empty = el('div', 'empty');
       empty.style.cssText = 'text-align:center;padding:48px 16px;color:#64748b;';
-      const icon = el('div', '', '🛒');
-      icon.style.cssText = 'font-size:3rem;margin-bottom:12px;';
-      const title = el('strong', '', 'तुमची कार्ट रिकामी आहे / Your cart is empty');
+      const icon = el('div', '', '');
+      icon.innerHTML = '<svg class="icon icon--2xl" style="color:var(--forest-400);margin-bottom:12px;"><use href="/images/icons.svg#cart"></use></svg>';
+      const title = el('strong', '', '');
+      title.innerHTML = '<span class="lang-mr">तुमची कार्ट रिकामी आहे</span><span class="lang-en">Your cart is empty</span>';
       title.style.cssText = 'display:block;font-size:1.15rem;color:#04251a;margin-bottom:6px;';
-      const sub = el('p', '', 'आमच्या ताज्या किराणा मालाच्या कॅटलॉगमधून वस्तू जोडा.');
+      const sub = el('p', '', '');
+      sub.innerHTML = '<span class="lang-mr">आमच्या ताज्या कॅटलॉगमधून वस्तू जोडा.</span><span class="lang-en">Add items from our catalog.</span>';
       sub.style.cssText = 'font-size:0.9rem;margin-bottom:20px;';
-      const shopBtn = el('button', 'btn btn-primary', 'खरेदी सुरू करा / Start Shopping');
+      const shopBtn = el('button', 'btn btn-primary', '');
+      shopBtn.innerHTML = '<span class="lang-mr">खरेदी सुरू करा</span><span class="lang-en">Start Shopping</span>';
       shopBtn.type = 'button';
       shopBtn.style.cssText = 'min-height:44px;padding:10px 24px;margin:0 auto;';
       shopBtn.addEventListener('click', () => closeCart());
@@ -442,16 +451,21 @@ const ui = (() => {
 
       const row = el('div', 'cart-item');
 
-      // Emoji / image
+      // Category icon fallback or image
       if (p.imageUrl) {
         const itemImg = document.createElement('img');
         itemImg.src = p.imageUrl;
         itemImg.alt = p.nameEn;
         itemImg.className = 'cart-item-img';
-        itemImg.onerror = () => { itemImg.replaceWith(el('div', 'em', p.emoji || '🛒')); };
+        itemImg.onerror = () => {
+          const emEl = el('div', 'em', '');
+          emEl.innerHTML = renderCategoryIcon(p.categoryId || p.category);
+          itemImg.replaceWith(emEl);
+        };
         row.appendChild(itemImg);
       } else {
-        const emEl = el('div', 'em', p.emoji || '🛒');
+        const emEl = el('div', 'em', '');
+        emEl.innerHTML = renderCategoryIcon(p.categoryId || p.category);
         row.appendChild(emEl);
       }
 
@@ -511,8 +525,8 @@ const ui = (() => {
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:12px;font-weight:600;">
             <span style="color:${remainingForFree === 0 ? '#166534' : '#04251a'};">
               ${remainingForFree === 0
-                ? '🎉 मोफत डिलिव्हरी लागू! / Free Delivery Unlocked!'
-                : `मोफत डिलिव्हरीसाठी अजून <strong>₹${remainingForFree}</strong> ची खरेदी करा / Add ₹${remainingForFree} for Free Delivery`}
+                ? '<svg class="icon icon--sm" style="color:#16a34a;margin-right:4px;"><use href="/images/icons.svg#truck"></use></svg> <span class="lang-mr">मोफत डिलिव्हरी लागू</span><span class="lang-en">Free Delivery Unlocked</span>'
+                : `<span class="lang-mr">मोफत डिलिव्हरीसाठी अजून <strong>₹${remainingForFree}</strong> ची खरेदी करा</span><span class="lang-en">Add <strong>₹${remainingForFree}</strong> for Free Delivery</span>`}
             </span>
             <span style="font-weight:800;color:#04251a;">${freePercent}%</span>
           </div>
@@ -522,28 +536,28 @@ const ui = (() => {
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#64748b;margin-bottom:3px;">
-          <span>एकूण सामानाची किंमत (Subtotal)</span>
+          <span><span class="lang-mr">एकूण सामानाची किंमत</span><span class="lang-en">Subtotal</span></span>
           <span style="font-weight:700;color:#1e293b;">₹${subtotal}</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#64748b;margin-bottom:6px;">
-          <span>डिलिव्हरी शुल्क (Delivery Fee)</span>
+          <span><span class="lang-mr">डिलिव्हरी शुल्क</span><span class="lang-en">Delivery Fee</span></span>
           <span style="font-weight:700;color:${deliveryCharge === 0 ? '#16a34a' : '#1e293b'};">
-            ${deliveryCharge === 0 ? 'मोफत / FREE' : '₹' + deliveryCharge}
+            ${deliveryCharge === 0 ? '<span class="lang-mr">मोफत</span><span class="lang-en">FREE</span>' : '₹' + deliveryCharge}
           </span>
         </div>
 
         <div class="total-row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-top:6px;border-top:1px dashed #cbd5e1;">
-          <span style="font-weight:700;font-size:14.5px;color:#04251a;">एकूण देय रक्कम (Total)</span>
+          <span style="font-weight:700;font-size:14.5px;color:#04251a;"><span class="lang-mr">एकूण देय रक्कम</span><span class="lang-en">Total</span></span>
           <strong id="totalAmt" style="font-size:1.3rem;font-weight:800;color:#04251a;">₹${grandTotal}</strong>
         </div>
 
         ${!isStoreOpen
           ? `<div class="cart-min-notice" style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:600;margin-bottom:10px;text-align:center;">
-              ⚠️ दुकान सध्या बंद आहे (${s.closureReason || 'तात्पुरते बंद'}). ऑर्डर स्वीकारणे बंद आहे.<br>Store is closed. Checkout is paused.
+              <svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">दुकान सध्या बंद आहे (${s.closureReason || 'तात्पुरते बंद'})</span><span class="lang-en">Store closed (${s.closureReason || 'Temporarily closed'})</span>
             </div>`
           : (isUnderMin
             ? `<div class="cart-min-notice" style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:600;margin-bottom:10px;text-align:center;">
-                ⚠️ किमान ऑर्डर रक्कम ₹${minOrder} आहे. कृपया अजून ₹${minOrder - subtotal} चे सामान जोडा.<br>Minimum order is ₹${minOrder}. Add ₹${minOrder - subtotal} more.
+                <svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">किमान ऑर्डर ₹${minOrder}. आणखी ₹${minOrder - subtotal} जोडा.</span><span class="lang-en">Min order ₹${minOrder}. Add ₹${minOrder - subtotal}.</span>
               </div>`
             : ''
           )
@@ -551,10 +565,10 @@ const ui = (() => {
 
         <button class="checkout-btn btn btn-primary" id="checkoutBtn" ${(!isStoreOpen || isUnderMin) ? 'disabled style="opacity:0.6;cursor:not-allowed;"' : ''}>
           ${!isStoreOpen
-            ? 'दुकान बंद आहे / Store Closed'
+            ? '<span class="lang-mr">दुकान बंद आहे</span><span class="lang-en">Store Closed</span>'
             : (isUnderMin
-              ? `किमान ₹${minOrder} ची ऑर्डर आवश्यक / Min ₹${minOrder}`
-              : 'ऑर्डर पूर्ण करा / Proceed to Checkout →'
+              ? `<span class="lang-mr">किमान ₹${minOrder} आवश्यक</span><span class="lang-en">Min ₹${minOrder} Required</span>`
+              : '<span class="lang-mr">ऑर्डर पूर्ण करा</span><span class="lang-en">Proceed to Checkout</span> →'
             )
           }
         </button>
@@ -575,13 +589,13 @@ const ui = (() => {
 
     const s = window._storeSettings || {};
     if (s.isStoreOpen === false) {
-      showToast('⚠️ दुकान सध्या बंद आहे. ऑर्डर स्वीकारणे बंद आहे. / Store is currently closed.');
+      showToast('दुकान सध्या बंद आहे / Store closed', 'warning');
       return;
     }
 
     const minOrder = typeof s.minOrder === 'number' ? s.minOrder : 200;
     if (cart.total() < minOrder) {
-      showToast(`⚠️ किमान ऑर्डर रक्कम ₹${minOrder} आहे. / Minimum order is ₹${minOrder}.`);
+      showToast(`किमान ऑर्डर ₹${minOrder} / Min order ₹${minOrder}`, 'warning');
       return;
     }
 
@@ -825,8 +839,8 @@ const ui = (() => {
       fab.setAttribute('type', 'button');
       fab.setAttribute('aria-label', 'Open Smart AI List / स्मार्ट किराणा यादी उघडा');
       fab.innerHTML = `
-        <span class="fab-icon">✨</span>
-        <span class="fab-text">स्मार्ट यादी <span class="fab-sub">Smart List</span></span>
+        <span class="fab-icon"><svg class="icon"><use href="/images/icons.svg#sparkles"></use></svg></span>
+        <span class="fab-text"><span class="lang-mr">स्मार्ट यादी</span><span class="lang-en">Smart List</span></span>
       `;
       fab.addEventListener('click', () => {
         if (window.PWA) window.PWA.haptic(20);
@@ -865,31 +879,31 @@ const ui = (() => {
       nav.setAttribute('aria-label', 'Mobile Bottom Navigation');
       nav.innerHTML = `
         <a href="index.html" class="mbn-item" id="mbnHome" aria-label="Home">
-          <span class="mbn-icon">🏠</span>
-          <span class="mbn-label"><span class="mbn-mr">मुख्य</span>Home</span>
+          <span class="mbn-icon"><svg class="icon"><use href="/images/icons.svg#home"></use></svg></span>
+          <span class="mbn-label"><span class="lang-mr">मुख्य</span><span class="lang-en">Home</span></span>
         </a>
         <a href="index.html#catalog" class="mbn-item" id="mbnCatalog" aria-label="Categories">
-          <span class="mbn-icon">🗂️</span>
-          <span class="mbn-label"><span class="mbn-mr">विभाग</span>Items</span>
+          <span class="mbn-icon"><svg class="icon"><use href="/images/icons.svg#grid"></use></svg></span>
+          <span class="mbn-label"><span class="lang-mr">विभाग</span><span class="lang-en">Items</span></span>
         </a>
         <button type="button" class="mbn-item mbn-ai" id="mbnSmartList" aria-label="Smart List">
-          <span class="mbn-icon">✨</span>
-          <span class="mbn-label"><span class="mbn-mr">स्मार्ट यादी</span>Smart List</span>
+          <span class="mbn-icon"><svg class="icon"><use href="/images/icons.svg#sparkles"></use></svg></span>
+          <span class="mbn-label"><span class="lang-mr">स्मार्ट यादी</span><span class="lang-en">List</span></span>
         </button>
         <button type="button" class="mbn-item mbn-cart" id="mbnCart" aria-label="Cart">
           <span class="mbn-icon-wrap">
-            <span class="mbn-icon">🛒</span>
+            <span class="mbn-icon"><svg class="icon"><use href="/images/icons.svg#cart"></use></svg></span>
             <span class="mbn-badge" id="mbnCartBadge">0</span>
           </span>
-          <span class="mbn-label"><span class="mbn-mr">कार्ट</span>Cart</span>
+          <span class="mbn-label"><span class="lang-mr">कार्ट</span><span class="lang-en">Cart</span></span>
         </button>
         <a href="orders.html" class="mbn-item" id="mbnOrders" aria-label="Orders">
-          <span class="mbn-icon">📋</span>
-          <span class="mbn-label"><span class="mbn-mr">ऑर्डर्स</span>Orders</span>
+          <span class="mbn-icon"><svg class="icon"><use href="/images/icons.svg#orders"></use></svg></span>
+          <span class="mbn-label"><span class="lang-mr">ऑर्डर्स</span><span class="lang-en">Orders</span></span>
         </a>
         <a href="account.html" class="mbn-item" id="mbnAccount" aria-label="Account">
-          <span class="mbn-icon">👤</span>
-          <span class="mbn-label"><span class="mbn-mr">खाते</span>Account</span>
+          <span class="mbn-icon"><svg class="icon"><use href="/images/icons.svg#account"></use></svg></span>
+          <span class="mbn-label"><span class="lang-mr">खाते</span><span class="lang-en">Account</span></span>
         </a>
       `;
       document.body.appendChild(nav);

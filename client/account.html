@@ -179,7 +179,7 @@
         </div>
       </a>
       <button class="cart-btn" id="cartBtn" aria-label="Open cart" style="min-height:42px;padding:8px 16px;font-size:14px;">
-        🛒 Cart<span class="badge" id="cartBadge">0</span>
+        <svg class="icon"><use href="/images/icons.svg#cart"></use></svg> Cart<span class="badge" id="cartBadge">0</span>
       </button>
     </div>
   </header>
@@ -193,10 +193,10 @@
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <h1 class="profile-name" id="profileName" style="margin:0;">ग्राहक / Customer</h1>
             <button type="button" id="editProfileBtn" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;">
-              ✏️ नाव बदला / Edit
+              <svg class="icon"><use href="/images/icons.svg#edit"></use></svg> Edit
             </button>
           </div>
-          <p class="profile-phone" id="profilePhone">📞 9876543210</p>
+          <p class="profile-phone" id="profilePhone"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> 9876543210</p>
           <div id="roleBadgeContainer"></div>
         </div>
       </div>
@@ -206,7 +206,7 @@
         <div class="menu-group-title">माझी खरेदी व संदेश / Orders & Messages</div>
         <a href="orders.html" class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">📦</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#orders"></use></svg></span>
             <span>माझ्या ऑर्डर्स / My Orders</span>
           </div>
           <div class="menu-item-right">
@@ -216,7 +216,7 @@
         </a>
         <a href="inbox.html" class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">🔔</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#bell"></use></svg></span>
             <span>सूचना व संदेश / Inbox</span>
           </div>
           <div class="menu-item-right">
@@ -231,7 +231,7 @@
         <div class="menu-group-title">पत्ता व माहिती / Addresses & Settings</div>
         <a href="checkout.html" class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">📍</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg></span>
             <span>डिलिव्हरी पत्ते / Delivery Addresses</span>
           </div>
           <div class="menu-item-right">
@@ -241,7 +241,7 @@
         </a>
         <button type="button" id="installAppBtn" class="menu-item" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;">
           <div class="menu-item-left">
-            <span class="menu-icon">📲</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg></span>
             <span>ॲप इन्स्टॉल करा / Install Web App</span>
           </div>
           <div class="menu-item-right">
@@ -250,16 +250,17 @@
         </button>
         <div class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">🌐</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#globe"></use></svg></span>
             <span>भाषा / Language</span>
           </div>
-          <div class="menu-item-right">
-            <span style="font-weight:600;color:#047857;">मराठी + English</span>
+          <div class="menu-item-right" id="accountLangSwitcher" style="display:flex;gap:6px;">
+            <button type="button" id="accountLangMr" style="padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid #047857;background:#047857;color:#fff;">मराठी</button>
+            <button type="button" id="accountLangEn" style="padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid #cbd5e1;background:#fff;color:#475569;">English</button>
           </div>
         </div>
         <a href="https://wa.me/919860924504?text=Hi%20Mahalaxmi%20Kirana,%20I%20need%20help%20with%20my%20account" target="_blank" class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">💬</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg></span>
             <span>दुकानदाराशी संपर्क / WhatsApp Support</span>
           </div>
           <div class="menu-item-right">
@@ -269,7 +270,7 @@
         </a>
         <a href="privacy.html" class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">🔒</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#lock"></use></svg></span>
             <span>गोपनीयता धोरण / Privacy Policy</span>
           </div>
           <div class="menu-item-right">
@@ -283,7 +284,7 @@
         <div class="menu-group-title" style="color:#166534;">दुकान व्यवस्थापन / Store Management</div>
         <a href="admin/dashboard.html" class="menu-item" style="color:#166534;font-weight:700;">
           <div class="menu-item-left">
-            <span class="menu-icon">🛠️</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#settings"></use></svg></span>
             <span>मालक डॅशबोर्ड / Admin Panel</span>
           </div>
           <div class="menu-item-right" style="color:#166534;">
@@ -295,14 +296,14 @@
 
       <!-- Logout -->
       <button type="button" class="logout-btn" id="logoutBtn">
-        🚪 बाहेर पडा / Log Out
+        <svg class="icon"><use href="/images/icons.svg#logout"></use></svg> Log Out
       </button>
     </div>
 
     <!-- Guest / Not logged in view -->
     <div id="accountGuestView" style="display:none;">
       <div class="guest-card">
-        <span style="font-size:3rem;display:block;margin-bottom:12px;">👤</span>
+        <span style="font-size:3rem;display:block;margin-bottom:12px;"><svg class="icon icon--2xl" style="width:56px;height:56px;"><use href="/images/icons.svg#account"></use></svg></span>
         <h2 style="font-size:1.3rem;font-weight:800;color:#04251a;margin:0 0 6px;">
           खात्यामध्ये प्रवेश करा / Welcome
         </h2>
@@ -324,7 +325,7 @@
         <div class="menu-group-title">मदत व माहिती / Help & Store Info</div>
         <a href="https://wa.me/919860924504?text=Hi%20Mahalaxmi%20Kirana" target="_blank" class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">💬</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg></span>
             <span>WhatsApp वर मदत / Help</span>
           </div>
           <div class="menu-item-right">
@@ -333,7 +334,7 @@
         </a>
         <a href="privacy.html" class="menu-item">
           <div class="menu-item-left">
-            <span class="menu-icon">🔒</span>
+            <span class="menu-icon"><svg class="icon"><use href="/images/icons.svg#lock"></use></svg></span>
             <span>गोपनीयता धोरण / Privacy Policy</span>
           </div>
           <div class="menu-item-right">
@@ -353,7 +354,7 @@
         <h2 style="font-size:1.15rem;font-weight:800;color:var(--forest-950);margin:0;">तुमची कार्ट (Your Cart)</h2>
         <span style="font-size:0.8rem;color:#64748b;">महालक्ष्मी किराणा दुकान</span>
       </div>
-      <button class="drawer-close" onclick="closeCart()" aria-label="Close cart">✕</button>
+      <button class="drawer-close" onclick="closeCart()" aria-label="Close cart"><svg class="icon"><use href="/images/icons.svg#close"></use></svg></button>
     </div>
     <div class="drawer-body" id="drawerBody"></div>
     <div class="drawer-foot" id="drawerFoot">
@@ -388,18 +389,18 @@
 
         const name = user.name || 'Customer';
         document.getElementById('profileName').textContent = name;
-        document.getElementById('profilePhone').textContent = `📞 ${user.phone || ''}`;
+        document.getElementById('profilePhone').innerHTML = `<svg class="icon"><use href="/images/icons.svg#phone"></use></svg> ${user.phone || ''}`;
         document.getElementById('profileAvatar').textContent = name.trim().charAt(0).toUpperCase();
 
         const roleContainer = document.getElementById('roleBadgeContainer');
         if (user.role === 'owner') {
-          roleContainer.innerHTML = '<span class="role-badge" style="background:#dcfce7;color:#15803d;border-color:#86efac;">👑 दुकान मालक / Store Owner</span>';
+          roleContainer.innerHTML = '<span class="role-badge" style="background:#dcfce7;color:#15803d;border-color:#86efac;">दुकान मालक / Store Owner</span>';
           document.getElementById('ownerAdminGroup').style.display = 'block';
         } else if (user.role === 'staff') {
-          roleContainer.innerHTML = '<span class="role-badge" style="background:#e0f2fe;color:#0369a1;border-color:#bae6fd;">👔 कर्मचारी / Staff</span>';
+          roleContainer.innerHTML = '<span class="role-badge" style="background:#e0f2fe;color:#0369a1;border-color:#bae6fd;">कर्मचारी / Staff</span>';
           document.getElementById('ownerAdminGroup').style.display = 'block';
         } else {
-          roleContainer.innerHTML = '<span class="role-badge">⭐ नियमित ग्राहक / Member</span>';
+          roleContainer.innerHTML = '<span class="role-badge">नियमित ग्राहक / Member</span>';
         }
 
         // Fetch unread count for badge
@@ -468,6 +469,36 @@
       // Init cart badge & bottom nav
       ui.updateCartBadge();
       document.getElementById('cartBtn')?.addEventListener('click', () => ui.openCart());
+
+      // Language Switcher buttons
+      const currentLang = localStorage.getItem('mk_lang') || 'mr';
+      const mrBtn = document.getElementById('accountLangMr');
+      const enBtn = document.getElementById('accountLangEn');
+      function updateLangUI(l) {
+        if (!mrBtn || !enBtn) return;
+        if (l === 'mr') {
+          mrBtn.style.cssText = 'padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid #047857;background:#047857;color:#fff;';
+          enBtn.style.cssText = 'padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid #cbd5e1;background:#fff;color:#475569;';
+        } else {
+          enBtn.style.cssText = 'padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid #047857;background:#047857;color:#fff;';
+          mrBtn.style.cssText = 'padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid #cbd5e1;background:#fff;color:#475569;';
+        }
+      }
+      updateLangUI(currentLang);
+      mrBtn?.addEventListener('click', () => {
+        localStorage.setItem('mk_lang', 'mr');
+        localStorage.setItem('kirana_lang', 'mr');
+        document.documentElement.setAttribute('data-lang', 'mr');
+        updateLangUI('mr');
+        window.location.reload();
+      });
+      enBtn?.addEventListener('click', () => {
+        localStorage.setItem('mk_lang', 'en');
+        localStorage.setItem('kirana_lang', 'en');
+        document.documentElement.setAttribute('data-lang', 'en');
+        updateLangUI('en');
+        window.location.reload();
+      });
     })();
   </script>
 </body>

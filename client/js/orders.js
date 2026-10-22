@@ -59,7 +59,7 @@ const ordersApp = (() => {
               hasChanges = true;
               const meta = STATUS_LABELS[ord.status] || { mr: ord.status, en: ord.status };
               if (window.ui && window.ui.showToast) {
-                ui.showToast(`🔔 ऑर्डर #${ord.orderNumber} स्थिती: ${meta.mr} (${meta.en})`);
+                ui.showToast(`ऑर्डर #${ord.orderNumber}: ${meta.mr}`, 'info');
               }
             }
             _lastOrderStatuses[ord._id] = ord.status;
@@ -92,7 +92,7 @@ const ordersApp = (() => {
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
             <div>
               <div style="display:flex;align-items:center;gap:6px;">
-                <h3 style="margin:0;font-size:1.15rem;color:#04251a;">📝 माझे उधारी खाते (My Udhar Account)</h3>
+                <h3 style="margin:0;font-size:1.15rem;color:#04251a;display:inline-flex;align-items:center;gap:6px;"><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> <span class="lang-mr">उधारी खाते</span><span class="lang-en">Udhar Account</span></h3>
                 <span style="background:#dcfce7;color:#15803d;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;">सक्रिय (ACTIVE)</span>
               </div>
               <p style="margin:4px 0 0;font-size:0.85rem;color:#64748b;">महालक्ष्मी किराणा स्टोअर्स येसगाव — मंजूर खाते</p>
@@ -108,7 +108,7 @@ const ordersApp = (() => {
           ${acc.entries && acc.entries.length > 0 ? `
             <div style="margin-top:1rem;border-top:1px dashed #cbd5e1;padding-top:0.75rem;">
               <button type="button" id="toggleLedgerBtn" class="btn btn-secondary btn-sm" style="font-size:0.78rem;">
-                📜 हिशोब पावती इतिहास दाखवा (${acc.entries.length} नोंदी)
+                <svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#file-text"></use></svg> <span class="lang-mr">हिशोब इतिहास (${acc.entries.length})</span><span class="lang-en">View Ledger (${acc.entries.length})</span>
               </button>
               <div id="customerLedgerTray" style="display:none;margin-top:0.75rem;max-height:220px;overflow-y:auto;">
                 <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
@@ -144,13 +144,13 @@ const ordersApp = (() => {
           toggleBtn.addEventListener('click', () => {
             const isHidden = tray.style.display === 'none';
             tray.style.display = isHidden ? 'block' : 'none';
-            toggleBtn.textContent = isHidden ? '▲ हिशोब लपवा' : `📜 हिशोब पावती इतिहास दाखवा (${acc.entries.length} नोंदी)`;
+            toggleBtn.innerHTML = isHidden ? '<span class="lang-mr">हिशोब लपवा</span><span class="lang-en">Hide Ledger</span>' : `<svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#file-text"></use></svg> <span class="lang-mr">हिशोब इतिहास (${acc.entries.length})</span><span class="lang-en">View Ledger (${acc.entries.length})</span>`;
           });
         }
       } else if (acc.hasAccount && acc.status === 'pending') {
         card.innerHTML = `
           <div style="display:flex;align-items:center;gap:12px;">
-            <span style="font-size:1.8rem;">⏳</span>
+            <span style="font-size:1.8rem;"><svg class="icon icon--xl" style="color:#d97706;"><use href="/images/icons.svg#clock"></use></svg></span>
             <div>
               <h4 style="margin:0;color:#92400e;">उधारी खाते अर्ज प्रलंबित आहे (Request Pending Approval)</h4>
               <p style="margin:2px 0 0;font-size:0.85rem;color:#78350f;">
@@ -163,13 +163,13 @@ const ordersApp = (() => {
         card.innerHTML = `
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
             <div>
-              <h4 style="margin:0;color:#04251a;">📝 गावात राहणाऱ्या ग्राहकांसाठी उधारी खाते सुविधा (Udhar Credit)</h4>
+              <h4 style="margin:0;color:#04251a;display:inline-flex;align-items:center;gap:6px;"><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> <span class="lang-mr">उधारी खाते सुविधा</span><span class="lang-en">Udhar Credit</span></h4>
               <p style="margin:3px 0 0;font-size:0.85rem;color:#64748b;">
                 येसगाव व कोपरगाव परिसरातील नियमित ग्राहकांसाठी मासिक खाते सुविधा उपलब्ध.
               </p>
             </div>
             <button type="button" id="applyUdharBtn" class="btn btn-primary btn-sm">
-              + उधारी खात्यासाठी अर्ज करा (Apply Now)
+              <span class="lang-mr">+ उधारी अर्ज</span><span class="lang-en">+ Apply</span>
             </button>
           </div>
         `;
@@ -234,15 +234,15 @@ const ordersApp = (() => {
 
       const icon = document.createElement('div');
       icon.className = 'empty-icon';
-      icon.textContent = '📦';
+      icon.innerHTML = '<svg class="icon icon--2xl" style="color:var(--forest-400);margin-bottom:12px;"><use href="/images/icons.svg#box"></use></svg>';
       emptyCard.appendChild(icon);
 
       const title = document.createElement('h3');
-      title.textContent = 'No orders yet / अद्याप कोणतीही ऑर्डर नाही';
+      title.innerHTML = '<span class="lang-mr">अद्याप ऑर्डर्स नाहीत</span><span class="lang-en">No orders yet</span>';
       emptyCard.appendChild(title);
 
       const desc = document.createElement('p');
-      desc.textContent = 'Your placed orders will appear here. Browse our fresh grocery catalog to start shopping!';
+      desc.innerHTML = '<span class="lang-mr">आपल्या सर्व ऑर्डर्स येथे दिसतील. सामान खरेदी करण्यासाठी कॅटलॉग पहा.</span><span class="lang-en">Your placed orders will appear here.</span>';
       emptyCard.appendChild(desc);
 
       const shopBtn = document.createElement('a');
@@ -327,16 +327,16 @@ const ordersApp = (() => {
 
           subItem.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;">
-              <strong style="color:#78350f;">🔄 वस्तू बदल प्रस्ताव (Substitution Proposal):</strong>
+              <strong style="color:#78350f;display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--sm"><use href="/images/icons.svg#refresh"></use></svg> <span class="lang-mr">वस्तू बदल प्रस्ताव</span><span class="lang-en">Substitution Proposal</span>:</strong>
               <span style="font-weight:700;font-size:0.75rem;padding:2px 8px;border-radius:12px;${
                 isPending ? 'background:#fde047;color:#854d0e;' : (isAccepted ? 'background:#bbf7d0;color:#166534;' : 'background:#fecaca;color:#991b1b;')
               }">
-                ${isPending ? '⏳ उत्तराची प्रतीक्षा (Pending)' : (isAccepted ? '✓ स्वीकारले (Accepted)' : '✕ नाकारले (Rejected)')}
+                ${isPending ? '<span class="lang-mr">प्रतीक्षेत</span><span class="lang-en">Pending</span>' : (isAccepted ? '<span class="lang-mr">स्वीकारले</span><span class="lang-en">Accepted</span>' : '<span class="lang-mr">नाकारले</span><span class="lang-en">Rejected</span>')}
               </span>
             </div>
             <div style="margin-top:4px;color:#334155;">
               <span style="text-decoration:line-through;color:#94a3b8;">${escapeHtml(sub.originalNameMr || sub.originalNameEn)} (${escapeHtml(sub.originalPackSize || '')}) × ${sub.originalQty}</span>
-              &nbsp;➔&nbsp;
+              &nbsp;&rarr;&nbsp;
               <strong style="color:#047857;">${escapeHtml(sub.proposedNameMr || sub.proposedNameEn)} (${escapeHtml(sub.proposedPackSize || '')}) × ${sub.proposedQty}</strong>
               &nbsp;(${diffText})
             </div>
@@ -351,14 +351,14 @@ const ordersApp = (() => {
             acceptBtn.type = 'button';
             acceptBtn.className = 'btn btn-primary btn-sm';
             acceptBtn.style.cssText = 'font-size:0.78rem;padding:4px 10px;background:#059669;border-color:#059669;';
-            acceptBtn.textContent = '✓ स्वीकारा (Accept)';
+            acceptBtn.innerHTML = '<svg class="icon icon--sm" style="margin-right:2px;vertical-align:-1px;"><use href="/images/icons.svg#check"></use></svg> <span class="lang-mr">स्वीकारा</span><span class="lang-en">Accept</span>';
             acceptBtn.addEventListener('click', () => handleRespondSubstitution(order._id, sub._id, 'accept'));
 
             const rejectBtn = document.createElement('button');
             rejectBtn.type = 'button';
             rejectBtn.className = 'btn btn-outline btn-sm btn-danger-outline';
             rejectBtn.style.cssText = 'font-size:0.78rem;padding:4px 10px;';
-            rejectBtn.textContent = '✕ नाकारा (Reject)';
+            rejectBtn.innerHTML = '<svg class="icon icon--sm" style="margin-right:2px;vertical-align:-1px;"><use href="/images/icons.svg#close"></use></svg> <span class="lang-mr">नाकारा</span><span class="lang-en">Reject</span>';
             rejectBtn.addEventListener('click', () => handleRespondSubstitution(order._id, sub._id, 'reject'));
 
             btnGroup.appendChild(acceptBtn);
@@ -379,7 +379,7 @@ const ordersApp = (() => {
       const slotInfo = document.createElement('div');
       const slotB = document.createElement('b');
       slotB.textContent = 'Timing: ';
-      slotInfo.textContent = '⏰ ';
+      slotInfo.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#clock"></use></svg> ';
       slotInfo.appendChild(slotB);
       slotInfo.appendChild(document.createTextNode(order.slot));
       metaRow.appendChild(slotInfo);
@@ -387,7 +387,7 @@ const ordersApp = (() => {
       const addrInfo = document.createElement('div');
       const addrB = document.createElement('b');
       addrB.textContent = 'Delivery: ';
-      addrInfo.textContent = '📍 ';
+      addrInfo.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#map-pin"></use></svg> ';
       addrInfo.appendChild(addrB);
       addrInfo.appendChild(document.createTextNode(`${order.address.line} (${order.address.pincode})`));
       metaRow.appendChild(addrInfo);
@@ -409,7 +409,7 @@ const ordersApp = (() => {
       const statusIdx = steps.findIndex((s) => s.key === order.status);
       const isCancelled = order.status === 'cancelled';
       if (isCancelled) {
-        timeline.innerHTML = '<div style="color:#dc2626;font-weight:700;">❌ ही ऑर्डर रद्द करण्यात आली आहे / This order was cancelled.</div>';
+        timeline.innerHTML = '<div style="color:#dc2626;font-weight:700;display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--sm"><use href="/images/icons.svg#close"></use></svg> <span class="lang-mr">ही ऑर्डर रद्द झाली आहे</span><span class="lang-en">Order cancelled</span></div>';
       } else {
         timeline.innerHTML = steps.map((s, idx) => {
           const isDone = idx <= statusIdx;
@@ -417,7 +417,7 @@ const ordersApp = (() => {
           const color = isDone ? '#059669' : '#94a3b8';
           const weight = isCurrent ? '800' : (isDone ? '700' : '500');
           return `<div style="text-align:center;color:${color};font-weight:${weight};white-space:pre-line;flex:1;">
-            <div style="width:16px;height:16px;border-radius:50%;background:${isDone ? '#059669' : '#cbd5e1'};margin:0 auto 4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;">${isDone ? '✓' : idx + 1}</div>
+            <div style="width:16px;height:16px;border-radius:50%;background:${isDone ? '#059669' : '#cbd5e1'};margin:0 auto 4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;">${isDone ? '<svg class="icon" style="width:10px;height:10px;stroke-width:2.5;"><use href="/images/icons.svg#check"></use></svg>' : idx + 1}</div>
             ${s.label}
           </div>`;
         }).join('<div style="width:12px;height:2px;background:#e2e8f0;margin-top:-14px;"></div>');
@@ -446,7 +446,7 @@ const ordersApp = (() => {
       callStore.href = 'tel:+919860924504';
       callStore.className = 'btn btn-outline btn-sm';
       callStore.style.cssText = 'text-decoration:none;font-size:12px;padding:5px 10px;';
-      callStore.textContent = '📞 कॉल करा / Call';
+      callStore.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#phone"></use></svg> <span class="lang-mr">कॉल</span><span class="lang-en">Call</span>';
       actions.appendChild(callStore);
 
       // WhatsApp store button
@@ -457,7 +457,7 @@ const ordersApp = (() => {
       waStore.rel = 'noopener';
       waStore.className = 'btn btn-outline btn-sm';
       waStore.style.cssText = 'text-decoration:none;font-size:12px;padding:5px 10px;color:#15803d;border-color:#86efac;';
-      waStore.textContent = '💬 WhatsApp';
+      waStore.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp';
       actions.appendChild(waStore);
 
       // Rule 11: Cancel button (only allowed for 'new' and 'confirmed')
@@ -566,7 +566,7 @@ const ordersApp = (() => {
       const changedItems = available.filter((i) => i.priceChanged);
       if (changedItems.length > 0) {
         const priceNotes = changedItems
-          .map((i) => `• ${i.nameMr || i.nameEn}: जुनी किंमत ₹${i.originalPrice} ➔ नवीन किंमत ₹${i.price}`)
+          .map((i) => `• ${i.nameMr || i.nameEn}: जुनी किंमत ₹${i.originalPrice} → नवीन किंमत ₹${i.price}`)
           .join('\n');
         alert(`काही वस्तूंच्या किमतींमध्ये बदल झाला आहे (नवीन किमती लागू):\nPrice updates in current catalog:\n${priceNotes}`);
       }

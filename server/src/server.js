@@ -238,4 +238,5 @@ if (require.main === module) {
   })();
 }
 
+app.dbPromise = dbPromise;
 module.exports = app;

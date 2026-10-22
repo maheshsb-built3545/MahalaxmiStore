@@ -141,7 +141,7 @@ const aiOrderBox = (() => {
         if ($voiceStatus) {
           $voiceStatus.style.display = 'flex';
           const labels = ['मराठी', 'हिंदी', 'English'];
-          $voiceStatusText.textContent = `🎙️ ऐकत आहे... / Listening (${labels[currentLangIndex]}) — किराणा यादी सांगा...`;
+          $voiceStatusText.innerHTML = `<svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#mic"></use></svg> <span class="lang-mr">ऐकत आहे (${labels[currentLangIndex]})...</span><span class="lang-en">Listening (${labels[currentLangIndex]})...</span>`;
         }
       };
 
@@ -328,7 +328,7 @@ const aiOrderBox = (() => {
           </div>
           ${isOos && item.substitutes && item.substitutes.length > 0 ? `
             <div class="ai-subs-inline">
-              <span class="ai-subs-label">💡 पर्यायी वस्तू निवडा:</span>
+              <span class="ai-subs-label"><svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#info"></use></svg> <span class="lang-mr">पर्यायी वस्तू:</span><span class="lang-en">Substitutes:</span></span>
               ${item.substitutes.map((sub) => `
                 <button type="button" class="btn-sub-pill" data-index="${index}" data-sub-id="${sub._id}">
                   ${escapeHtml(sub.nameMarathi || sub.nameEnglish)} (₹${sub.price})
@@ -344,7 +344,7 @@ const aiOrderBox = (() => {
             <button type="button" class="ai-stepper-btn" data-action="inc" data-index="${index}" aria-label="Increase quantity">+</button>
           </div>
           <div class="ai-item-subtotal">₹${itemTotal}</div>
-          <button type="button" class="ai-item-remove" data-index="${index}" title="यादीतून काढा" aria-label="Remove item">✕</button>
+          <button type="button" class="ai-item-remove" data-index="${index}" title="यादीतून काढा" aria-label="Remove item"><svg class="icon icon--sm"><use href="/images/icons.svg#close"></use></svg></button>
         </div>
       `;
 
@@ -427,11 +427,12 @@ const aiOrderBox = (() => {
 
       card.innerHTML = `
         <div class="ai-amb-header">
-          <span class="ai-amb-icon">⚠️</span>
+          <span class="ai-amb-icon"><svg class="icon icon--sm"><use href="/images/icons.svg#warning"></use></svg></span>
           <div class="ai-amb-title">
-            तुम्ही लिहिले: <strong>"${escapeHtml(amb.rawPhrase)}"</strong> — नक्की कोणती वस्तू हवी आहे?
+            <span class="lang-mr">तुम्ही लिहिले: <strong>"${escapeHtml(amb.rawPhrase)}"</strong> — वस्तू निवडा:</span>
+            <span class="lang-en">You typed: <strong>"${escapeHtml(amb.rawPhrase)}"</strong> — Choose:</span>
           </div>
-          <button type="button" class="ai-amb-dismiss" data-index="${ambIdx}" title="काढून टाका">✕</button>
+          <button type="button" class="ai-amb-dismiss" data-index="${ambIdx}" title="काढून टाका" aria-label="Dismiss"><svg class="icon icon--sm"><use href="/images/icons.svg#close"></use></svg></button>
         </div>
         <div class="ai-candidate-grid">
           ${amb.candidates.map((c, cIdx) => `
@@ -440,7 +441,7 @@ const aiOrderBox = (() => {
                 <span class="c-mr">${escapeHtml(c.nameMarathi || '')}</span>
                 <span class="c-en">${escapeHtml(c.nameEnglish || c.name)}</span>
               </div>
-              <div class="chip-price">₹${c.price} ${c.inStock ? '✓ उपलब्ध' : '(संपले)'}</div>
+              <div class="chip-price">₹${c.price} ${c.inStock ? '<span style="color:#059669;">उपलब्ध</span>' : '<span style="color:#dc2626;">(संपले)</span>'}</div>
             </button>
           `).join('')}
         </div>
@@ -524,7 +525,7 @@ const aiOrderBox = (() => {
     if ($addBtn) {
       const inStockCount = _resolvedItems.filter((i) => i.product.inStock && i.product.stockQuantity > 0).length;
       $addBtn.disabled = inStockCount === 0;
-      $addBtn.innerHTML = `🛒 सर्व ${inStockCount} वस्तू कार्टमध्ये जोडा (₹${total.toFixed(0)}) →`;
+      $addBtn.innerHTML = `<svg class="icon" style="margin-right:5px;"><use href="/images/icons.svg#cart"></use></svg> <span class="lang-mr">सर्व ${inStockCount} वस्तू कार्टमध्ये जोडा (₹${total.toFixed(0)})</span><span class="lang-en">Add All ${inStockCount} to Cart (₹${total.toFixed(0)})</span> →`;
     }
   }
 
@@ -590,12 +591,12 @@ const aiOrderBox = (() => {
     } catch (_) {}
 
     // Bilingual feedback summary toast
-    let summaryMsg = `🎉 ${addedCount} वस्तू कार्टमध्ये जोडल्या! / ${addedCount} items added`;
+    let summaryMsg = `${addedCount} वस्तू कार्टमध्ये जोडल्या / ${addedCount} items added`;
     if (droppedCount > 0) {
-      summaryMsg += ` • ${droppedCount} वस्तू तपासणे बाकी आहे / ${droppedCount} need attention`;
+      summaryMsg += ` • ${droppedCount} तपासणे बाकी / ${droppedCount} need attention`;
     }
     if (window.ui && window.ui.showToast) {
-      ui.showToast(summaryMsg);
+      ui.showToast(summaryMsg, 'success');
     }
 
     // Open cart drawer so user sees items instantly

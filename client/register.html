@@ -24,8 +24,8 @@
 <!-- Announcement Bar -->
 <div class="announce">
   <div class="wrap">
-    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
-    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+    <span>30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> +91 98609 24504</a>
   </div>
 </div>
 
@@ -39,7 +39,7 @@
         <span class="mr">महालक्ष्मी किराणा दुकान</span>
       </div>
     </a>
-    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div class="loc-chip hide-mobile"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Yesgaon, Kopargaon</div>
     <div style="flex:1"></div>
     <a href="index.html" class="navlink">← Back to Store</a>
   </div>
@@ -49,7 +49,7 @@
 <main class="auth-main">
   <div class="auth-card">
     <div class="auth-card-head">
-      <span class="auth-icon">📝</span>
+      <span class="auth-icon"><svg class="icon icon--xl"><use href="/images/icons.svg#account"></use></svg></span>
       <h1>Customer Register <span class="mr">नवीन ग्राहक नोंदणी</span></h1>
       <p>Create an account to save your delivery addresses and reorder easily.</p>
     </div>
@@ -114,7 +114,7 @@
             style="width:100%;padding-right:44px;"
           >
           <button type="button" id="togglePasswordBtn" aria-label="Show or hide password" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;font-size:1.15rem;padding:6px;min-height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;">
-            👁️
+            <svg class="icon"><use href="/images/icons.svg#eye"></use></svg>
           </button>
         </div>
       </div>
@@ -137,7 +137,7 @@
             style="width:100%;padding-right:44px;"
           >
           <button type="button" id="toggleConfirmBtn" aria-label="Show or hide confirm password" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;font-size:1.15rem;padding:6px;min-height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;">
-            👁️
+            <svg class="icon"><use href="/images/icons.svg#eye"></use></svg>
           </button>
         </div>
       </div>
@@ -176,7 +176,7 @@
     togglePassBtn.addEventListener('click', () => {
       const isPass = passInput.type === 'password';
       passInput.type = isPass ? 'text' : 'password';
-      togglePassBtn.textContent = isPass ? '🙈' : '👁️';
+      togglePassBtn.innerHTML = isPass ? '<svg class="icon"><use href="/images/icons.svg#eye-off"></use></svg>' : '<svg class="icon"><use href="/images/icons.svg#eye"></use></svg>';
     });
   }
 
@@ -186,7 +186,7 @@
     toggleConfirmBtn.addEventListener('click', () => {
       const isPass = confirmInput.type === 'password';
       confirmInput.type = isPass ? 'text' : 'password';
-      toggleConfirmBtn.textContent = isPass ? '🙈' : '👁️';
+      toggleConfirmBtn.innerHTML = isPass ? '<svg class="icon"><use href="/images/icons.svg#eye-off"></use></svg>' : '<svg class="icon"><use href="/images/icons.svg#eye"></use></svg>';
     });
   }
 

@@ -152,7 +152,7 @@ const auth = (() => {
         if (ui.updateCartBadge) ui.updateCartBadge();
         if (ui.renderCartDrawer) ui.renderCartDrawer();
         if (ui.openCart) setTimeout(() => ui.openCart(), 350);
-        if (ui.showToast) ui.showToast('कार्टमध्ये जोडले / Added to cart 🎉');
+        if (ui.showToast) ui.showToast('कार्टमध्ये जोडले / Added to cart', 'success');
       }
     } else if (action.type === 'ai_list') {
       const items = action.items || [];
@@ -164,7 +164,7 @@ const auth = (() => {
         if (ui.updateCartBadge) ui.updateCartBadge();
         if (ui.renderCartDrawer) ui.renderCartDrawer();
         if (ui.openCart) setTimeout(() => ui.openCart(), 350);
-        if (ui.showToast) ui.showToast(`🎉 ${items.length} वस्तू कार्टमध्ये जोडल्या! (Added to cart)`);
+        if (ui.showToast) ui.showToast(`${items.length} वस्तू कार्टमध्ये जोडल्या / Added to cart`, 'success');
       }
     } else if (action.type === 'reorder') {
       if (window.location.pathname.includes('orders.html') && action.orderId) {
@@ -241,7 +241,7 @@ const auth = (() => {
       const ordersLink = document.createElement('a');
       ordersLink.href = 'orders.html';
       ordersLink.className = 'btn-my-orders';
-      ordersLink.textContent = '📦 Orders';
+      ordersLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#orders"></use></svg> Orders';
       ordersLink.setAttribute('aria-label', 'View my orders');
       badge.appendChild(ordersLink);
 
@@ -250,7 +250,7 @@ const auth = (() => {
       inboxLink.href = 'inbox.html';
       inboxLink.className = 'btn-my-orders btn-inbox-header';
       inboxLink.id = 'customerInboxHeaderLink';
-      inboxLink.innerHTML = '🔔 <span class="hide-mobile">Inbox</span><span class="nav-unread-badge" id="customerUnreadBadge" style="display:none;">0</span>';
+      inboxLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#bell"></use></svg> <span class="hide-mobile">Inbox</span><span class="nav-unread-badge" id="customerUnreadBadge" style="display:none;">0</span>';
       inboxLink.setAttribute('aria-label', 'View messages and notifications');
       badge.appendChild(inboxLink);
 
@@ -262,7 +262,7 @@ const auth = (() => {
         adminLink.style.background = '#047857';
         adminLink.style.color = '#ffffff';
         adminLink.style.borderColor = '#059669';
-        adminLink.textContent = '🛠️ Admin';
+        adminLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#settings"></use></svg> Admin';
         adminLink.setAttribute('aria-label', 'Go to admin panel');
         badge.appendChild(adminLink);
       }
@@ -290,7 +290,7 @@ const auth = (() => {
       loginLink.setAttribute('aria-label', 'Customer login');
 
       const iconSpan = document.createElement('span');
-      iconSpan.textContent = '👤';
+      iconSpan.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#account"></use></svg>';
       loginLink.appendChild(iconSpan);
 
       const textSpan = document.createElement('span');

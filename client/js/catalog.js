@@ -57,7 +57,8 @@ const catalog = (() => {
     // "All" button
     const allBtn = el('button', 'cat-card' + (_activeCatId === null ? ' active' : ''));
     allBtn.dataset.cat = 'all';
-    const allEm  = el('span', 'em', '🛒');
+    const allEm  = el('span', 'em', '');
+    allEm.innerHTML = '<svg class="icon"><use href="/images/icons.svg#grid"></use></svg>';
     allBtn.appendChild(allEm);
     allBtn.appendChild(t('All'));
     allBtn.addEventListener('click', () => setCat(null));
@@ -66,7 +67,8 @@ const catalog = (() => {
     _categories.forEach((cat) => {
       const btn  = el('button', 'cat-card' + (_activeCatId === cat._id ? ' active' : ''));
       btn.dataset.cat = cat._id;
-      const emEl = el('span', 'em', cat.emoji);
+      const emEl = el('span', 'em', '');
+      emEl.innerHTML = renderCategoryIcon(cat);
       btn.appendChild(emEl);
       btn.appendChild(t(cat.nameEn));
       btn.addEventListener('click', () => setCat(cat._id));
@@ -77,7 +79,8 @@ const catalog = (() => {
     if (deptRow && _categories.length) {
       deptRow.textContent = '';
       _categories.forEach((cat) => {
-        const btn = el('button', 'dept', `${cat.emoji} ${cat.nameEn.split('&')[0].trim()}`);
+        const btn = el('button', 'dept');
+        btn.innerHTML = `${renderCategoryIcon(cat, 'icon--sm')} <span>${cat.nameEn.split('&')[0].trim()}</span>`;
         btn.setAttribute('type', 'button');
         btn.setAttribute('aria-label', `View ${cat.nameEn} in catalog`);
         btn.addEventListener('click', () => setCat(cat._id));
@@ -134,7 +137,6 @@ const catalog = (() => {
     card.appendChild(offEl);
 
     // Product image wrapper with 1:1 ratio
-    const catEmoji = (p.categoryId && p.categoryId.emoji) || p.emoji || '🛒';
     const imgWrap = el('div', 'card-img-wrap');
     if (p.imageUrl) {
       const img = document.createElement('img');
@@ -145,10 +147,16 @@ const catalog = (() => {
       img.className = 'card-img';
       img.loading   = 'lazy';
       img.decoding  = 'async';
-      img.onerror   = () => { img.replaceWith(el('div', 'em', catEmoji)); };
+      img.onerror   = () => {
+        const fallback = el('div', 'em', '');
+        fallback.innerHTML = renderCategoryIcon(p.categoryId);
+        img.replaceWith(fallback);
+      };
       imgWrap.appendChild(img);
     } else {
-      imgWrap.appendChild(el('div', 'em', catEmoji));
+      const fallback = el('div', 'em', '');
+      fallback.innerHTML = renderCategoryIcon(p.categoryId);
+      imgWrap.appendChild(fallback);
     }
     card.appendChild(imgWrap);
 
@@ -166,14 +174,16 @@ const catalog = (() => {
 
     // R1: Low-stock indicator — "Only N left"
     if (isLow) {
-      const lowBadge = el('span', 'low-stock-badge', `⚠️ फक्त ${stock} शिल्लक`);
+      const lowBadge = el('span', 'low-stock-badge');
+      lowBadge.innerHTML = `<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">फक्त ${stock} शिल्लक</span><span class="lang-en">Only ${stock} left</span>`;
       card.appendChild(lowBadge);
     }
 
     // Out-of-stock (R1: based on virtual inStock which checks stockQuantity + unavailableFlag)
     if (!p.inStock || stock <= 0) {
       card.classList.add('out-of-stock');
-      const oos = el('button', 'add-btn', 'संपले / Out of stock');
+      const oos = el('button', 'add-btn');
+      oos.innerHTML = '<span class="lang-mr">संपले</span><span class="lang-en">Out of stock</span>';
       oos.disabled = true;
       oos.style.opacity = '0.55';
       oos.style.cursor  = 'not-allowed';
@@ -273,15 +283,19 @@ const catalog = (() => {
     if (!list.length) {
       const msg = el('div', 'empty-search-state');
       msg.style.cssText = 'color:#64748b;grid-column:1/-1;text-align:center;padding:48px 16px;';
-      const icon = el('div', '', '🔍');
-      icon.style.cssText = 'font-size:2.4rem;margin-bottom:8px;';
-      const title = el('strong', '', 'कोणतेही उत्पादन सापडले नाही / No products found');
+      const icon = el('div', '', '');
+      icon.innerHTML = '<svg class="icon icon--2xl" style="color:var(--forest-400);margin-bottom:8px;"><use href="/images/icons.svg#search"></use></svg>';
+      icon.style.cssText = 'margin-bottom:8px;';
+      const title = el('strong', '', '');
+      title.innerHTML = '<span class="lang-mr">उत्पादने सापडली नाहीत</span><span class="lang-en">No products found</span>';
       title.style.cssText = 'display:block;font-size:1.1rem;color:#04251a;margin-bottom:6px;';
-      const sub = el('p', '', `"${search}" साठी कॅटलॉगमध्ये वस्तू सापडली नाही. कृपया वेगळा शब्द वापरा किंवा व्हॉट्सॲपवर विचारा.`);
+      const sub = el('p', '', '');
+      sub.innerHTML = '<span class="lang-mr">वेगळा शब्द वापरून शोधा किंवा व्हॉट्सॲपवर विचारा.</span><span class="lang-en">Try another search or ask on WhatsApp.</span>';
       sub.style.cssText = 'font-size:0.9rem;margin-bottom:12px;';
 
       const waNumber = (window._storeSettings && window._storeSettings.storeWhatsapp) || (typeof CONFIG !== 'undefined' ? CONFIG.STORE_NUM : '919860924504');
-      const waBtn = el('a', 'btn btn-outline', '💬 व्हॉट्सॲपवर विचारा / Ask on WhatsApp');
+      const waBtn = el('a', 'btn btn-outline', '');
+      waBtn.innerHTML = '<svg class="icon" style="margin-right:6px;"><use href="/images/icons.svg#whatsapp"></use></svg> <span class="lang-mr">व्हॉट्सॲपवर विचारा</span><span class="lang-en">Ask on WhatsApp</span>';
       waBtn.href = `${CONFIG.WA_BASE}${waNumber}?text=` + encodeURIComponent(`नमस्कार! मला "${search}" हवे होते, तुमच्याकडे उपलब्ध आहे का? / Hi, do you have "${search}"?`);
       waBtn.target = '_blank';
       waBtn.rel = 'noopener';
@@ -375,14 +389,21 @@ const catalog = (() => {
         dImg.className = 'deal-card-img';
         dImg.loading = 'lazy';
         dImg.decoding = 'async';
-        dImg.onerror = () => { dImg.replaceWith(el('div', 'em', p.emoji || '🛒')); };
+        dImg.onerror = () => {
+          const fallback = el('div', 'em', '');
+          fallback.innerHTML = renderCategoryIcon(p.categoryId);
+          dImg.replaceWith(fallback);
+        };
         card.appendChild(dImg);
       } else {
-        card.appendChild(el('div', 'em', p.emoji || '🛒'));
+        const fallback = el('div', 'em', '');
+        fallback.innerHTML = renderCategoryIcon(p.categoryId);
+        card.appendChild(fallback);
       }
       card.appendChild(el('h4', null, `${p.nameEn} ${p.packSize}`));
       card.appendChild(el('div', 'save', (p.offerPercent ? `${p.offerPercent}% OFF · ` : '') + 'Save ₹' + save));
-      const dealBadge = el('div', 'timer', '🔥 महा ऑफर • Mega Deal');
+      const dealBadge = el('div', 'timer');
+      dealBadge.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#badge-percent"></use></svg> <span class="lang-mr">विशेष सवलत</span><span class="lang-en">Mega Deal</span>';
       card.appendChild(dealBadge);
       grid.appendChild(card);
     });
@@ -433,7 +454,8 @@ const catalog = (() => {
 
       const authorInfo = el('div', '');
       const authorName = el('div', 'testimonial-name', item.name);
-      const authorArea = el('div', 'testimonial-area', `📍 ${item.area || 'Yesgaon'}`);
+      const authorArea = el('div', 'testimonial-area');
+      authorArea.innerHTML = `<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#map-pin"></use></svg> ${item.area || 'Yesgaon'}`;
       authorInfo.appendChild(authorName);
       authorInfo.appendChild(authorArea);
       author.appendChild(authorInfo);
@@ -481,16 +503,19 @@ const catalog = (() => {
         const errMsg = el('div', 'empty');
         errMsg.style.cssText = 'grid-column:1/-1;text-align:center;padding:48px 16px;color:#dc2626;';
         
-        const icon = el('div', '', '⚠️');
-        icon.style.cssText = 'font-size:2.5rem;margin-bottom:8px;';
+        const icon = el('div', '', '');
+        icon.innerHTML = '<svg class="icon icon--2xl" style="color:#dc2626;margin-bottom:8px;"><use href="/images/icons.svg#warning"></use></svg>';
         
-        const title = el('strong', '', 'उत्पादने लोड करण्यात अडचण आली / Could not load products');
+        const title = el('strong', '', '');
+        title.innerHTML = '<span class="lang-mr">उत्पादने लोड झाली नाहीत</span><span class="lang-en">Could not load products</span>';
         title.style.cssText = 'display:block;font-size:1.15rem;margin-bottom:4px;';
         
-        const sub = el('p', '', 'कृपया इंटरनेट कनेक्शन तपासा किंवा पुन्हा प्रयत्न करा.');
+        const sub = el('p', '', '');
+        sub.innerHTML = '<span class="lang-mr">कृपया इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.</span><span class="lang-en">Check connection and retry.</span>';
         sub.style.cssText = 'font-size:0.9rem;color:#64748b;margin-bottom:16px;';
         
-        const retryBtn = el('button', 'btn btn-primary', '🔄 पुन्हा प्रयत्न करा / Retry');
+        const retryBtn = el('button', 'btn btn-primary', '');
+        retryBtn.innerHTML = '<svg class="icon" style="margin-right:5px;"><use href="/images/icons.svg#refresh"></use></svg> <span class="lang-mr">पुन्हा प्रयत्न करा</span><span class="lang-en">Retry</span>';
         retryBtn.type = 'button';
         retryBtn.style.cssText = 'min-height:44px;padding:8px 24px;margin:0 auto;';
         retryBtn.addEventListener('click', () => init());

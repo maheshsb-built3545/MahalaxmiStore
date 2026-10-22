@@ -21,7 +21,7 @@ window.PWA = {
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                     if (window.ui && window.ui.showToast) {
-                      ui.showToast('🚀 नवीन आवृत्ती उपलब्ध आहे • New version available - Refresh');
+                      ui.showToast('नवीन आवृत्ती उपलब्ध आहे • New version available - Refresh', 'info');
                     }
                   }
                 });

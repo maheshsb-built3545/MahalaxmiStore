@@ -184,7 +184,7 @@ const checkoutApp = (() => {
         const defBtn = document.createElement('button');
         defBtn.type = 'button';
         defBtn.className = 'btn-link';
-        defBtn.textContent = '⭐ मुख्य पत्ता करा / Make Default';
+        defBtn.innerHTML = '<span class="lang-mr">मुख्य पत्ता करा</span><span class="lang-en">Make Default</span>';
         defBtn.style.cssText = 'background:none;border:none;color:#047857;font-weight:600;padding:0;cursor:pointer;font-size:12px;';
         defBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
@@ -196,7 +196,7 @@ const checkoutApp = (() => {
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
       delBtn.className = 'btn-link';
-      delBtn.textContent = '🗑️ हटवा / Delete';
+      delBtn.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#trash"></use></svg> <span class="lang-mr">हटवा</span><span class="lang-en">Delete</span>';
       delBtn.style.cssText = 'background:none;border:none;color:#dc2626;font-weight:600;padding:0;cursor:pointer;font-size:12px;margin-left:auto;';
       delBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -237,7 +237,7 @@ const checkoutApp = (() => {
     if (!_settings || !warning) return;
 
     if (!_settings.servicePincodes.includes(pincode)) {
-      warning.textContent = `⚠️ We currently only deliver to: ${_settings.servicePincodes.join(', ')}. Pincode ${pincode} is outside our delivery zone.`;
+      warning.innerHTML = `<svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">फक्त ${_settings.servicePincodes.join(', ')} येथे डिलिव्हरी उपलब्ध आहे.</span><span class="lang-en">Delivery only available in ${_settings.servicePincodes.join(', ')}.</span>`;
       warning.style.display = 'block';
     } else {
       warning.textContent = '';
@@ -395,7 +395,7 @@ const checkoutApp = (() => {
 
     if (subtotal < _settings.minOrder) {
       const diff = _settings.minOrder - subtotal;
-      minOrderAlert.textContent = `⚠️ Minimum order is ₹${_settings.minOrder}. Add ₹${diff} more of items to place your order. / किमान ऑर्डर ₹${_settings.minOrder} आवश्यक आहे.`;
+      minOrderAlert.innerHTML = `<svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">किमान ऑर्डर ₹${_settings.minOrder}. आणखी ₹${diff} जोडा.</span><span class="lang-en">Min order ₹${_settings.minOrder}. Add ₹${diff} more.</span>`;
       minOrderAlert.style.display = 'block';
       placeOrderBtn.disabled = true;
     } else {
@@ -409,10 +409,10 @@ const checkoutApp = (() => {
     if (freeDeliveryHint) {
       if (!isFreeDelivery) {
         const needed = _settings.freeDeliveryAbove - subtotal;
-        freeDeliveryHint.textContent = `💡 Add ₹${needed} more to get FREE delivery!`;
+        freeDeliveryHint.innerHTML = `<svg class="icon icon--sm" style="margin-right:4px;"><use href="/images/icons.svg#truck"></use></svg> <span class="lang-mr">आणखी ₹${needed} ची खरेदी करा व मोफत डिलिव्हरी मिळवा!</span><span class="lang-en">Add ₹${needed} more for FREE delivery!</span>`;
         freeDeliveryHint.style.display = 'block';
       } else {
-        freeDeliveryHint.textContent = '🎉 You unlocked FREE delivery on this order!';
+        freeDeliveryHint.innerHTML = `<svg class="icon icon--sm" style="color:#16a34a;margin-right:4px;"><use href="/images/icons.svg#truck"></use></svg> <span class="lang-mr">मोफत डिलिव्हरी लागू!</span><span class="lang-en">FREE delivery unlocked!</span>`;
         freeDeliveryHint.style.display = 'block';
       }
     }
@@ -424,8 +424,7 @@ const checkoutApp = (() => {
         udharRadio.disabled = true;
         const subTitle = document.getElementById('udharCreditSubtitle');
         if (subTitle) {
-          // Safe: no innerHTML, only textContent for user-data
-          subTitle.textContent = `⚠️ मर्यादा संपली (Limit Exceeded) • शिल्लक: ₹${_udharAccount.availableCredit}`;
+          subTitle.innerHTML = `<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">मर्यादा संपली • शिल्लक: ₹${_udharAccount.availableCredit}</span><span class="lang-en">Limit exceeded • Balance: ₹${_udharAccount.availableCredit}</span>`;
           subTitle.style.color = '#ef4444';
           subTitle.style.fontWeight = '700';
         }
@@ -498,7 +497,7 @@ const checkoutApp = (() => {
           return;
         }
         shareLocBtn.disabled = true;
-        shareLocBtn.textContent = '📍 शोधत आहे... / Locating...';
+        shareLocBtn.innerHTML = '<svg class="icon icon--sm"><use href="/images/icons.svg#map-pin"></use></svg> <span class="lang-mr">शोधत आहे...</span><span class="lang-en">Locating...</span>';
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
@@ -507,17 +506,17 @@ const checkoutApp = (() => {
             if (input) {
               input.value = mapsUrl;
               if (window.ui && window.ui.showToast) {
-                ui.showToast('📍 चालू लोकेशन लिंक जोडली! / Location link added!');
+                ui.showToast('लोकेशन लिंक जोडली / Location added', 'success');
               }
             }
             shareLocBtn.disabled = false;
-            shareLocBtn.textContent = '📍 चालू लोकेशन जोडा (GPS) / Share Location';
+            shareLocBtn.innerHTML = '<svg class="icon icon--sm"><use href="/images/icons.svg#map-pin"></use></svg> <span class="lang-mr">चालू लोकेशन (GPS)</span><span class="lang-en">Share Location</span>';
           },
           (err) => {
             console.warn('Geolocation error:', err.message);
-            alert('लोकेशन मिळवता आले नाही. कृपया ब्राऊझरमध्ये लोकेशन परवानगी द्या किंवा हाताने जवळची खूण लिहा.\nCould not access GPS. Please allow location permissions or type a landmark manually.');
+            alert('लोकेशन मिळवता आले नाही. कृपया ब्राऊझरमध्ये परवानगी द्या किंवा खूण लिहा.\nCould not access GPS. Please allow location permissions or type a landmark.');
             shareLocBtn.disabled = false;
-            shareLocBtn.textContent = '📍 चालू लोकेशन जोडा (GPS) / Share Location';
+            shareLocBtn.innerHTML = '<svg class="icon icon--sm"><use href="/images/icons.svg#map-pin"></use></svg> <span class="lang-mr">चालू लोकेशन (GPS)</span><span class="lang-en">Share Location</span>';
           },
           { enableHighAccuracy: true, timeout: 10000 }
         );
@@ -667,9 +666,9 @@ const checkoutApp = (() => {
       }
 
       if (res.status === 403 && data.code === 'STORE_CLOSED') {
-        showGlobalError('⚠️ दुकान सध्या बंद आहे. नवीन ऑर्डर्स तात्पुरत्या बंद आहेत. / Store is currently closed. Order placement paused.');
+        showGlobalError('दुकान सध्या बंद आहे. नवीन ऑर्डर्स तात्पुरत्या बंद आहेत. / Store is currently closed. Order placement paused.');
         placeBtn.disabled = true;
-        placeBtn.textContent = 'दुकान बंद आहे / Store Closed';
+        placeBtn.innerHTML = '<span class="lang-mr">दुकान बंद आहे</span><span class="lang-en">Store Closed</span>';
         return;
       }
 
@@ -726,7 +725,7 @@ const checkoutApp = (() => {
   function showGlobalError(msg) {
     const alertBox = document.getElementById('checkoutGlobalError');
     if (alertBox) {
-      alertBox.textContent = msg;
+      alertBox.innerHTML = `<svg class="icon icon--sm" style="margin-right:5px;vertical-align:-2px;"><use href="/images/icons.svg#warning"></use></svg> <span>${msg.replace(/^[\u26A0\uFE0F\s]+/, '')}</span>`;
       alertBox.style.display = 'block';
       alertBox.scrollIntoView({ behavior: 'smooth' });
     } else {

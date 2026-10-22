@@ -81,8 +81,8 @@
       <span class="dot" id="statusDot"></span>
       <span id="statusText">Store status</span>
     </span>
-    <span>⚡ 30-min delivery in Kopargaon &amp; Yesgaon</span>
-    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+    <span>30-min delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> +91 98609 24504</a>
   </div>
 </div>
 
@@ -97,12 +97,12 @@
       </div>
     </a>
 
-    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div class="loc-chip hide-mobile"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Yesgaon, Kopargaon</div>
 
     <div class="search" id="headerSearch">
       <input type="search" id="searchInput" placeholder="Search atta, oil, dal…" aria-label="Search products">
       <span class="kbd hide-mobile">⌘K</span>
-      <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">✕</button>
+      <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search"><svg class="icon"><use href="/images/icons.svg#close"></use></svg></button>
     </div>
 
     <nav class="hide-mobile">
@@ -112,11 +112,15 @@
     </nav>
 
     <div class="hdr-actions">
-      <button type="button" class="search-toggle-btn mobile-only" id="searchToggleBtn" aria-label="Open search">🔍</button>
+      <button type="button" class="lang-toggle-btn" id="langToggleBtn" aria-label="Switch Language">
+        <svg class="icon"><use href="/images/icons.svg#globe"></use></svg>
+        <span id="langToggleLabel">EN</span>
+      </button>
+      <button type="button" class="search-toggle-btn mobile-only" id="searchToggleBtn" aria-label="Open search"><svg class="icon"><use href="/images/icons.svg#search"></use></svg></button>
       <div id="userHeaderArea" class="desktop-only-user"></div>
 
       <button class="cart-btn" id="cartBtn" aria-label="Open cart">
-        🛒 <span class="hide-mobile">Cart</span><span class="badge" id="cartBadge">0</span>
+        <svg class="icon"><use href="/images/icons.svg#cart"></use></svg> <span class="hide-mobile">Cart</span><span class="badge" id="cartBadge">0</span>
       </button>
     </div>
   </div>
@@ -129,7 +133,7 @@
   <div class="hero-bg-layer" aria-hidden="true"></div>
   <div class="wrap">
     <div class="hero-content">
-      <div class="trust hero-animate-1">🏪 येसगाव व कोपरगावचे विश्वासू किराणा दुकान • Trusted Local Kirana</div>
+      <div class="trust hero-animate-1">येसगाव व कोपरगावचे विश्वासू किराणा दुकान • Trusted Local Kirana</div>
       <h1 class="hero-animate-2">Fresh groceries from your neighbourhood dukan
         <span class="mr">तुमच्या शेजारच्या दुकानातून ताजा किराणा</span>
       </h1>
@@ -151,7 +155,7 @@
 <!-- ── Photo-list banner ──────────────────────────────────────── -->
 <section class="snap" data-reveal>
   <div class="wrap">
-    <p>📸 हाताने लिहिलेली यादी आहे? फोटो पाठवा — आम्ही सामान भरून ठेवू. <span class="hide-mobile">/ Snap a photo of your list and WhatsApp us.</span></p>
+    <p>हाताने लिहिलेली यादी आहे? फोटो पाठवा — आम्ही सामान भरून ठेवू. <span class="hide-mobile">/ Snap a photo of your list and WhatsApp us.</span></p>
     <a id="snapWaLink" href="#" target="_blank" rel="noopener" class="btn">व्हॉट्सॲपवर यादी पाठवा / Send list on WhatsApp</a>
   </div>
 </section>
@@ -162,19 +166,19 @@
     <!-- One-time dismissible onboarding hint (Task 2) -->
     <div id="aiOnboardingHint" class="ai-onboarding-hint" style="display:none;" role="status">
       <div class="ai-hint-content">
-        <span class="ai-hint-icon">✨</span>
+        <span class="ai-hint-icon"><svg class="icon"><use href="/images/icons.svg#info"></use></svg></span>
         <div class="ai-hint-text">
           <strong class="ai-hint-title">नवीन: तुमची संपूर्ण किराणा यादी एकाच वेळी जोडा! <span class="ai-hint-en">/ New: Smart Grocery List</span></strong>
           <span class="ai-hint-desc">यादी लिहा किंवा बोला — आमचे AI सर्व वस्तू शोधून एका क्लिकवर तुमच्या कार्टमध्ये भरेल. (Type or speak your list to add all items at once.)</span>
         </div>
       </div>
-      <button type="button" id="dismissAiHintBtn" class="ai-hint-dismiss" aria-label="Dismiss hint">समजले (Got it) ✕</button>
+      <button type="button" id="dismissAiHintBtn" class="ai-hint-dismiss" aria-label="Dismiss hint">समजले (Got it)</button>
     </div>
 
     <div class="ai-box-card" data-reveal>
       <div class="ai-box-header">
         <div class="ai-badge-row">
-          <span class="ai-smart-badge">✨ Smart AI List • स्मार्ट यादी</span>
+          <span class="ai-smart-badge"><svg class="icon"><use href="/images/icons.svg#edit"></use></svg> Smart AI List • स्मार्ट यादी</span>
           <span class="ai-tagline">मराठी / Hindi / Hinglish / English</span>
         </div>
         <h2 class="ai-box-title">
@@ -188,7 +192,7 @@
 
       <!-- Quick sample pills -->
       <div class="ai-sample-pills">
-        <span class="ai-pills-label">💡 उदाहरणे (क्लिक करा):</span>
+        <span class="ai-pills-label"><svg class="icon"><use href="/images/icons.svg#info"></use></svg> उदाहरणे:</span>
         <button type="button" class="ai-pill-btn" data-text="२ किलो तांदूळ, १ लिटर तेल, अर्धा किलो साखर">२ किलो तांदूळ, १ लिटर तेल, अर्धा किलो साखर</button>
         <button type="button" class="ai-pill-btn" data-text="5kg wheat flour, 2kg basmati rice, 1 packet tea">5kg wheat flour, 2kg basmati rice, 1 packet tea</button>
         <button type="button" class="ai-pill-btn" data-text="१ किलो तूर डाळ, अर्धा किलो पोहे, १०० ग्रॅम जिरे">१ किलो तूर डाळ, अर्धा किलो पोहे, १०० ग्रॅम जिरे</button>
@@ -208,7 +212,7 @@
         <div class="ai-input-footer">
           <div class="ai-input-left">
             <button type="button" id="aiVoiceBtn" class="btn btn-voice" title="बोलून यादी सांगा (Voice Typing)">
-              <span class="voice-icon">🎙️</span>
+              <span class="voice-icon"><svg class="icon"><use href="/images/icons.svg#mic"></use></svg></span>
               <span class="voice-text">बोलून सांगा (Voice)</span>
             </button>
             <span id="aiCharCount" class="ai-char-counter">0 / 2000</span>
@@ -216,7 +220,7 @@
           <div class="ai-input-right">
             <button type="button" id="aiClearBtn" class="btn btn-secondary ai-btn-clear" style="display:none">Clear</button>
             <button type="button" id="aiParseBtn" class="btn btn-primary ai-btn-submit">
-              <span class="ai-btn-text">यादी तपासा • Build Cart ✨</span>
+              <span class="ai-btn-text">यादी तपासा • Build Cart</span>
               <span class="ai-btn-spinner" style="display:none">
                 <span class="spinner-dot"></span><span class="spinner-dot"></span><span class="spinner-dot"></span>
               </span>
@@ -237,26 +241,26 @@
         <div class="ai-tray-summary">
           <div class="ai-tray-title-group">
             <h3 id="aiTrayTitle">यादीतील वस्तू तपासणी (Review Items)</h3>
-            <span id="aiFallbackBadge" class="badge-fallback" style="display:none">⚡ Local Catalog Match</span>
+            <span id="aiFallbackBadge" class="badge-fallback" style="display:none">Local Catalog Match</span>
           </div>
           <p id="aiTraySub">खालील वस्तू तपासून एका क्लिकवर तुमच्या कार्टमध्ये टाका.</p>
         </div>
 
         <!-- Matched Items List -->
         <div id="aiMatchedSection" class="ai-section-group">
-          <h4 class="ai-group-heading">✅ ओळखलेल्या वस्तू (<span id="aiMatchedCount">0</span>)</h4>
+          <h4 class="ai-group-heading"><svg class="icon"><use href="/images/icons.svg#check"></use></svg> ओळखलेल्या वस्तू (<span id="aiMatchedCount">0</span>)</h4>
           <div id="aiMatchedList" class="ai-item-cards"></div>
         </div>
 
         <!-- Ambiguous Items (AI-03) -->
         <div id="aiAmbiguousSection" class="ai-section-group" style="display:none">
-          <h4 class="ai-group-heading amber">⚠️ नक्की कोणती वस्तू हवी आहे? (<span id="aiAmbiguousCount">0</span>)</h4>
+          <h4 class="ai-group-heading amber"><svg class="icon"><use href="/images/icons.svg#warning"></use></svg> नक्की कोणती वस्तू हवी आहे? (<span id="aiAmbiguousCount">0</span>)</h4>
           <div id="aiAmbiguousList" class="ai-ambiguous-cards"></div>
         </div>
 
         <!-- Unmatched Items (AI-08) -->
         <div id="aiUnmatchedSection" class="ai-section-group" style="display:none">
-          <h4 class="ai-group-heading gray">❓ कॅटलॉगमध्ये थेट न सापडलेल्या वस्तू (<span id="aiUnmatchedCount">0</span>)</h4>
+          <h4 class="ai-group-heading gray"><svg class="icon"><use href="/images/icons.svg#info"></use></svg> कॅटलॉगमध्ये थेट न सापडलेल्या वस्तू (<span id="aiUnmatchedCount">0</span>)</h4>
           <div id="aiUnmatchedList" class="ai-unmatched-pills"></div>
           <p class="ai-unmatched-hint">टीप: हे आयटम तुम्ही चेकआउटवेळी "ऑर्डर टीप (Order Note)" मध्ये लिहू शकता किंवा दुकानदाराला व्हॉट्सॲपवर सांगू शकता.</p>
         </div>
@@ -268,7 +272,7 @@
             <span id="aiTotalPreview" class="ai-total-val">₹0</span>
           </div>
           <button type="button" id="aiAddToCartBtn" class="btn btn-gold btn-add-all-cart">
-            🛒 सर्व वस्तू कार्टमध्ये जोडा (Add All to Cart) →
+            <svg class="icon"><use href="/images/icons.svg#cart"></use></svg> सर्व वस्तू कार्टमध्ये जोडा (Add All to Cart) →
           </button>
         </div>
       </div>
@@ -294,7 +298,7 @@
               decoding="async"
               onerror="this.src='images/placeholder-store.svg'"
             >
-            <span class="photo-tag">🏪 Store front</span>
+            <span class="photo-tag">Store front</span>
           </div>
           <div class="photo" data-reveal="scale">
             <img
@@ -304,7 +308,7 @@
               decoding="async"
               onerror="this.src='images/placeholder-store.svg'"
             >
-            <span class="photo-tag">📦 Inside</span>
+            <span class="photo-tag">Inside</span>
           </div>
         </div>
         <div class="dept-row" id="deptRow" data-reveal></div>
@@ -330,15 +334,15 @@
       <div class="store-col-right">
         <div class="info-card" data-reveal>
           <div>
-            <div class="info-row"><span class="ic">📍</span><div><b>Address</b><span>Post Yesgaon, Kopargaon, Maharashtra 423602</span></div></div>
-            <div class="info-row"><span class="ic">⏰</span><div><b>Hours</b><span>Daily 7 AM – 10 PM · दररोज सकाळी ७ ते रात्री १०</span></div></div>
-            <div class="info-row"><span class="ic">📞</span><div><b>Phone</b><span><a href="tel:+919860924504">98609 24504</a> / <a href="tel:+918788210084">87882 10084</a></span></div></div>
-            <div class="info-row"><span class="ic">🛵</span><div><b>Delivery</b><span>Yesgaon &amp; Kopargaon · 30 min</span></div></div>
-            <div class="info-row"><span class="ic">💳</span><div><b>Payment</b><span>UPI (GPay / PhonePe / Paytm), Cash, Udhar</span></div></div>
+            <div class="info-row"><span class="ic"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg></span><div><b>Address</b><span>Post Yesgaon, Kopargaon, Maharashtra 423602</span></div></div>
+            <div class="info-row"><span class="ic"><svg class="icon"><use href="/images/icons.svg#clock"></use></svg></span><div><b>Hours</b><span>Daily 7 AM – 10 PM · दररोज सकाळी ७ ते रात्री १०</span></div></div>
+            <div class="info-row"><span class="ic"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg></span><div><b>Phone</b><span><a href="tel:+919860924504">98609 24504</a> / <a href="tel:+918788210084">87882 10084</a></span></div></div>
+            <div class="info-row"><span class="ic"><svg class="icon"><use href="/images/icons.svg#truck"></use></svg></span><div><b>Delivery</b><span>Yesgaon &amp; Kopargaon · 30 min</span></div></div>
+            <div class="info-row"><span class="ic"><svg class="icon"><use href="/images/icons.svg#credit"></use></svg></span><div><b>Payment</b><span>UPI (GPay / PhonePe / Paytm), Cash, Udhar</span></div></div>
           </div>
           <div class="store-actions">
-            <a href="https://www.google.com/maps/search/?api=1&query=19.902565,74.495572" target="_blank" rel="noopener" class="btn btn-primary store-btn">📍 Get Directions</a>
-            <a href="tel:+919860924504" class="btn btn-gold store-btn">📞 Call Now</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=19.902565,74.495572" target="_blank" rel="noopener" class="btn btn-primary store-btn"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Get Directions</a>
+            <a href="tel:+919860924504" class="btn btn-gold store-btn"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> Call Now</a>
           </div>
         </div>
       </div>
@@ -361,7 +365,7 @@
 <section class="section best-sellers-section" id="bestSellers">
   <div class="wrap">
     <div class="section-head" data-reveal>
-      <h2>🔥 सर्वाधिक पसंतीची उत्पादने <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Best Sellers</span></h2>
+      <h2>सर्वाधिक पसंतीची उत्पादने <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Best Sellers</span></h2>
       <p>येसगावमधील कुटुंबांनी या महिन्यात सर्वाधिक मागवलेला किराणा माल • Frequently ordered items this month.</p>
     </div>
     <div class="prod-grid" id="bestSellerGrid"></div>
@@ -395,7 +399,7 @@
 <section class="section testimonials-section" id="testimonials">
   <div class="wrap">
     <div class="section-head" data-reveal>
-      <h2>💬 ग्राहकांचे मनोगत <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Customer Reviews</span></h2>
+      <h2>ग्राहकांचे मनोगत <span style="color:#5b7a6f;font-weight:500;font-size:16px">— Customer Reviews</span></h2>
       <p>What our neighbours in Yesgaon &amp; Kopargaon say about Mahalaxmi Kirana Store.</p>
     </div>
     <div class="testimonials-grid" id="testimonialGrid"></div>
@@ -410,7 +414,7 @@
     Mahalaxmi Kirana Store • Post Yesgaon, Kopargaon 423602 ·
     <a href="tel:+919860924504">98609 24504</a> ·
     <a href="tel:+918788210084">87882 10084</a> ·
-    <a href="privacy.html" style="color:inherit;text-decoration:underline;font-weight:600;">🔒 गोपनीयता धोरण (Privacy Policy)</a>
+    <a href="privacy.html" style="color:inherit;text-decoration:underline;font-weight:600;"><svg class="icon"><use href="/images/icons.svg#lock"></use></svg> गोपनीयता धोरण (Privacy Policy)</a>
   </div>
 </footer>
 
@@ -420,9 +424,9 @@
   <div class="drawer-head">
     <div>
       <h3>Your cart</h3>
-      <a href="#aiOrderBox" class="drawer-ai-link" onclick="ui.closeCart();">✨ यादी पेस्ट करा (AI Box)</a>
+      <a href="#aiOrderBox" class="drawer-ai-link" onclick="ui.closeCart();">यादी पेस्ट करा (AI Box)</a>
     </div>
-    <button id="closeCartBtn" aria-label="Close cart">✕</button>
+    <button id="closeCartBtn" aria-label="Close cart"><svg class="icon"><use href="/images/icons.svg#close"></use></svg></button>
   </div>
   <div class="drawer-body" id="drawerBody"></div>
   <div class="drawer-foot" id="drawerFoot" style="display:none">
@@ -441,7 +445,7 @@
 </div>
 
 <!-- ── Floating WA button ─────────────────────────────────────── -->
-<a class="fab" id="fabWa" href="#" target="_blank" rel="noopener" aria-label="Order on WhatsApp">💬</a>
+<a class="fab" id="fabWa" href="#" target="_blank" rel="noopener" aria-label="Order on WhatsApp"><svg class="icon icon--lg" style="color:white;width:26px;height:26px;"><use href="/images/icons.svg#whatsapp"></use></svg></a>
 
 <!-- ── Toast container ───────────────────────────────────────── -->
 <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>

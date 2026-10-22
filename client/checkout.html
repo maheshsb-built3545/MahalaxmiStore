@@ -24,8 +24,8 @@
 <!-- Announcement bar -->
 <div class="announce">
   <div class="wrap">
-    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
-    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+    <span>30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> +91 98609 24504</a>
   </div>
 </div>
 
@@ -39,7 +39,7 @@
         <span class="mr">महालक्ष्मी किराणा दुकान</span>
       </div>
     </a>
-    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div class="loc-chip hide-mobile"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Yesgaon, Kopargaon</div>
     <div style="flex:1"></div>
     <div id="userHeaderArea"></div>
   </div>
@@ -124,7 +124,7 @@
         <!-- ── Order Note & Village Landmark (ORD-07) ────────────────────── -->
         <section class="step-card" id="stepNotes">
           <div class="step-title">
-            <span class="step-num">✍️</span>
+            <span class="step-num"><svg class="icon"><use href="/images/icons.svg#edit"></use></svg></span>
             <h2>Order Note &amp; Village Landmark <span class="mr">विशेष सूचना आणि गावातील खूण</span></h2>
           </div>
           <p class="step-desc">गावातील घर शोधणे सोपे जावे म्हणून जवळची खूण किंवा सूचना लिहा (Optional):</p>
@@ -141,7 +141,7 @@
                 Village Landmark or Maps link / गावातील खूण किंवा नकाशा लिंक:
               </label>
               <button type="button" id="shareLocationBtn" class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:3px 10px;min-height:36px;display:inline-flex;align-items:center;gap:4px;">
-                📍 चालू लोकेशन जोडा (GPS) / Share Location
+                <svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Share Location
               </button>
             </div>
             <input type="text" id="orderLocationPinInput" placeholder="e.g. Behind Vitthal Temple or https://maps.google.com/?q=..." maxlength="300">
@@ -176,7 +176,7 @@
             <label id="udharPaymentOption" class="payment-card" style="display:none">
               <input type="radio" name="paymentMethod" value="udhar">
               <div class="payment-info">
-                <b>📝 खाते (Udhar Credit) <span class="badge-udhar" id="udharCreditBadge">Active</span></b>
+                <b><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> खाते (Udhar Credit) <span class="badge-udhar" id="udharCreditBadge">Active</span></b>
                 <span id="udharCreditSubtitle">दुकानदार मंजूर खाते • चालू शिल्लक मर्यादा: ₹<span id="udharAvailableLimit">0</span></span>
               </div>
             </label>
@@ -197,12 +197,12 @@
                   <b id="upiMobileText">+91 98609 24504</b>
                 </div>
                 <div class="upi-notice">
-                  ℹ️ <b>Manual Owner Verification:</b> Please pay using your UPI app. The store owner will verify this payment manually when packing your order.
+                  <svg class="icon"><use href="/images/icons.svg#info"></use></svg> <b>Manual Verification:</b> Please pay using your UPI app. The store owner will verify this payment manually when packing your order.
                   <span class="mr" style="display:block;margin-top:4px;">कृपया कोणत्याही UPI ॲपवरून स्कॅन करून पैसे भरा. दुकानाचे मालक ऑर्डर पॅक करताना खात्री करतील.</span>
                 </div>
                 <div class="upi-actions" style="margin-top:10px;">
                   <a id="upiDeepLinkBtn" href="#" class="btn btn-primary btn-block" style="text-decoration:none;font-size:0.9rem;padding:10px 14px;background:#059669;display:none;">
-                    📱 Open UPI App (GPay/PhonePe/Paytm) / थेट ॲपने भरा →
+                    <svg class="icon"><use href="/images/icons.svg#upi"></use></svg> Open UPI App (GPay/PhonePe/Paytm) →
                   </a>
                 </div>
                 <div class="form-group" style="margin-top:12px;">
@@ -224,13 +224,13 @@
 
           <!-- COD Notice Box -->
           <div id="codPaymentDetails" class="cod-box" style="display:none">
-            <p>💵 Please keep the exact cash ready when your groceries arrive.</p>
+            <p><svg class="icon"><use href="/images/icons.svg#cash"></use></svg> Please keep exact cash ready on delivery.</p>
             <p class="mr">कृपया ऑर्डर पोहोचल्यावर रोख रक्कम तयार ठेवा.</p>
           </div>
 
           <!-- Udhar Notice Box (UDH-01, UDH-02) -->
           <div id="udharPaymentDetails" class="cod-box" style="display:none;background:#f0fdf4;border-color:#86efac;">
-            <p>📝 <b>खात्यावर नोंद (Udhar Credit):</b> या ऑर्डरची रक्कम आपल्या उधारी खात्यावर नोंदवली जाईल.</p>
+            <p><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> <b>खात्यावर नोंद (Udhar Credit):</b> या ऑर्डरची रक्कम आपल्या उधारी खात्यावर नोंदवली जाईल.</p>
             <p style="margin:4px 0;">चालू बाकी (Current Balance): <b id="udharCurrentBalText">₹0</b> | उपलब्ध मर्यादा: <b id="udharAvailLimitText">₹0</b></p>
             <p class="mr" style="font-size:0.85rem;color:#047857;margin-top:4px;">महालक्ष्मी किराणा स्टोअर्स येसगाव — आपले हक्काचे दुकान.</p>
           </div>
@@ -268,7 +268,7 @@
           </button>
 
           <p class="summary-foot">
-            🔒 Your order is saved securely before dispatch. The owner packs and delivers fresh from Yesgaon.
+            <svg class="icon"><use href="/images/icons.svg#lock"></use></svg> Secure Checkout · Delivered fresh from Yesgaon.
           </p>
         </div>
       </div>

@@ -201,8 +201,8 @@
 <!-- Announcement bar -->
 <div class="announce">
   <div class="wrap">
-    <span>⚡ 30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
-    <a href="tel:+919860924504">📞 +91 98609 24504</a>
+    <span>30-min grocery delivery in Kopargaon &amp; Yesgaon</span>
+    <a href="tel:+919860924504"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> +91 98609 24504</a>
   </div>
 </div>
 
@@ -216,7 +216,7 @@
         <span class="mr">महालक्ष्मी किराणा दुकान</span>
       </div>
     </a>
-    <div class="loc-chip hide-mobile">📍 Yesgaon, Kopargaon</div>
+    <div class="loc-chip hide-mobile"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Yesgaon, Kopargaon</div>
     <div style="flex:1"></div>
     <div id="userHeaderArea"></div>
   </div>
@@ -225,12 +225,12 @@
 <main class="inbox-container">
   <div class="inbox-header">
     <div class="inbox-title">
-      <h1>🔔 संदेश आणि सूचना <span style="font-size:1rem;font-weight:500;color:#64748b;">(Inbox)</span></h1>
+      <h1><svg class="icon"><use href="/images/icons.svg#bell"></use></svg> संदेश आणि सूचना <span style="font-size:1rem;font-weight:500;color:#64748b;">(Inbox)</span></h1>
       <p>तुमच्या ऑर्डर्स आणि महत्त्वाच्या घडामोडींचे ताजे अपडेट्स</p>
     </div>
     <div>
       <button id="markAllReadBtn" class="btn btn-outline" style="font-size:0.85rem;padding:0.4rem 0.8rem;">
-        ✓ सर्व वाचले म्हणून खूण करा (Mark All Read)
+        <svg class="icon"><use href="/images/icons.svg#check"></use></svg> Mark All Read
       </button>
     </div>
   </div>
@@ -238,14 +238,14 @@
   <!-- Web Push Prompt (MSG-05) -->
   <div class="push-banner" id="pushBanner" style="display:none;">
     <div class="push-info">
-      <span class="bell-icon">📲</span>
+      <span class="bell-icon"><svg class="icon"><use href="/images/icons.svg#bell"></use></svg></span>
       <div>
         <div class="push-title">मोबाईलवर तात्काळ सूचना सुरू करा / Enable Web Push</div>
         <div class="push-sub">ब्राउझर बंद असतानाही ऑर्डर कन्फर्मेशन आणि डिलिव्हरीचे मेसेज मिळवा.</div>
       </div>
     </div>
     <button id="enablePushBtn" class="btn btn-primary" style="font-size:0.85rem;padding:0.4rem 0.9rem;">
-      🔔 सुरू करा (Enable)
+      <svg class="icon"><use href="/images/icons.svg#bell"></use></svg> सुरू करा (Enable)
     </button>
   </div>
 
@@ -281,18 +281,18 @@
     switch (type) {
       case 'order_new':
       case 'order_status':
-        return '📦';
+        return '<svg class="icon"><use href="/images/icons.svg#box"></use></svg>';
       case 'order_cancelled':
-        return '❌';
+        return '<svg class="icon" style="color:#dc2626;"><use href="/images/icons.svg#close"></use></svg>';
       case 'low_stock':
-        return '⚠️';
+        return '<svg class="icon" style="color:#f59e0b;"><use href="/images/icons.svg#warning"></use></svg>';
       case 'announcement':
-        return '📢';
+        return '<svg class="icon"><use href="/images/icons.svg#info"></use></svg>';
       case 'udhar_request':
       case 'udhar_status':
-        return '💰';
+        return '<svg class="icon"><use href="/images/icons.svg#cash"></use></svg>';
       default:
-        return '🔔';
+        return '<svg class="icon"><use href="/images/icons.svg#bell"></use></svg>';
     }
   }
 
@@ -327,7 +327,7 @@
     if (notifications.length === 0) {
       listEl.innerHTML = `
         <div class="empty-inbox">
-          <div class="icon">📭</div>
+          <div class="icon"><svg class="icon icon--2xl"><use href="/images/icons.svg#inbox"></use></svg></div>
           <p><strong>कोणतेही नवीन संदेश नाहीत! / No messages</strong></p>
           <small>तुमच्या ऑर्डर्सचे अपडेट्स येथे दिसतील.</small>
         </div>
@@ -351,7 +351,7 @@
             <div class="inbox-body">${escapeHtml(item.body)}</div>
             <div class="inbox-actions">
               ${item.link ? `<a href="${item.link}" class="btn-inbox-action btn-inbox-primary" onclick="markRead('${item._id}')">तपशील पहा →</a>` : ''}
-              ${isUnread ? `<button class="btn-inbox-action btn-inbox-read" onclick="markRead('${item._id}')">✓ वाचले (Mark Read)</button>` : ''}
+              ${isUnread ? `<button class="btn-inbox-action btn-inbox-read" onclick="markRead('${item._id}')"><svg class="icon"><use href="/images/icons.svg#check"></use></svg> Mark Read</button>` : ''}
             </div>
           </div>
         </div>
