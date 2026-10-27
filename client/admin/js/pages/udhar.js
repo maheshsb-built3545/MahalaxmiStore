@@ -41,7 +41,7 @@
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" class="btn btn-primary" id="btn-new-udhar-entry" style="min-height:44px;font-weight:700;">
-            ➕ नवीन नोंद / New Entry
+            <svg class="icon"><use href="/images/icons.svg#plus"></use></svg> नवीन नोंद / New Entry
           </button>
           <button type="button" class="btn btn-secondary" id="btn-export-udhar" style="min-height:44px;">
             <svg class="icon icon-sm"><use href="assets/icons.svg#icon-reports"></use></svg>
@@ -89,7 +89,7 @@
       },
       chips: [
         { id: 'all', label: 'सर्व खाती / All', active: activeFilter === 'all' },
-        { id: 'overdue', label: '⚠️ थकीत / Overdue', active: activeFilter === 'overdue' },
+        { id: 'overdue', label: 'थकीत / Overdue', active: activeFilter === 'overdue' },
         { id: 'near_limit', label: 'मर्यादा संपत आलेली / Near Limit (≥80%)', active: activeFilter === 'near_limit' },
         { id: 'active', label: 'सक्रिय / Active', active: activeFilter === 'active' },
         { id: 'pending', label: 'प्रलंबित / Pending', active: activeFilter === 'pending' },
@@ -270,11 +270,11 @@
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <h3 style="font-size:1.05rem;font-weight:700;margin:0;color:var(--text);">${AdminDOM.escape(name)}</h3>
             <span class="badge badge-${statusBadgeColor}">${statusText}</span>
-            ${acc.isOverdue ? '<span class="badge badge-danger">⚠️ थकीत / Overdue</span>' : ''}
+            ${acc.isOverdue ? '<span class="badge badge-danger"><svg class="icon icon-sm"><use href="/images/icons.svg#warning"></use></svg> थकीत / Overdue</span>' : ''}
           </div>
           <div style="font-size:0.8rem;color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span>📍 ${AdminDOM.escape(village)}</span>
-            ${phone ? `<span>📞 <a href="tel:${phone}" style="color:var(--primary);font-weight:600;text-decoration:none;">${phone}</a></span>` : ''}
+            <span><svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> ${AdminDOM.escape(village)}</span>
+            ${phone ? `<span><svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> <a href="tel:${phone}" style="color:var(--primary);font-weight:600;text-decoration:none;">${phone}</a></span>` : ''}
           </div>
         </div>
 
@@ -309,16 +309,16 @@
       <!-- Action Buttons (Thumb friendly >= 44px) -->
       <div class="account-actions" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:8px;">
         <button type="button" class="btn btn-primary btn-record-pay" style="min-height:44px;font-size:0.82rem;font-weight:700;">
-          💰 जमा करा / Pay
+          <svg class="icon"><use href="/images/icons.svg#wallet"></use></svg> जमा करा / Pay
         </button>
         <button type="button" class="btn btn-secondary btn-reminder" style="min-height:44px;font-size:0.82rem;font-weight:600;border-color:#22c55e;color:#15803d;background:#ecfdf5;">
-          💬 तगादा / Reminder
+          <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> तगादा / Reminder
         </button>
         <button type="button" class="btn btn-secondary btn-view-ledger" style="min-height:44px;font-size:0.82rem;font-weight:600;">
-          📖 वही / Ledger
+          <svg class="icon"><use href="/images/icons.svg#book"></use></svg> वही / Ledger
         </button>
         <button type="button" class="btn btn-secondary btn-edit-account" style="min-height:44px;font-size:0.82rem;font-weight:600;">
-          ⚙️ मर्यादा / Limit
+          <svg class="icon"><use href="/images/icons.svg#settings"></use></svg> मर्यादा / Limit
         </button>
       </div>
     `;
@@ -342,8 +342,8 @@
     const sheetContent = document.createElement('div');
     sheetContent.innerHTML = `
       <div style="padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:16px;">
-        <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;">
-          ➕ नवीन उधारी नोंद / New Entry
+        <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;display:flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#plus"></use></svg> नवीन उधारी नोंद / New Entry
         </h3>
         <p style="font-size:0.85rem;color:var(--text-muted);margin:4px 0 0;">
           उधारी खरेदी (Debit) किंवा जमा पावती (Payment) नोंदवा.
@@ -373,11 +373,11 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
             <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
               <input type="radio" name="new-entry-type" value="debit" checked />
-              <span style="font-weight:600;font-size:0.85rem;">🛒 उधारी खरेदी (Debit)</span>
+              <span style="font-weight:600;font-size:0.85rem;"><svg class="icon icon-sm"><use href="/images/icons.svg#cart"></use></svg> उधारी खरेदी (Debit)</span>
             </label>
             <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
               <input type="radio" name="new-entry-type" value="payment" />
-              <span style="font-weight:600;font-size:0.85rem;">💰 जमा पावती (Payment)</span>
+              <span style="font-weight:600;font-size:0.85rem;"><svg class="icon icon-sm"><use href="/images/icons.svg#wallet"></use></svg> जमा पावती (Payment)</span>
             </label>
           </div>
         </div>
@@ -398,11 +398,11 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
             <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
               <input type="radio" name="new-entry-method" value="cash" checked />
-              <span style="font-weight:600;font-size:0.85rem;">💵 रोख (Cash)</span>
+              <span style="font-weight:600;font-size:0.85rem;"><svg class="icon icon-sm"><use href="/images/icons.svg#cash"></use></svg> रोख (Cash)</span>
             </label>
             <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
               <input type="radio" name="new-entry-method" value="upi" />
-              <span style="font-weight:600;font-size:0.85rem;">📱 UPI / ऑनलाईन</span>
+              <span style="font-weight:600;font-size:0.85rem;"><svg class="icon icon-sm"><use href="/images/icons.svg#upi"></use></svg> UPI / ऑनलाईन</span>
             </label>
           </div>
         </div>
@@ -421,7 +421,7 @@
             ${t('cancel')}
           </button>
           <button type="submit" class="btn btn-primary" id="new-entry-submit" style="flex:2;min-height:46px;font-weight:700;">
-            ✓ नोंद जतन करा / Save Entry
+            <svg class="icon"><use href="/images/icons.svg#check"></use></svg> नोंद जतन करा / Save Entry
           </button>
         </div>
       </form>
@@ -477,7 +477,7 @@
       } catch (err) {
         AdminToast.error(err.message || t('error_generic'));
         submitBtn.disabled = false;
-        submitBtn.textContent = '✓ नोंद जतन करा / Save Entry';
+        submitBtn.innerHTML = '<svg class="icon"><use href="/images/icons.svg#check"></use></svg> नोंद जतन करा / Save Entry';
       }
     });
   }
@@ -491,8 +491,8 @@
     const sheetContent = document.createElement('div');
     sheetContent.innerHTML = `
       <div style="padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:16px;">
-        <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;">
-          💰 जमा पावती नोंदवा / Record Payment
+        <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;display:flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#wallet"></use></svg> जमा पावती नोंदवा / Record Payment
         </h3>
         <p style="font-size:0.85rem;color:var(--text-muted);margin:4px 0 0;">
           ग्राहक: <strong>${AdminDOM.escape(name)}</strong> | चालू बाकी: <strong style="color:var(--danger);">${AdminFormat.currency(balance)}</strong>
@@ -528,11 +528,11 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
             <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
               <input type="radio" name="pay-method" value="cash" checked />
-              <span style="font-weight:600;font-size:0.85rem;">💵 रोख (Cash)</span>
+              <span style="font-weight:600;font-size:0.85rem;"><svg class="icon icon-sm"><use href="/images/icons.svg#cash"></use></svg> रोख (Cash)</span>
             </label>
             <label class="radio-label" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;">
               <input type="radio" name="pay-method" value="upi" />
-              <span style="font-weight:600;font-size:0.85rem;">📱 UPI / ऑनलाईन</span>
+              <span style="font-weight:600;font-size:0.85rem;"><svg class="icon icon-sm"><use href="/images/icons.svg#upi"></use></svg> UPI / ऑनलाईन</span>
             </label>
           </div>
         </div>
@@ -551,7 +551,7 @@
             ${t('cancel')}
           </button>
           <button type="submit" class="btn btn-primary" id="pay-submit-btn" style="flex:2;min-height:46px;font-weight:700;">
-            ✓ जमा पावती नोंदवा / Save Payment
+            <svg class="icon"><use href="/images/icons.svg#check"></use></svg> जमा पावती नोंदवा / Save Payment
           </button>
         </div>
       </form>
@@ -605,7 +605,7 @@
       } catch (err) {
         AdminToast.error(err.message || t('error_generic'));
         submitBtn.disabled = false;
-        submitBtn.textContent = '✓ जमा पावती नोंदवा / Save Payment';
+        submitBtn.innerHTML = '<svg class="icon"><use href="/images/icons.svg#check"></use></svg> जमा पावती नोंदवा / Save Payment';
       }
     });
   }
@@ -633,8 +633,8 @@
     const cust = acc.customer || {};
     const content = document.createElement('div');
     content.innerHTML = `
-      <h3 style="font-size:1.1rem;font-weight:800;margin:0 0 8px;">
-        💬 उधारी तगादा संदेश / Payment Reminder
+      <h3 style="font-size:1.1rem;font-weight:800;margin:0 0 8px;display:flex;align-items:center;gap:6px;">
+        <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> उधारी तगादा संदेश / Payment Reminder
       </h3>
       <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
         ग्राहक: <strong>${AdminDOM.escape(cust.name || 'ग्राहक')}</strong> (फोन नंबर उपलब्ध नाही)
@@ -653,7 +653,7 @@
 
       <div style="display:flex;gap:8px;">
         <button type="button" class="btn btn-secondary" id="copy-reminder-btn" style="flex:1;min-height:44px;">
-          📋 संदेश कॉपी करा / Copy Text
+          <svg class="icon"><use href="/images/icons.svg#copy"></use></svg> संदेश कॉपी करा / Copy Text
         </button>
         <button type="button" class="btn btn-primary" id="close-reminder-btn" style="flex:1;min-height:44px;">
           ${t('close')}
@@ -678,8 +678,8 @@
     sheetContent.innerHTML = `
       <div style="padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
         <div>
-          <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;">
-            📖 उधारी हिशोब वही / Ledger History
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;display:flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#book"></use></svg> उधारी हिशोब वही / Ledger History
           </h3>
           <p style="font-size:0.82rem;color:var(--text-muted);margin:3px 0 0;">
             ग्राहक: <strong>${AdminDOM.escape(name)}</strong> | चालू बाकी: <strong style="color:var(--danger);">${AdminFormat.currency(acc.balance)}</strong>
@@ -687,10 +687,10 @@
         </div>
         <div style="display:flex;gap:6px;">
           <button type="button" class="btn btn-secondary btn-sm" id="btn-share-ledger-wa" style="min-height:36px;font-size:0.75rem;">
-            💬 WhatsApp शेअर
+            <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp शेअर
           </button>
           <button type="button" class="btn btn-secondary btn-sm" id="btn-print-ledger" style="min-height:36px;font-size:0.75rem;">
-            🖨️ प्रिंट / Print
+            <svg class="icon"><use href="/images/icons.svg#print"></use></svg> प्रिंट / Print
           </button>
         </div>
       </div>
@@ -816,8 +816,8 @@
     const modalContent = document.createElement('div');
     modalContent.innerHTML = `
       <div style="padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:14px;">
-        <h3 style="font-size:1.15rem;font-weight:800;margin:0;">
-          ⚙️ खाते स्थिती व मर्यादा / Status & Limit
+        <h3 style="font-size:1.15rem;font-weight:800;margin:0;display:flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#settings"></use></svg> खाते स्थिती व मर्यादा / Status & Limit
         </h3>
         <p style="font-size:0.82rem;color:var(--text-muted);margin:3px 0 0;">
           ग्राहक: <strong>${AdminDOM.escape(name)}</strong>

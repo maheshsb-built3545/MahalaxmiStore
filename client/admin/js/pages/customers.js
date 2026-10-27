@@ -72,11 +72,11 @@
       },
       chips: [
         { id: 'all', label: 'सर्व ग्राहक / All', active: activeSegment === 'all' },
-        { id: 'regular', label: '⭐ नियमित / Regular (≥3 orders)', active: activeSegment === 'regular' },
-        { id: 'new', label: '🌱 नवीन / New (<30 days)', active: activeSegment === 'new' },
-        { id: 'dormant', label: '💤 सुप्त / Dormant (>30 days)', active: activeSegment === 'dormant' },
-        { id: 'udhar', label: '📖 उधारी ग्राहक / Udhar Users', active: activeSegment === 'udhar' },
-        { id: 'blocked', label: '🚫 ब्लॉक केलेले / Blocked', active: activeSegment === 'blocked' },
+        { id: 'regular', label: 'नियमित / Regular (≥3)', active: activeSegment === 'regular' },
+        { id: 'new', label: 'नवीन / New (<30 days)', active: activeSegment === 'new' },
+        { id: 'dormant', label: 'सुप्त / Dormant (>30 days)', active: activeSegment === 'dormant' },
+        { id: 'udhar', label: 'उधारी ग्राहक / Udhar Users', active: activeSegment === 'udhar' },
+        { id: 'blocked', label: 'ब्लॉक केलेले / Blocked', active: activeSegment === 'blocked' },
       ],
       onFilterChange: (chipId) => {
         activeSegment = chipId;
@@ -210,12 +210,12 @@
         <div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <h3 style="font-size:1.05rem;font-weight:700;margin:0;color:var(--text);">${AdminDOM.escape(name)}</h3>
-            ${isBlocked ? '<span class="badge badge-danger">🚫 ब्लॉक / Blocked</span>' : ''}
-            ${orderCount >= 3 ? '<span class="badge badge-success">⭐ नियमित / Regular</span>' : ''}
+            ${isBlocked ? '<span class="badge badge-danger">ब्लॉक / Blocked</span>' : ''}
+            ${orderCount >= 3 ? '<span class="badge badge-success">नियमित / Regular</span>' : ''}
           </div>
           <div style="font-size:0.8rem;color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span>📍 ${AdminDOM.escape(village)}</span>
-            ${phone ? `<span>📞 <a href="tel:${phone}" style="color:var(--primary);font-weight:600;text-decoration:none;">${phone}</a></span>` : ''}
+            <span><svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> ${AdminDOM.escape(village)}</span>
+            ${phone ? `<span><svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> <a href="tel:${phone}" style="color:var(--primary);font-weight:600;text-decoration:none;">${phone}</a></span>` : ''}
           </div>
         </div>
 
@@ -247,14 +247,14 @@
       <!-- Actions Row (Thumb friendly >= 44px) -->
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button type="button" class="btn btn-primary btn-view-profile" style="flex:2;min-height:44px;font-size:0.82rem;font-weight:700;">
-          👤 प्रोफाइल व इतिहास / Profile & Orders
+          <svg class="icon"><use href="/images/icons.svg#user"></use></svg> प्रोफाइल व इतिहास / Profile & Orders
         </button>
         ${phone ? `
-          <a href="https://wa.me/91${phone.slice(-10)}" target="_blank" class="btn btn-secondary" style="flex:1;min-height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:600;color:#15803d;border-color:#22c55e;background:#ecfdf5;text-decoration:none;">
-            💬 WhatsApp
+          <a href="https://wa.me/91${phone.slice(-10)}" target="_blank" class="btn btn-secondary" style="flex:1;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:0.82rem;font-weight:600;color:#15803d;border-color:#22c55e;background:#ecfdf5;text-decoration:none;">
+            <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp
           </a>
-          <a href="tel:${phone}" class="btn btn-secondary" style="flex:1;min-height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:600;text-decoration:none;">
-            📞 कॉल
+          <a href="tel:${phone}" class="btn btn-secondary" style="flex:1;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:0.82rem;font-weight:600;text-decoration:none;">
+            <svg class="icon"><use href="/images/icons.svg#phone"></use></svg> कॉल
           </a>
         ` : ''}
       </div>
@@ -318,15 +318,15 @@
             <h3 style="font-size:1.2rem;font-weight:800;color:var(--text);margin:0;">
               ${AdminDOM.escape(name)}
             </h3>
-            ${c.blocked ? '<span class="badge badge-danger">🚫 ब्लॉक / Blocked</span>' : '<span class="badge badge-success">सक्रिय / Active</span>'}
+            ${c.blocked ? '<span class="badge badge-danger">ब्लॉक / Blocked</span>' : '<span class="badge badge-success">सक्रिय / Active</span>'}
           </div>
-          <p style="font-size:0.82rem;color:var(--text-muted);margin:4px 0 0;">
-            📞 ${phone} | 📍 ${AdminDOM.escape(village)} | भाषा: ${c.preferredLanguage ? c.preferredLanguage.toUpperCase() : 'MR'}
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:4px 0 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> ${phone} | <svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> ${AdminDOM.escape(village)} | भाषा: ${c.preferredLanguage ? c.preferredLanguage.toUpperCase() : 'MR'}
           </p>
         </div>
         <div style="display:flex;gap:8px;">
           <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-block" style="min-height:38px;font-size:0.78rem;">
-            ${c.blocked ? '✓ अनब्लॉक करा / Unblock' : '🚫 ब्लॉक करा / Block'}
+            ${c.blocked ? '<svg class="icon"><use href="/images/icons.svg#check"></use></svg> अनब्लॉक करा / Unblock' : '<svg class="icon"><use href="/images/icons.svg#close"></use></svg> ब्लॉक करा / Block'}
           </button>
         </div>
       </div>
@@ -404,8 +404,8 @@
       if (favoriteItems.length > 0) {
         html += `
           <div style="margin-bottom:16px;">
-            <h4 style="font-size:0.9rem;font-weight:700;color:var(--text);margin:0 0 8px;">
-              🌟 ${t('customer_favorite_items')}
+            <h4 style="font-size:0.9rem;font-weight:700;color:var(--text);margin:0 0 8px;display:flex;align-items:center;gap:6px;">
+              <svg class="icon icon-sm"><use href="/images/icons.svg#tag"></use></svg> ${t('customer_favorite_items')}
             </h4>
             <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;">
               ${favoriteItems.map((fi) => `
@@ -423,8 +423,8 @@
       if (addresses.length > 0) {
         html += `
           <div style="margin-bottom:16px;">
-            <h4 style="font-size:0.9rem;font-weight:700;color:var(--text);margin:0 0 8px;">
-              📍 ${t('customer_addresses')}
+            <h4 style="font-size:0.9rem;font-weight:700;color:var(--text);margin:0 0 8px;display:flex;align-items:center;gap:6px;">
+              <svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> ${t('customer_addresses')}
             </h4>
             <div style="display:flex;flex-direction:column;gap:6px;">
               ${addresses.map((a) => `
@@ -442,8 +442,8 @@
       // Recent Orders List
       html += `
         <div>
-          <h4 style="font-size:0.9rem;font-weight:700;color:var(--text);margin:0 0 8px;">
-            📦 ${t('customer_recent_orders')} (${orders.length})
+          <h4 style="font-size:0.9rem;font-weight:700;color:var(--text);margin:0 0 8px;display:flex;align-items:center;gap:6px;">
+            <svg class="icon icon-sm"><use href="/images/icons.svg#box"></use></svg> ${t('customer_recent_orders')} (${orders.length})
           </h4>
           ${orders.length === 0 ? `
             <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:0.85rem;">

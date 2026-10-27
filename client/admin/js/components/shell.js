@@ -68,27 +68,27 @@ class AppShell {
       {
         title: 'मुख्य / Core',
         items: [
-          { id: 'dashboard', href: 'dashboard.html', icon: '📊', label: 'डॅशबोर्ड / Dashboard' },
-          { id: 'orders', href: 'orders.html', icon: '📦', label: 'ऑर्डर्स / Orders', badgeId: 'navBadgeOrders' },
-          { id: 'inventory', href: 'inventory.html', icon: '📥', label: 'स्टॉक व माल / Inventory', badgeId: 'navBadgeStock' },
+          { id: 'dashboard', href: 'dashboard.html', icon: 'chart', label: 'डॅशबोर्ड / Dashboard' },
+          { id: 'orders', href: 'orders.html', icon: 'box', label: 'ऑर्डर्स / Orders', badgeId: 'navBadgeOrders' },
+          { id: 'inventory', href: 'inventory.html', icon: 'inbox', label: 'स्टॉक व माल / Inventory', badgeId: 'navBadgeStock' },
         ],
       },
       {
         title: 'दुकान व्यवस्थापन / Store',
         items: [
-          { id: 'catalog', href: 'catalog.html', icon: '🏷️', label: 'उत्पादने व वर्ग / Catalog' },
-          { id: 'udhar', href: 'udhar.html', icon: '📝', label: 'उधारी वही / Udhar' },
-          { id: 'customers', href: 'customers.html', icon: '👥', label: 'ग्राहक / Customers' },
+          { id: 'catalog', href: 'catalog.html', icon: 'tag', label: 'उत्पादने व वर्ग / Catalog' },
+          { id: 'udhar', href: 'udhar.html', icon: 'credit', label: 'उधारी वही / Udhar' },
+          { id: 'customers', href: 'customers.html', icon: 'users', label: 'ग्राहक / Customers' },
         ],
       },
       {
         title: 'अहवाल व प्रणाली / System',
         items: [
-          { id: 'reports', href: 'reports.html', icon: '📈', label: 'अहवाल व नफा / Reports', ownerOnly: true },
-          { id: 'ai-corrections', href: 'ai-corrections.html', icon: '🤖', label: 'AI सुधारणा / AI Misses' },
-          { id: 'inbox', href: 'inbox.html', icon: '🔔', label: 'सूचना / Inbox', badgeId: 'navBadgeInbox' },
-          { id: 'settings', href: 'settings.html', icon: '⚙️', label: 'सेटिंग्ज / Settings', ownerOnly: true },
-          { id: 'staff', href: 'staff.html', icon: '👤', label: 'कर्मचारी / Staff', ownerOnly: true },
+          { id: 'reports', href: 'reports.html', icon: 'trending-up', label: 'अहवाल व नफा / Reports', ownerOnly: true },
+          { id: 'ai-corrections', href: 'ai-corrections.html', icon: 'bot', label: 'AI सुधारणा / AI Misses' },
+          { id: 'inbox', href: 'inbox.html', icon: 'bell', label: 'सूचना / Inbox', badgeId: 'navBadgeInbox' },
+          { id: 'settings', href: 'settings.html', icon: 'settings', label: 'सेटिंग्ज / Settings', ownerOnly: true },
+          { id: 'staff', href: 'staff.html', icon: 'user', label: 'कर्मचारी / Staff', ownerOnly: true },
         ],
       },
     ];
@@ -129,7 +129,7 @@ class AppShell {
     sidebar.innerHTML = `
       <div class="sidebar-header">
         <a href="dashboard.html" class="sidebar-brand">
-          <span class="sidebar-brand-icon">🏪</span>
+          <span class="sidebar-brand-icon"><svg class="icon icon--lg" aria-hidden="true"><use href="/images/icons.svg#store"></use></svg></span>
           <span>महालक्ष्मी किराणा</span>
         </a>
       </div>
@@ -138,7 +138,7 @@ class AppShell {
           <div class="nav-section-title">${sec.title}</div>
           ${sec.items.map((item) => `
             <a href="${item.href}" class="nav-item ${this.activeRoute === item.id ? 'active' : ''}">
-              <span class="icon">${item.icon}</span>
+              <span class="icon"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#${item.icon}"></use></svg></span>
               <span>${item.label}</span>
               ${item.badgeId ? `<span class="badge badge-danger" id="${item.badgeId}" style="display:none;">0</span>` : ''}
             </a>
@@ -151,7 +151,7 @@ class AppShell {
           <div style="font-size:0.75rem;color:var(--text-muted);">${userRole}</div>
         </div>
         <button type="button" class="btn btn-sm btn-secondary" id="shellLogoutBtn" title="Logout / बाहेर पडा">
-          🚪
+          <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#logout"></use></svg>
         </button>
       </div>
     `;
@@ -176,12 +176,12 @@ class AppShell {
 
         <!-- Audio Alert Toggle -->
         <button type="button" class="btn btn-sm btn-secondary" id="audioToggleBtn" title="Alert Sound">
-          🔊
+          <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#audio"></use></svg>
         </button>
 
         <!-- Notification Bell -->
         <a href="inbox.html" class="btn btn-sm btn-secondary" style="position:relative;" title="Notifications / सूचना">
-          🔔
+          <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#bell"></use></svg>
           <span class="badge badge-danger" id="headerInboxBadge" style="position:absolute;top:-4px;right:-4px;display:none;padding:1px 5px;font-size:0.65rem;">0</span>
         </a>
       </div>
@@ -207,25 +207,25 @@ class AppShell {
     bottomNav.className = 'app-bottom-nav';
     bottomNav.innerHTML = `
       <a href="dashboard.html" class="bottom-tab ${this.activeRoute === 'dashboard' ? 'active' : ''}">
-        <span class="tab-icon">📊</span>
+        <span class="tab-icon"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#chart"></use></svg></span>
         <span>डॅशबोर्ड</span>
       </a>
       <a href="orders.html" class="bottom-tab ${this.activeRoute === 'orders' ? 'active' : ''}">
-        <span class="tab-icon">📦</span>
+        <span class="tab-icon"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#box"></use></svg></span>
         <span>ऑर्डर्स</span>
         <span class="tab-badge" id="bottomOrdersBadge" style="display:none;">0</span>
       </a>
       <a href="inventory.html" class="bottom-tab ${this.activeRoute === 'inventory' ? 'active' : ''}">
-        <span class="tab-icon">📥</span>
+        <span class="tab-icon"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#inbox"></use></svg></span>
         <span>स्टॉक</span>
       </a>
       <a href="udhar.html" class="bottom-tab ${this.activeRoute === 'udhar' ? 'active' : ''}">
-        <span class="tab-icon">📝</span>
+        <span class="tab-icon"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#credit"></use></svg></span>
         <span>उधारी</span>
       </a>
       <button type="button" class="bottom-tab ${isMoreActive ? 'active' : ''}" id="bottomMoreBtn">
-        <span class="tab-icon">☰</span>
-        <span>अधिक (More)</span>
+        <span class="tab-icon"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#menu"></use></svg></span>
+        <span>अधिक</span>
       </button>
     `;
 
@@ -274,13 +274,13 @@ class AppShell {
     const isOwner = user && user.role === 'owner';
 
     const moreItems = [
-      { href: 'catalog.html', icon: '🏷️', label: 'उत्पादने व वर्ग (Catalog)' },
-      { href: 'customers.html', icon: '👥', label: 'ग्राहक व्यवस्थापन (Customers)' },
-      { href: 'reports.html', icon: '📈', label: 'अहवाल व नफा (Reports)', ownerOnly: true },
-      { href: 'ai-corrections.html', icon: '🤖', label: 'AI सुधारणा (AI Misses)' },
-      { href: 'inbox.html', icon: '🔔', label: 'सूचना व संदेश (Inbox)' },
-      { href: 'settings.html', icon: '⚙️', label: 'दुकान सेटिंग्ज (Settings)', ownerOnly: true },
-      { href: 'staff.html', icon: '👤', label: 'कर्मचारी व्यवस्थापन (Staff)', ownerOnly: true },
+      { href: 'catalog.html', icon: 'tag', label: 'उत्पादने व वर्ग (Catalog)' },
+      { href: 'customers.html', icon: 'users', label: 'ग्राहक व्यवस्थापन (Customers)' },
+      { href: 'reports.html', icon: 'trending-up', label: 'अहवाल व नफा (Reports)', ownerOnly: true },
+      { href: 'ai-corrections.html', icon: 'bot', label: 'AI सुधारणा (AI Misses)' },
+      { href: 'inbox.html', icon: 'bell', label: 'सूचना व संदेश (Inbox)' },
+      { href: 'settings.html', icon: 'settings', label: 'दुकान सेटिंग्ज (Settings)', ownerOnly: true },
+      { href: 'staff.html', icon: 'user', label: 'कर्मचारी व्यवस्थापन (Staff)', ownerOnly: true },
     ];
 
     const allowed = isOwner ? moreItems : moreItems.filter((i) => !i.ownerOnly);
@@ -302,7 +302,7 @@ class AppShell {
       a.style.padding = '16px 8px';
       a.style.gap = '8px';
       a.style.borderRadius = '14px';
-      a.innerHTML = `<span style="font-size: 1.75rem;">${item.icon}</span><span style="font-size: 0.8rem; text-align: center; font-weight: 600;">${item.label}</span>`;
+      a.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;"><svg class="icon icon--xl" aria-hidden="true"><use href="/images/icons.svg#${item.icon}"></use></svg></span><span style="font-size: 0.8rem; text-align: center; font-weight: 600;">${item.label}</span>`;
       grid.appendChild(a);
     }
 
@@ -382,12 +382,12 @@ class AppShell {
         this.isStoreOpen = nextState;
         this.updateStoreStatusUi();
         if (window.AdminToast) {
-          window.AdminToast.show(nextState ? '✅ दुकान सुरू केले / Store Opened' : '🛑 दुकान बंद केले / Store Closed', 'success');
+          window.AdminToast.show(nextState ? 'दुकान सुरू केले / Store Opened' : 'दुकान बंद केले / Store Closed', 'success');
         }
       }
     } catch (err) {
       if (window.AdminToast) {
-        window.AdminToast.show('❌ Error: ' + err.message, 'danger');
+        window.AdminToast.show('त्रुटी / Error: ' + err.message, 'danger');
       }
     }
   }
@@ -429,7 +429,9 @@ class AppShell {
     const isMuted = localStorage.getItem('admin_audio_muted') === 'true';
     const audioBtn = document.getElementById('audioToggleBtn');
     if (audioBtn) {
-      audioBtn.innerHTML = isMuted ? '🔇' : '🔊';
+      audioBtn.innerHTML = isMuted
+        ? '<svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#audio-off"></use></svg>'
+        : '<svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#audio"></use></svg>';
       audioBtn.title = isMuted ? 'Unmute Sound' : 'Mute Sound';
     }
   }
@@ -440,7 +442,9 @@ class AppShell {
     localStorage.setItem('admin_audio_muted', String(next));
     const audioBtn = document.getElementById('audioToggleBtn');
     if (audioBtn) {
-      audioBtn.innerHTML = next ? '🔇' : '🔊';
+      audioBtn.innerHTML = next
+        ? '<svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#audio-off"></use></svg>'
+        : '<svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#audio"></use></svg>';
       audioBtn.title = next ? 'Unmute Sound' : 'Mute Sound';
     }
     if (!next) {

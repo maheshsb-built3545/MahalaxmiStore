@@ -17,7 +17,7 @@ function updateOfflineUi() {
       offlineBanner = document.createElement('div');
       offlineBanner.id = 'offlineBanner';
       offlineBanner.className = 'offline-banner';
-      offlineBanner.textContent = '⚠️ ' + (window.t ? window.t('offline_notice') : 'Offline — Read only mode');
+      offlineBanner.innerHTML = `<svg class="icon icon--sm" aria-hidden="true" style="margin-right:6px;"><use href="/images/icons.svg#wifi-off"></use></svg> ` + (window.t ? window.t('offline_notice') : 'Offline — Read only mode');
       document.body.prepend(offlineBanner);
     }
   }
@@ -35,7 +35,7 @@ function updateOfflineUi() {
 window.addEventListener('online', () => {
   updateOfflineUi();
   if (window.AdminToast) {
-    window.AdminToast.show('🌐 इंटरनेट पुन्हा सुरू झाले / Internet connected', 'success', 3000);
+    window.AdminToast.show('इंटरनेट पुन्हा सुरू झाले / Internet connected', 'success', 3000);
   }
 });
 

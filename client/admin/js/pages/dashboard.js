@@ -32,7 +32,7 @@ function initAudioBanner() {
           window.shell.playOrderChime();
         }
         if (window.AdminToast) {
-          window.AdminToast.show('🔊 ऑडिओ इशारे सुरू केले / Order alert sounds enabled', 'success');
+          window.AdminToast.show('ऑडिओ इशारे सुरू केले / Order alert sounds enabled', 'success');
         }
       };
     }
@@ -94,7 +94,7 @@ function renderDashboard(data) {
     {
       count: newOrdersCount,
       label: 'नवीन ऑर्डर्स / New Orders',
-      icon: '🔔',
+      icon: 'bell',
       color: '#fee2e2',
       textColor: '#991b1b',
       href: 'orders.html?status=new',
@@ -103,7 +103,7 @@ function renderDashboard(data) {
     {
       count: today.pendingDispatches || data.toDeliverCount || 0,
       label: 'डिलिव्हरी बाकी / To Dispatch',
-      icon: '🚚',
+      icon: 'truck',
       color: '#ffedd5',
       textColor: '#9a3412',
       href: 'orders.html?status=packed',
@@ -112,7 +112,7 @@ function renderDashboard(data) {
     {
       count: lowStockCount,
       label: 'कमी साठा वस्तू / Low Stock',
-      icon: '⚠️',
+      icon: 'warning',
       color: '#fef3c7',
       textColor: '#92400e',
       href: 'inventory.html?tab=alerts',
@@ -137,7 +137,7 @@ function renderDashboard(data) {
       a.style.boxShadow = 'var(--shadow-xs)';
       a.innerHTML = `
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:1.3rem;">${item.icon}</span>
+          <span style="display:inline-flex;align-items:center;"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#${item.icon}"></use></svg></span>
           <span>${item.label}</span>
         </div>
         <span style="background:${item.textColor};color:#fff;border-radius:20px;padding:2px 8px;font-size:0.85rem;">${item.count}</span>
@@ -156,10 +156,10 @@ function renderDashboard(data) {
   quickActions.style.marginBottom = '16px';
 
   quickActions.innerHTML = `
-    <a href="catalog.html?action=add" class="btn btn-sm btn-primary">➕ उत्पादन जोडा (Add Product)</a>
-    <a href="inventory.html?tab=stock-in" class="btn btn-sm btn-secondary">📥 स्टॉक भरा (Stock In)</a>
-    <a href="udhar.html" class="btn btn-sm btn-secondary">📝 उधारी नोंद (Record Udhar)</a>
-    <a href="orders.html?tab=packing" class="btn btn-sm btn-secondary">📋 पॅकिंग यादी (Packing List)</a>
+    <a href="catalog.html?action=add" class="btn btn-sm btn-primary" style="display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#plus"></use></svg> <span>उत्पादन जोडा (Add Product)</span></a>
+    <a href="inventory.html?tab=stock-in" class="btn btn-sm btn-secondary" style="display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#box"></use></svg> <span>स्टॉक भरा (Stock In)</span></a>
+    <a href="udhar.html" class="btn btn-sm btn-secondary" style="display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#credit"></use></svg> <span>उधारी नोंद (Record Udhar)</span></a>
+    <a href="orders.html?tab=packing" class="btn btn-sm btn-secondary" style="display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#print"></use></svg> <span>पॅकिंग यादी (Packing List)</span></a>
   `;
   container.appendChild(quickActions);
 
@@ -174,7 +174,7 @@ function renderDashboard(data) {
     label: 'आजची विक्री / Today Sales',
     value: window.AdminFormat.currency(netSales),
     note: 'रद्द वगळून / Non-cancelled',
-    icon: '💰',
+    icon: 'wallet',
     href: 'reports.html?range=today',
   }));
 
@@ -182,7 +182,7 @@ function renderDashboard(data) {
     label: 'आजच्या ऑर्डर्स / Today Orders',
     value: String(today.orders || data.todayOrders || 0),
     note: `${today.deliveredOrders || data.deliveredOrders || 0} डिलिव्हर पूर्ण`,
-    icon: '📦',
+    icon: 'orders',
     href: 'orders.html',
   }));
 
@@ -190,7 +190,7 @@ function renderDashboard(data) {
     label: 'उधारी बाकी / Udhar Outstanding',
     value: window.AdminFormat.currency(udharOutstanding),
     note: 'सक्रिय खाती / Active Credit',
-    icon: '📝',
+    icon: 'credit',
     href: 'udhar.html',
   }));
 
@@ -198,7 +198,7 @@ function renderDashboard(data) {
     label: 'जमा रक्कम / Collected Today',
     value: window.AdminFormat.currency(today.collectedSales || data.collectedSales || 0),
     note: 'रोख व UPI जमा / Paid',
-    icon: '✅',
+    icon: 'check',
     href: 'reports.html?range=today',
   }));
 
@@ -216,7 +216,7 @@ function renderDashboard(data) {
   slotsCard.className = 'chart-card';
   const slotsData = data.slotCounts || { morning: 0, afternoon: 0, evening: 0 };
   slotsCard.innerHTML = `
-    <h3 style="font-size:1rem;margin-bottom:12px;">🕒 आजचे डिलिव्हरी स्लॉट्स (Slot Load)</h3>
+    <h3 style="font-size:1rem;margin-bottom:12px;display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#clock"></use></svg> आजचे डिलिव्हरी स्लॉट्स (Slot Load)</h3>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <div>
         <div class="flex justify-between text-sm" style="margin-bottom:4px;">
@@ -254,7 +254,7 @@ function renderDashboard(data) {
   topProductsCard.className = 'chart-card';
   const topItems = (data.topProductsToday || []).slice(0, 4);
   topProductsCard.innerHTML = `
-    <h3 style="font-size:1rem;margin-bottom:12px;">🔥 आज सर्वाधिक खपणारी उत्पादने (Top Selling Today)</h3>
+    <h3 style="font-size:1rem;margin-bottom:12px;display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#trending-up"></use></svg> आज सर्वाधिक खपणारी उत्पादने (Top Selling Today)</h3>
     ${topItems.length ? `
       <div style="display:flex;flex-direction:column;gap:8px;">
         ${topItems.map((item) => `

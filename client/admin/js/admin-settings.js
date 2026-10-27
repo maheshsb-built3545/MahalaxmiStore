@@ -66,14 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('qrPreview').src = res.url;
           document.getElementById('qrPreviewWrap').style.display = 'block';
           uploadStatus.style.color = '#16a34a';
-          uploadStatus.textContent = '✅ UPI QR image uploaded!';
+          uploadStatus.textContent = 'UPI QR image uploaded!';
         } else {
           uploadStatus.style.color = '#dc2626';
-          uploadStatus.textContent = `❌ Upload failed: ${res.message || 'Unknown server error.'}`;
+          uploadStatus.textContent = `Upload failed: ${res.message || 'Unknown server error.'}`;
         }
       } catch (err) {
         uploadStatus.style.color = '#dc2626';
-        uploadStatus.textContent = `❌ Upload failed: ${err.message}`;
+        uploadStatus.textContent = `Upload failed: ${err.message}`;
       }
     });
   }
@@ -171,7 +171,7 @@ async function loadAdminTestimonials() {
           </div>
           <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-end;">
             <button onclick="toggleTestimonialVisible('${item._id}', ${isVisible})" class="btn-action ${isVisible ? 'btn-outline' : 'btn-primary'}" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
-              ${isVisible ? '👁️ Visible (Hide)' : '🙈 Hidden (Show)'}
+              ${isVisible ? 'Visible (Hide)' : 'Hidden (Show)'}
             </button>
             <button onclick="deleteTestimonialItem('${item._id}')" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; text-decoration: underline;">
               Delete
@@ -278,16 +278,16 @@ function setupBackupAndMaintenance() {
 
         if (statusMsg) {
           statusMsg.style.color = '#15803d';
-          statusMsg.textContent = '✅ Backup successfully downloaded to your computer!';
+          statusMsg.textContent = 'Backup successfully downloaded to your computer!';
         }
       } catch (err) {
         if (statusMsg) {
           statusMsg.style.color = '#b91c1c';
-          statusMsg.textContent = `❌ Backup error: ${err.message}`;
+          statusMsg.textContent = `Backup error: ${err.message}`;
         }
       } finally {
         backupBtn.disabled = false;
-        backupBtn.textContent = '📥 Download Full Database Backup (.json)';
+        backupBtn.textContent = 'Download Full Database Backup (.json)';
       }
     });
   }

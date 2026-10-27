@@ -40,7 +40,7 @@ async function loadCustomers() {
               <div style="font-size: 0.75rem; color: var(--admin-muted);">Joined: ${joinedDate}</div>
             </td>
             <td style="padding: 0.6rem;">
-              <a href="tel:+${rawPhone}" class="phone-link">📞 ${phone}</a>
+              <a href="tel:+${rawPhone}" class="phone-link"><svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> ${phone}</a>
             </td>
             <td style="padding: 0.6rem; font-weight: 700;">${orders} orders</td>
             <td style="padding: 0.6rem;">

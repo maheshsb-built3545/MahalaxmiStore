@@ -54,7 +54,7 @@ async function checkNewOrders() {
       const banner = document.getElementById('newOrderBanner');
       const bannerText = document.getElementById('newOrderBannerText');
       if (banner && bannerText) {
-        bannerText.textContent = `🔔 ${res.count} नवीन ऑर्डर आली आहे! / ${res.count} New order received!`;
+        bannerText.innerHTML = `<svg class="icon"><use href="/images/icons.svg#bell"></use></svg> ${res.count} नवीन ऑर्डर आली आहे! / ${res.count} New order received!`;
         banner.style.display = 'flex';
       }
 
@@ -104,7 +104,7 @@ async function loadRecentOrders() {
             </div>
             <div class="customer-row">
               <strong>${customerName}</strong>
-              <a href="tel:+${normalizePhone(ord.customerPhone)}" class="phone-link">📞 ${escapeHtml(ord.customerPhone)}</a>
+              <a href="tel:+${normalizePhone(ord.customerPhone)}" class="phone-link"><svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> ${escapeHtml(ord.customerPhone)}</a>
             </div>
             <div class="order-summary-row">
               <span>Items: ${ord.items.length}</span>

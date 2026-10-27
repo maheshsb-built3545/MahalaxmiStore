@@ -32,14 +32,14 @@ function renderCategoryRow(cat) {
   const id = cat._id;
   const nameEn = escapeHtml(cat.nameEn);
   const nameMr = escapeHtml(cat.nameMr);
-  const emoji = escapeHtml(cat.emoji || '🛒');
+  const iconKey = escapeHtml(cat.iconKey || 'box');
   const sortOrder = cat.sortOrder || 0;
   const count = cat.productCount || 0;
   const active = cat.active !== false;
 
   return `
     <tr style="border-bottom: 1px solid var(--admin-border); ${active ? '' : 'opacity: 0.5; background: #f8fafc;'}">
-      <td style="padding: 0.6rem; font-size: 1.4rem; text-align: center; width: 50px;">${emoji}</td>
+      <td style="padding: 0.6rem; text-align: center; width: 50px;"><svg class="icon"><use href="/images/icons.svg#${iconKey}"></use></svg></td>
       <td style="padding: 0.6rem;">
         <div style="font-weight: 700; color: #0f172a;">${nameEn}</div>
         <div style="font-size: 0.8rem; color: var(--admin-muted);">${nameMr}</div>
@@ -48,7 +48,7 @@ function renderCategoryRow(cat) {
       <td style="padding: 0.6rem; font-size: 0.85rem;">Order: <strong>${sortOrder}</strong></td>
       <td style="padding: 0.6rem; text-align: right;">
         <button class="btn-action btn-outline" style="min-width: 50px; padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="openEditCategoryModal('${id}')">
-          ✏️ Edit
+          Edit
         </button>
         <button class="btn-action ${active ? 'btn-danger' : 'btn-primary'}" style="min-width: 60px; padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-left: 4px;" onclick="toggleCategoryActive('${id}')">
           ${active ? 'Hide' : 'Show'}
@@ -73,7 +73,7 @@ function openAddCategoryModal() {
   editingCategoryId = null;
   document.getElementById('categoryModalTitle').textContent = 'Add Category / नवीन श्रेणी';
   document.getElementById('categoryForm').reset();
-  document.getElementById('catEmoji').value = '🛒';
+  if (document.getElementById('catEmoji')) document.getElementById('catEmoji').value = 'box';
   document.getElementById('categoryModal').style.display = 'flex';
 }
 
@@ -85,7 +85,7 @@ function openEditCategoryModal(id) {
   document.getElementById('categoryModalTitle').textContent = 'Edit Category / श्रेणी संपादन';
   document.getElementById('catNameEn').value = cat.nameEn;
   document.getElementById('catNameMr').value = cat.nameMr;
-  document.getElementById('catEmoji').value = cat.emoji || '🛒';
+  if (document.getElementById('catEmoji')) document.getElementById('catEmoji').value = cat.iconKey || 'box';
   document.getElementById('catSortOrder').value = cat.sortOrder || 0;
   document.getElementById('categoryModal').style.display = 'flex';
 }
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = {
         nameEn: document.getElementById('catNameEn').value.trim(),
         nameMr: document.getElementById('catNameMr').value.trim(),
-        emoji: document.getElementById('catEmoji').value.trim() || '🛒',
+        iconKey: (document.getElementById('catEmoji')?.value || 'box').trim(),
         sortOrder: Number(document.getElementById('catSortOrder').value) || 0,
       };
 

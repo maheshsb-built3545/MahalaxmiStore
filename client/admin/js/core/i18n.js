@@ -55,9 +55,9 @@ const DICTIONARY = {
   store_status_changed: 'दुकानाची स्थिती बदलली / Store status updated',
 
   // ── Audio & Sound ──
-  enable_sound: '🔊 आवाज सुरू करा / Enable Sound Alerts',
-  mute_sound: '🔇 आवाज बंद करा / Mute Sound',
-  unmute_sound: '🔊 आवाज चालू करा / Unmute Sound',
+  enable_sound: 'आवाज सुरू करा / Enable Sound Alerts',
+  mute_sound: 'आवाज बंद करा / Mute Sound',
+  unmute_sound: 'आवाज चालू करा / Unmute Sound',
 
   // ── Order Statuses ──
   order_new: 'नवीन / New',
@@ -176,17 +176,23 @@ const DICTIONARY = {
   no_orders_found: 'कोणतीही नवीन ऑर्डर नाही / No orders found',
   no_products_found: 'कोणतेही उत्पादन सापडले नाही / No products found',
   no_udhar_accounts: 'कोणतेही उधारी खाते नाही / No udhar accounts',
-  offline_notice: '⚠️ इंटरनेट कनेक्शन बंद आहे — केवळ माहिती पाहू शकता / Offline — Read only mode',
+  offline_notice: 'इंटरनेट कनेक्शन बंद आहे — केवळ माहिती पाहू शकता / Offline — Read only mode',
   error_generic: 'काहीतरी चूक झाली, कृपया पुन्हा प्रयत्न करा / Something went wrong, please retry',
   success_generic: 'बदल यशस्वीरीत्या जतन केले / Changes saved successfully',
   session_expired: 'सत्र संपले आहे, कृपया पुन्हा लॉगिन करा / Session expired, please login again',
 };
 
 /**
- * Returns translated bilingual string by key with optional variable replacements.
+ * Returns translated string by key with optional variable replacements.
+ * Respects localStorage 'admin_lang' (default 'mr').
  */
 function t(key, vars = {}) {
   let str = DICTIONARY[key] || key;
+  const adminLang = (typeof localStorage !== 'undefined' && localStorage.getItem('admin_lang')) || 'mr';
+  if (typeof str === 'string' && str.includes(' / ')) {
+    const parts = str.split(' / ');
+    str = adminLang === 'en' ? (parts[1] || parts[0]) : parts[0];
+  }
   for (const [vKey, vVal] of Object.entries(vars)) {
     str = str.replace(new RegExp(`{${vKey}}`, 'g'), vVal);
   }
@@ -195,3 +201,4 @@ function t(key, vars = {}) {
 
 window.AdminI18n = { t, DICTIONARY };
 window.t = t;
+

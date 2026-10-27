@@ -164,7 +164,7 @@ function updateAudioUi() {
   if (!isUnlocked) {
     const enableBtn = document.createElement('button');
     enableBtn.className = 'btn-audio';
-    enableBtn.textContent = '🔊 Enable Sound / आवाज सुरू करा';
+    enableBtn.innerHTML = '<svg class="icon"><use href="/images/icons.svg#audio"></use></svg> Enable Sound / आवाज सुरू करा';
     enableBtn.title = 'Click once to allow audio alerts for new orders';
     enableBtn.onclick = () => {
       unlockAudio();
@@ -174,7 +174,7 @@ function updateAudioUi() {
   } else {
     const muteBtn = document.createElement('button');
     muteBtn.className = 'btn-audio';
-    muteBtn.textContent = isMuted ? '🔇 Unmute' : '🔊 Mute Sound';
+    muteBtn.innerHTML = isMuted ? '<svg class="icon"><use href="/images/icons.svg#audio-off"></use></svg> Unmute' : '<svg class="icon"><use href="/images/icons.svg#audio"></use></svg> Mute Sound';
     muteBtn.title = isMuted ? 'Unmute alert sounds' : 'Mute alert sounds';
     muteBtn.onclick = () => setAudioMuted(!isMuted);
     container.appendChild(muteBtn);
@@ -272,27 +272,27 @@ function renderAdminNavigation(activePage = '') {
     topNav.innerHTML = `
       <div class="admin-nav-inner">
         <a href="dashboard.html" class="admin-brand">
-          🏪 <span>Mahalaxmi ${currentLang === 'mr' ? 'व्यवस्थापन' : 'Admin'}</span>
+          <svg class="icon"><use href="/images/icons.svg#store"></use></svg> <span>Mahalaxmi ${currentLang === 'mr' ? 'व्यवस्थापन' : 'Admin'}</span>
         </a>
         <ul class="admin-nav-links">
-          <li><a href="dashboard.html" class="${activePage === 'dashboard' ? 'active' : ''}">📊 ${currentLang === 'mr' ? 'डॅशबोर्ड' : 'Dashboard'}</a></li>
-          <li><a href="inbox.html" class="${activePage === 'inbox' ? 'active' : ''}">🔔 ${currentLang === 'mr' ? 'सूचना' : 'Inbox'} <span id="adminInboxBadge" class="nav-badge" style="display:none;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;padding:2px 6px;font-weight:800;margin-left:4px;">0</span></a></li>
-          <li><a href="orders.html" class="${activePage === 'orders' ? 'active' : ''}">📦 ${currentLang === 'mr' ? 'ऑर्डर्स' : 'Orders'}</a></li>
-          <li><a href="udhar.html" class="${activePage === 'udhar' ? 'active' : ''}">📝 ${currentLang === 'mr' ? 'उधारी वही' : 'Udhar Ledger'}</a></li>
-          <li><a href="reports.html" class="${activePage === 'reports' ? 'active' : ''}">📈 ${currentLang === 'mr' ? 'हिशोब / रिपोर्ट्स' : 'Reports & Settlement'}</a></li>
-          <li><a href="stock-in.html" class="${activePage === 'stock-in' ? 'active' : ''}">📥 ${currentLang === 'mr' ? 'स्टॉक इन' : 'Stock In'}</a></li>
-          <li><a href="low-stock.html" class="${activePage === 'low-stock' ? 'active' : ''}">⚠️ ${currentLang === 'mr' ? 'कमी साठा' : 'Low Stock'}</a></li>
-          <li><a href="products.html" class="${activePage === 'products' ? 'active' : ''}">🏷️ ${currentLang === 'mr' ? 'उत्पादने' : 'Products'}</a></li>
-          <li><a href="ai-misses.html" class="${activePage === 'ai-misses' ? 'active' : ''}">🤖 ${currentLang === 'mr' ? 'AI शोध' : 'AI Misses'}</a></li>
-          ${isOwner ? `<li><a href="staff.html" class="${activePage === 'staff' ? 'active' : ''}">🧑‍💼 ${currentLang === 'mr' ? 'कर्मचारी' : 'Staff'}</a></li>` : ''}
-          <li><a href="settings.html" class="${activePage === 'settings' ? 'active' : ''}">⚙️ ${currentLang === 'mr' ? 'सेटिंग्ज' : 'Settings'}</a></li>
+          <li><a href="dashboard.html" class="${activePage === 'dashboard' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#chart"></use></svg> ${currentLang === 'mr' ? 'डॅशबोर्ड' : 'Dashboard'}</a></li>
+          <li><a href="inbox.html" class="${activePage === 'inbox' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#bell"></use></svg> ${currentLang === 'mr' ? 'सूचना' : 'Inbox'} <span id="adminInboxBadge" class="nav-badge" style="display:none;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;padding:2px 6px;font-weight:800;margin-left:4px;">0</span></a></li>
+          <li><a href="orders.html" class="${activePage === 'orders' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#box"></use></svg> ${currentLang === 'mr' ? 'ऑर्डर्स' : 'Orders'}</a></li>
+          <li><a href="udhar.html" class="${activePage === 'udhar' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#list"></use></svg> ${currentLang === 'mr' ? 'उधारी वही' : 'Udhar Ledger'}</a></li>
+          <li><a href="reports.html" class="${activePage === 'reports' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#chart"></use></svg> ${currentLang === 'mr' ? 'हिशोब / रिपोर्ट्स' : 'Reports & Settlement'}</a></li>
+          <li><a href="stock-in.html" class="${activePage === 'stock-in' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#box"></use></svg> ${currentLang === 'mr' ? 'स्टॉक इन' : 'Stock In'}</a></li>
+          <li><a href="low-stock.html" class="${activePage === 'low-stock' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#warning"></use></svg> ${currentLang === 'mr' ? 'कमी साठा' : 'Low Stock'}</a></li>
+          <li><a href="products.html" class="${activePage === 'products' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#tag"></use></svg> ${currentLang === 'mr' ? 'उत्पादने' : 'Products'}</a></li>
+          <li><a href="ai-misses.html" class="${activePage === 'ai-misses' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#bot"></use></svg> ${currentLang === 'mr' ? 'AI शोध' : 'AI Misses'}</a></li>
+          ${isOwner ? `<li><a href="staff.html" class="${activePage === 'staff' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#user"></use></svg> ${currentLang === 'mr' ? 'कर्मचारी' : 'Staff'}</a></li>` : ''}
+          <li><a href="settings.html" class="${activePage === 'settings' ? 'active' : ''}"><svg class="icon icon-sm"><use href="/images/icons.svg#settings"></use></svg> ${currentLang === 'mr' ? 'सेटिंग्ज' : 'Settings'}</a></li>
         </ul>
         <div class="admin-nav-actions">
           <button id="adminLangToggle" class="btn-audio" title="मराठी / English Switcher">
-            🌐 ${currentLang === 'mr' ? 'English' : 'मराठी'}
+            <svg class="icon icon-sm"><use href="/images/icons.svg#globe"></use></svg> ${currentLang === 'mr' ? 'English' : 'मराठी'}
           </button>
           <div id="audioControlsArea"></div>
-          <a href="../index.html" class="btn-storefront" target="_blank" title="View customer storefront">🌐 Store</a>
+          <a href="../index.html" class="btn-storefront" target="_blank" title="View customer storefront"><svg class="icon icon-sm"><use href="/images/icons.svg#globe"></use></svg> Store</a>
           <button class="btn-admin-logout" id="adminLogoutBtn">${currentLang === 'mr' ? 'बाहेर पडा' : 'Logout'}</button>
         </div>
       </div>
@@ -314,23 +314,23 @@ function renderAdminNavigation(activePage = '') {
   if (bottomBar) {
     bottomBar.innerHTML = `
       <a href="dashboard.html" class="bottom-tab ${activePage === 'dashboard' ? 'active' : ''}">
-        <span class="icon">📊</span>
+        <span class="icon"><svg class="icon"><use href="/images/icons.svg#chart"></use></svg></span>
         <span>Stats</span>
       </a>
       <a href="inbox.html" class="bottom-tab ${activePage === 'inbox' ? 'active' : ''}">
-        <span class="icon">🔔</span>
+        <span class="icon"><svg class="icon"><use href="/images/icons.svg#bell"></use></svg></span>
         <span>Inbox</span>
       </a>
       <a href="orders.html" class="bottom-tab ${activePage === 'orders' ? 'active' : ''}">
-        <span class="icon">📦</span>
+        <span class="icon"><svg class="icon"><use href="/images/icons.svg#box"></use></svg></span>
         <span>Orders</span>
       </a>
       <a href="low-stock.html" class="bottom-tab ${activePage === 'low-stock' ? 'active' : ''}">
-        <span class="icon">⚠️</span>
+        <span class="icon"><svg class="icon"><use href="/images/icons.svg#warning"></use></svg></span>
         <span>Stock</span>
       </a>
       <a href="settings.html" class="bottom-tab ${activePage === 'settings' ? 'active' : ''}">
-        <span class="icon">⚙️</span>
+        <span class="icon"><svg class="icon"><use href="/images/icons.svg#settings"></use></svg></span>
         <span>Settings</span>
       </a>
     `;

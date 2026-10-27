@@ -102,7 +102,7 @@ function renderAccountsTable(accounts) {
     tr.innerHTML = `
       <td>
         <strong>${customer.name || 'ग्राहक'}</strong>
-        <div style="font-size:0.8rem;color:#64748b;">📞 ${customer.phone || 'No phone'}</div>
+        <div style="font-size:0.8rem;color:#64748b;"><svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> ${customer.phone || 'No phone'}</div>
       </td>
       <td>
         <span class="badge-status ${acc.status}">${acc.status}</span>
@@ -119,18 +119,18 @@ function renderAccountsTable(accounts) {
       <td>
         <div class="action-btn-group">
           <button type="button" class="btn-action-sm green" onclick="openPaymentModal('${acc._id}')" title="रक्कम जमा करा">
-            💵 जमा
+            <svg class="icon icon-sm"><use href="/images/icons.svg#wallet"></use></svg> जमा
           </button>
           ${balance > 0 ? `
             <button type="button" class="btn-action-sm wa" onclick="triggerWhatsAppReminder('${acc._id}')" title="WhatsApp तगादा पाठवा">
-              📲 तगादा
+              <svg class="icon icon-sm"><use href="/images/icons.svg#whatsapp"></use></svg> तगादा
             </button>
           ` : ''}
           <button type="button" class="btn-action-sm" onclick="openLedgerModal('${acc._id}')" title="हिशोब वही पहा">
-            📖 हिशोब
+            <svg class="icon icon-sm"><use href="/images/icons.svg#book"></use></svg> हिशोब
           </button>
           <button type="button" class="btn-action-sm" onclick="openStatusModal('${acc._id}')" title="स्थिती व मर्यादा बदला">
-            ⚙️ स्थिती
+            <svg class="icon icon-sm"><use href="/images/icons.svg#settings"></use></svg> स्थिती
           </button>
         </div>
       </td>
@@ -182,7 +182,7 @@ async function handleRecordPaymentSubmit(e) {
     alert(`Payment error: ${err.message}`);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = '✓ जमा नोंदवा (Confirm Payment)';
+    submitBtn.textContent = 'जमा नोंदवा (Confirm Payment)';
   }
 }
 
@@ -220,7 +220,7 @@ async function openLedgerModal(accountId) {
     if (!res.success) throw new Error(res.message);
 
     const { account, entries } = res.data;
-    document.getElementById('ledgerModalTitle').textContent = `📖 उधारी वही: ${account.customer?.name || ''}`;
+    document.getElementById('ledgerModalTitle').textContent = `उधारी वही: ${account.customer?.name || ''}`;
     document.getElementById('ledgerModalSub').textContent = `मोबाईल: ${account.customer?.phone || ''} | चालू बाकी: ₹${account.balance} | उधारी मर्यादा: ₹${account.creditLimit}`;
 
     tbody.innerHTML = '';
@@ -300,7 +300,7 @@ async function handleUpdateStatusSubmit(e) {
     alert(`Status update error: ${err.message}`);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = '✓ बदल जतन करा (Save Changes)';
+    submitBtn.textContent = 'बदल जतन करा (Save Changes)';
   }
 }
 

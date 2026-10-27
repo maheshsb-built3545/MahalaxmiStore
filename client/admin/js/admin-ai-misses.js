@@ -66,7 +66,7 @@ function renderMissesTable(misses) {
   }
 
   if (!misses || misses.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:#059669;">🎉 उत्तम! कॅटलॉगमध्ये सर्व ग्राहकांचे शब्द ओळखले जात आहेत. कोणताही न सापडलेला शब्द नाही.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:#059669;">उत्तम! कॅटलॉगमध्ये सर्व ग्राहकांचे शब्द ओळखले जात आहेत. कोणताही न सापडलेला शब्द नाही.</td></tr>';
     return;
   }
 
@@ -142,7 +142,7 @@ async function handleSaveAlias(e) {
     alert(`Alias save error: ${err.message}`);
   } finally {
     saveBtn.disabled = false;
-    saveBtn.textContent = '✓ पर्यायी नाव जोडा (Save Alias)';
+    saveBtn.textContent = 'पर्यायी नाव जोडा (Save Alias)';
   }
 }
 

@@ -156,11 +156,11 @@ async function downloadAuthed(endpoint, filename = 'download.csv') {
     document.body.removeChild(link);
 
     if (window.AdminToast) {
-      window.AdminToast.show('✅ ' + (window.t ? window.t('export_csv') : 'Download complete'), 'success');
+      window.AdminToast.show(window.t ? window.t('export_csv') : 'Download complete', 'success');
     }
   } catch (err) {
     if (window.AdminToast) {
-      window.AdminToast.show('❌ ' + err.message, 'danger');
+      window.AdminToast.show(err.message, 'danger');
     } else {
       alert(`Download Error / डाऊनलोड त्रुटी: ${err.message}`);
     }

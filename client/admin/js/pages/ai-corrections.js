@@ -33,7 +33,7 @@
 
       <!-- Explanatory Help Card -->
       <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;">
-        <span style="font-size:1.5rem;line-height:1;">💡</span>
+        <span style="display:inline-flex;align-items:center;margin-top:2px;"><svg class="icon" style="width:28px;height:28px;color:#166534;"><use href="/images/icons.svg#sparkles"></use></svg></span>
         <div style="font-size:0.85rem;color:#166534;line-height:1.5;">
           <strong>कॅटलॉग समृद्ध करणे (Catalog Expansion):</strong><br>
           येसगाव व कोपरगावातील ग्राहक घरगुती भाषेत किंवा स्थानिक उच्चारात किराणा वस्तूंची नावे लिहितात. येथे दिसणारे न सापडलेले शब्द थेट संबंधित उत्पादनाला <strong>पर्यायी नाव (Alias)</strong> म्हणून जोडल्यास, पुढच्या वेळी AI ऑर्डर बॉक्स ते उत्पादन क्षणात अचूक ओळखेल!
@@ -119,8 +119,8 @@
           <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;word-break:break-word;">
             "${AdminDOM.escape(phrase)}"
           </h3>
-          <span class="badge badge-warning" style="font-size:0.75rem;font-weight:700;white-space:nowrap;">
-            🔥 ${frequency} वेळा / times
+          <span class="badge badge-warning" style="font-size:0.75rem;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;">
+            <svg class="icon icon-sm"><use href="/images/icons.svg#trending-up"></use></svg> ${frequency} वेळा / times
           </span>
         </div>
         <p style="font-size:0.78rem;color:var(--text-muted);margin:0;">
@@ -129,8 +129,8 @@
       </div>
 
       <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
-        <button type="button" class="btn btn-primary btn-map-alias" style="flex:1 1 180px;min-height:44px;font-size:0.82rem;font-weight:700;">
-          🔗 पर्यायी नाव जोडा / Map Alias
+        <button type="button" class="btn btn-primary btn-map-alias" style="flex:1 1 180px;min-height:44px;font-size:0.82rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#tag"></use></svg> पर्यायी नाव जोडा / Map Alias
         </button>
         <button type="button" class="btn btn-secondary btn-ignore" style="flex:1 1 90px;min-height:44px;font-size:0.82rem;font-weight:600;color:var(--text-muted);">
           दुर्लक्ष / Ignore
@@ -163,8 +163,8 @@
     const sheetContent = document.createElement('div');
     sheetContent.innerHTML = `
       <div style="padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;">
-        <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);">
-          🔗 पर्यायी नाव जोडा (Map Product Alias)
+        <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);display:flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#tag"></use></svg> पर्यायी नाव जोडा (Map Product Alias)
         </h3>
         <p style="font-size:0.85rem;color:var(--text-muted);margin:4px 0 0;">
           शब्द: <strong style="color:var(--primary);font-size:1.05rem;">"${AdminDOM.escape(m.phrase)}"</strong>

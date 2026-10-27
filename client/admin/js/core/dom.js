@@ -64,6 +64,12 @@ function setContent(container, ...children) {
 }
 
 // Global export for non-module scripts
-window.AdminDOM = { esc, escape: esc, el, setContent };
+function icon(name, extraClass = '') {
+  const cls = extraClass ? `icon ${extraClass}` : 'icon';
+  return `<svg class="${cls}" aria-hidden="true"><use href="/images/icons.svg#${name}"></use></svg>`;
+}
+
+window.AdminDOM = { esc, escape: esc, el, setContent, icon };
 window.esc = esc;
 window.escapeHtml = esc; // backward compat with legacy scripts
+window.icon = icon;

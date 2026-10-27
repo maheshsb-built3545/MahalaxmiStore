@@ -119,7 +119,7 @@ async function searchInventoryProducts(q) {
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span class="badge ${badgeCls}">${badgeTxt}</span>
-            <button type="button" class="btn btn-sm btn-primary" onclick="addProductToReceiveCart('${p._id}')">➕ निवडा / Add</button>
+            <button type="button" class="btn btn-sm btn-primary" onclick="addProductToReceiveCart('${p._id}')"><svg class="icon"><use href="/images/icons.svg#plus"></use></svg> निवडा / Add</button>
           </div>
         </div>
       `;
@@ -154,7 +154,7 @@ window.addProductToReceiveCart = async (productId) => {
 
     renderReceiveCart();
     if (window.AdminToast) {
-      window.AdminToast.show(`📥 ${p.nameMr || p.nameEn} साठ्यात जोडण्यासाठी निवडले`, 'info', 2000);
+      window.AdminToast.show(`${p.nameMr || p.nameEn} साठ्यात जोडण्यासाठी निवडले`, 'info', 2000);
     }
   } catch (err) {
     alert(`Error: ${err.message}`);
@@ -170,7 +170,7 @@ function renderReceiveCart() {
   if (!items.length) {
     container.innerHTML = `
       <div class="empty-state" style="padding:24px 12px;background:#ffffff;border-radius:14px;border:1px dashed var(--border-strong);">
-        <div class="empty-state-icon">📥</div>
+        <div class="empty-state-icon"><svg class="icon" style="width:36px;height:36px;"><use href="/images/icons.svg#box"></use></svg></div>
         <div class="empty-state-title">स्टॉक भरण्यासाठी वरील शोधपेटीतून उत्पादन निवडा</div>
         <div class="empty-state-desc">Search products above or use barcode scanner to add incoming delivery.</div>
       </div>
@@ -201,7 +201,7 @@ function renderReceiveCart() {
                 <strong style="font-size:1rem;">${window.esc(p.nameMr || p.nameEn)}</strong>
                 <div class="text-xs text-muted">${window.esc(p.nameEn)} — ${window.esc(p.packSize)} (चालू साठा: ${p.stockQuantity} ${p.unitType})</div>
               </div>
-              <button type="button" class="btn btn-sm btn-secondary" onclick="removeReceiveCartItem('${p._id}')" title="काढून टाका / Remove">✕</button>
+              <button type="button" class="btn btn-sm btn-secondary" onclick="removeReceiveCartItem('${p._id}')" title="काढून टाका / Remove"><svg class="icon"><use href="/images/icons.svg#close"></use></svg></button>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:10px;margin-top:10px;">
               <div>
@@ -273,7 +273,7 @@ window.submitBatchStockIn = async () => {
   const btn = document.getElementById('submitReceiveCartBtn');
   if (btn) {
     btn.disabled = true;
-    btn.textContent = '⏳ साठा जतन होत आहे / Saving...';
+    btn.textContent = 'साठा जतन होत आहे / Saving...';
   }
 
   let successCount = 0;
@@ -295,14 +295,14 @@ window.submitBatchStockIn = async () => {
 
   if (btn) {
     btn.disabled = false;
-    btn.textContent = '✅ सर्व साठा जतन करा (Save All Stock)';
+    btn.textContent = 'सर्व साठा जतन करा (Save All Stock)';
   }
 
   receiveCart.clear();
   renderReceiveCart();
 
   if (window.AdminToast) {
-    window.AdminToast.show(`✅ ${successCount} उत्पादनांचा साठा यशस्वीरित्या वाढवला!`, 'success', 4000);
+    window.AdminToast.show(`${successCount} उत्पादनांचा साठा यशस्वीरित्या वाढवला!`, 'success', 4000);
   }
 };
 
@@ -314,7 +314,7 @@ function startBarcodeScan() {
   }
 
   const sheet = new window.AdminBottomSheet({
-    title: '📷 बारकोड स्कॅनर (Scan Barcode)',
+    title: 'बारकोड स्कॅनर (Scan Barcode)',
   });
 
   const body = document.createElement('div');
@@ -404,17 +404,17 @@ function renderAlerts() {
     <!-- Top Action: Reorder List Generator Button -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
       <div>
-        <h2 style="font-size:1.15rem;margin:0;">⚠️ साठा इशारे व पुनर्खरेदी (Stock Alerts)</h2>
+        <h2 style="font-size:1.15rem;margin:0;display:flex;align-items:center;gap:6px;"><svg class="icon" style="color:var(--warning);"><use href="/images/icons.svg#warning"></use></svg> साठा इशारे व पुनर्खरेदी (Stock Alerts)</h2>
         <span class="text-xs text-muted">एकूण ${lowStockItems.length} वस्तूंचा साठा संपला किंवा कमी आहे.</span>
       </div>
       <button type="button" class="btn btn-sm btn-primary" onclick="generateReorderListWhatsApp()">
-        📲 पुरवठादार ऑर्डर तयार करा
+        <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> पुरवठादार ऑर्डर तयार करा
       </button>
     </div>
 
     <!-- Section 1: Out of Stock -->
     <div style="margin-bottom:20px;">
-      <h3 style="font-size:0.95rem;color:#dc2626;margin-bottom:8px;">🛑 पूर्ण संपलेला साठा / Out of Stock (${outOfStock.length})</h3>
+      <h3 style="font-size:0.95rem;color:#dc2626;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg class="icon"><use href="/images/icons.svg#warning"></use></svg> पूर्ण संपलेला साठा / Out of Stock (${outOfStock.length})</h3>
       ${outOfStock.length ? `
         <div class="flex flex-col gap-2">
           ${outOfStock.map((p) => renderAlertItemRow(p, 'zero')).join('')}
@@ -424,7 +424,7 @@ function renderAlerts() {
 
     <!-- Section 2: Low Stock (below reorder level) -->
     <div style="margin-bottom:20px;">
-      <h3 style="font-size:0.95rem;color:#d97706;margin-bottom:8px;">⚠️ कमी साठा / Low Stock (${lowStock.length})</h3>
+      <h3 style="font-size:0.95rem;color:#d97706;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg class="icon"><use href="/images/icons.svg#warning"></use></svg> कमी साठा / Low Stock (${lowStock.length})</h3>
       ${lowStock.length ? `
         <div class="flex flex-col gap-2">
           ${lowStock.map((p) => renderAlertItemRow(p, 'low')).join('')}
@@ -434,7 +434,7 @@ function renderAlerts() {
 
     <!-- Section 3: Near Expiry Items -->
     <div>
-      <h3 style="font-size:0.95rem;color:#c2410c;margin-bottom:8px;">📅 मुदत संपत आलेला साठा / Near Expiry (${nearExpiryItems.length})</h3>
+      <h3 style="font-size:0.95rem;color:#c2410c;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg class="icon"><use href="/images/icons.svg#clock"></use></svg> मुदत संपत आलेला साठा / Near Expiry (${nearExpiryItems.length})</h3>
       ${nearExpiryItems.length ? `
         <div class="flex flex-col gap-2">
           ${nearExpiryItems.map((p) => {
@@ -472,7 +472,7 @@ function renderAlertItemRow(p, type) {
       </div>
       <div class="flex gap-2">
         <button type="button" class="btn btn-sm btn-primary" onclick="quickStockIn('${p._id}', '${window.esc(p.nameEn)}')">
-          📥 स्टॉक भरा
+          <svg class="icon"><use href="/images/icons.svg#box"></use></svg> स्टॉक भरा
         </button>
         <button type="button" class="btn btn-sm btn-outline" onclick="toggleProductUnavailable('${p._id}', ${Boolean(p.unavailableFlag)})">
           ${p.unavailableFlag ? 'उपलब्ध करा' : 'बंद करा'}
@@ -507,7 +507,7 @@ window.generateReorderListWhatsApp = () => {
     return;
   }
 
-  const lines = ['📋 महालक्ष्मी किराणा — पुरवठादार माल ऑर्डर यादी:\n'];
+  const lines = ['महालक्ष्मी किराणा — पुरवठादार माल ऑर्डर यादी:\n'];
   lowStockItems.forEach((p, idx) => {
     lines.push(`${idx + 1}. ${p.nameMr || p.nameEn} (${p.packSize}) — चालू साठा: ${p.stockQuantity} ${p.unitType}`);
   });
@@ -516,7 +516,7 @@ window.generateReorderListWhatsApp = () => {
   const text = lines.join('\n');
   navigator.clipboard.writeText(text).then(() => {
     if (window.AdminToast) {
-      window.AdminToast.show('📋 पुरवठादार ऑर्डर यादी कॉपी केली! (Copied to clipboard)', 'success', 3000);
+      window.AdminToast.show('पुरवठादार ऑर्डर यादी कॉपी केली! (Copied to clipboard)', 'success', 3000);
     }
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   });
@@ -540,15 +540,15 @@ async function loadStockLogs() {
     container.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div>
-          <h2 style="font-size:1.15rem;margin:0;">📝 स्टॉक नोंदवही व दुरुस्ती (Log & Adjust)</h2>
+          <h2 style="font-size:1.15rem;margin:0;display:flex;align-items:center;gap:6px;"><svg class="icon"><use href="/images/icons.svg#list"></use></svg> स्टॉक नोंदवही व दुरुस्ती (Log & Adjust)</h2>
           <span class="text-xs text-muted">साठा बदल इतिहास आणि नुकसान/तफावत नोंद.</span>
         </div>
         <div class="flex gap-2">
           <button type="button" class="btn btn-sm btn-secondary" onclick="downloadAuthed('/admin/export/stock-log.csv', 'stock-log.csv')">
-            📥 CSV डाऊनलोड
+            <svg class="icon"><use href="/images/icons.svg#box"></use></svg> CSV डाऊनलोड
           </button>
           <button type="button" class="btn btn-sm btn-danger" onclick="openManualAdjustModal()">
-            ⚖️ साठा दुरुस्ती (Adjust)
+            <svg class="icon"><use href="/images/icons.svg#settings"></use></svg> साठा दुरुस्ती (Adjust)
           </button>
         </div>
       </div>
@@ -584,7 +584,7 @@ window.openAdjustModal = (id) => {
 
 window.openManualAdjustModal = async (preselectedProductId = null) => {
   const sheet = new window.AdminBottomSheet({
-    title: '⚖️ साठा दुरुस्ती नोंद (Stock Adjustment)',
+    title: 'साठा दुरुस्ती नोंद (Stock Adjustment)',
   });
 
   let productOptions = lowStockItems;
@@ -623,7 +623,7 @@ window.openManualAdjustModal = async (preselectedProductId = null) => {
         <label class="form-label">टीप / Note (Optional)</label>
         <textarea class="form-textarea" id="adjustNoteInput" rows="2" placeholder="तपशीलवार कारण नमूद करा..."></textarea>
       </div>
-      <button type="submit" class="btn btn-primary" style="margin-top:12px;">✅ दुरुस्ती जतन करा (Save Adjustment)</button>
+      <button type="submit" class="btn btn-primary" style="margin-top:12px;">दुरुस्ती जतन करा (Save Adjustment)</button>
     </form>
   `;
 
@@ -652,7 +652,7 @@ window.openManualAdjustModal = async (preselectedProductId = null) => {
       sheet.close();
       loadStockLogs();
       if (window.AdminToast) {
-        window.AdminToast.show('✅ साठा दुरुस्ती यशस्वीरीत्या नोंदवली!', 'success');
+        window.AdminToast.show('साठा दुरुस्ती यशस्वीरीत्या नोंदवली!', 'success');
       }
     } catch (err) {
       alert(`Adjustment Error: ${err.message}`);

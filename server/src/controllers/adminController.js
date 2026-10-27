@@ -952,7 +952,8 @@ const createCategory = async (req, res, next) => {
       return res.status(409).json({ success: false, message: `A category named "${nameEn}" already exists.` });
     }
 
-    const category = await Category.create({ nameEn, nameMr, emoji, sortOrder, active });
+    const iconKey = req.body.iconKey ? String(req.body.iconKey).trim() : null;
+    const category = await Category.create({ nameEn, nameMr, emoji, iconKey, sortOrder, active });
     res.status(201).json({ success: true, data: category });
   } catch (err) {
     if (err.code === 11000) {
@@ -991,6 +992,7 @@ const updateCategory = async (req, res, next) => {
     }
 
     const updateFields = { nameEn, nameMr, emoji, sortOrder };
+    if (req.body.iconKey !== undefined) updateFields.iconKey = req.body.iconKey ? String(req.body.iconKey).trim() : null;
     if (req.body.active !== undefined) updateFields.active = Boolean(req.body.active);
 
     const category = await Category.findByIdAndUpdate(id, updateFields, { new: true });

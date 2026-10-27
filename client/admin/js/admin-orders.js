@@ -15,7 +15,7 @@ const STATUS_TRANSITIONS = {
   new: { next: 'confirmed', label: 'Confirm Order (ऑर्डर निश्चित करा) →' },
   confirmed: { next: 'packed', label: 'Mark Packed (पॅक झाली) →' },
   packed: { next: 'out_for_delivery', label: 'Out for Delivery (डिलिव्हरीसाठी निघाली) →' },
-  out_for_delivery: { next: 'delivered', label: 'Mark Delivered (डिलिव्हर झाली) ✓' },
+  out_for_delivery: { next: 'delivered', label: 'Mark Delivered (डिलिव्हर झाली)' },
 };
 
 function getWhatsAppStatusMessage(order, status) {
@@ -98,7 +98,7 @@ function renderOrderCard(ord) {
   const waUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent(waMsg)}`;
   actionHtml += `
     <a href="${waUrl}" target="_blank" class="btn-action btn-whatsapp" title="Send status update to customer on WhatsApp">
-      💬 WhatsApp Notify
+      <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp Notify
     </a>
   `;
 
@@ -106,7 +106,7 @@ function renderOrderCard(ord) {
   if (!isPaid && status !== 'cancelled') {
     actionHtml += `
       <button class="btn-action btn-outline" onclick="markOrderPaid('${ord._id}')">
-        💳 Mark as Paid
+        <svg class="icon"><use href="/images/icons.svg#credit"></use></svg> Mark as Paid
       </button>
     `;
   }
@@ -115,7 +115,7 @@ function renderOrderCard(ord) {
   if (status !== 'delivered' && status !== 'cancelled') {
     actionHtml += `
       <button class="btn-action btn-danger" onclick="openCancelModal('${ord._id}', '${orderNum}')">
-        ✕ Cancel
+        <svg class="icon"><use href="/images/icons.svg#close"></use></svg> Cancel
       </button>
     `;
   }
@@ -124,7 +124,7 @@ function renderOrderCard(ord) {
   if (['new', 'confirmed'].includes(status)) {
     actionHtml += `
       <button class="btn-action btn-outline" style="border-color:#d97706;color:#b45309;" onclick="openSubstitutionModal('${ord._id}')">
-        🔄 Propose Substitute
+        <svg class="icon"><use href="/images/icons.svg#refresh"></use></svg> Propose Substitute
       </button>
     `;
   }
@@ -144,7 +144,7 @@ function renderOrderCard(ord) {
           const isAccepted = s.status === 'accepted';
           return `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;gap:8px;">
-              <span><strong>🔄 Substitution:</strong> <span style="text-decoration:line-through;color:#94a3b8;">${escapeHtml(s.originalNameEn)}</span> ➔ <strong style="color:#047857;">${escapeHtml(s.proposedNameEn)}</strong> (Qty: ${s.proposedQty}, ₹${s.priceDiff >= 0 ? '+' : ''}${s.priceDiff})</span>
+              <span><strong>Substitution:</strong> <span style="text-decoration:line-through;color:#94a3b8;">${escapeHtml(s.originalNameEn)}</span> &rarr; <strong style="color:#047857;">${escapeHtml(s.proposedNameEn)}</strong> (Qty: ${s.proposedQty}, ₹${s.priceDiff >= 0 ? '+' : ''}${s.priceDiff})</span>
               <span style="font-weight:700;font-size:0.75rem;padding:1px 6px;border-radius:8px;${
                 isPending ? 'background:#fde047;color:#854d0e;' : (isAccepted ? 'background:#bbf7d0;color:#166534;' : 'background:#fecaca;color:#991b1b;')
               }">${s.status.toUpperCase()}</span>
@@ -174,14 +174,14 @@ function renderOrderCard(ord) {
         <div>
           <strong>${custName}</strong>
           <div style="font-size: 0.8rem; color: var(--admin-muted); margin-top: 2px;">
-            📍 ${escapeHtml(ord.address.line)}${ord.address.landmark ? ', ' + escapeHtml(ord.address.landmark) : ''}, ${escapeHtml(ord.address.pincode)}
+            <svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> ${escapeHtml(ord.address.line)}${ord.address.landmark ? ', ' + escapeHtml(ord.address.landmark) : ''}, ${escapeHtml(ord.address.pincode)}
           </div>
-          ${ord.note ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:6px;padding:3px 7px;margin-top:4px;font-size:0.82rem;color:#92400e;"><strong>📝 Note:</strong> ${escapeHtml(ord.note)}</div>` : ''}
-          ${ord.locationPin ? `<div style="margin-top:4px;font-size:0.8rem;"><a href="${escapeHtml(ord.locationPin.startsWith('http') ? ord.locationPin : 'https://maps.google.com/?q=' + encodeURIComponent(ord.locationPin))}" target="_blank" rel="noopener" style="color:#047857;font-weight:700;">🗺️ Map / Landmark Link →</a></div>` : ''}
+          ${ord.note ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:6px;padding:3px 7px;margin-top:4px;font-size:0.82rem;color:#92400e;"><strong>Note:</strong> ${escapeHtml(ord.note)}</div>` : ''}
+          ${ord.locationPin ? `<div style="margin-top:4px;font-size:0.8rem;"><a href="${escapeHtml(ord.locationPin.startsWith('http') ? ord.locationPin : 'https://maps.google.com/?q=' + encodeURIComponent(ord.locationPin))}" target="_blank" rel="noopener" style="color:#047857;font-weight:700;"><svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> Map / Landmark Link →</a></div>` : ''}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-          <a href="tel:+${rawPhone}" class="phone-link">📞 ${custPhone}</a>
-          <a href="https://maps.google.com/?q=${encodeURIComponent(ord.address.line + ' ' + (ord.address.landmark || '') + ' ' + ord.address.pincode)}" target="_blank" rel="noopener" style="font-size:0.75rem;color:#047857;text-decoration:none;font-weight:600;">📍 Map</a>
+          <a href="tel:+${rawPhone}" class="phone-link"><svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> ${custPhone}</a>
+          <a href="https://maps.google.com/?q=${encodeURIComponent(ord.address.line + ' ' + (ord.address.landmark || '') + ' ' + ord.address.pincode)}" target="_blank" rel="noopener" style="font-size:0.75rem;color:#047857;text-decoration:none;font-weight:600;"><svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> Map</a>
         </div>
       </div>
 

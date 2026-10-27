@@ -26,50 +26,50 @@ const Settings = require('../src/models/Settings');
 // ─── Seed data (verified 100% against baseline) ───────────────────────────────
 
 const CATEGORIES = [
-  { nameEn: 'Atta & Grains',   nameMr: 'आटा आणि धान्य',     emoji: '🌾', sortOrder: 1 },
-  { nameEn: 'Dals & Pulses',   nameMr: 'डाळ आणि कडधान्ये',  emoji: '🫘', sortOrder: 2 },
-  { nameEn: 'Oils & Ghee',     nameMr: 'तेल आणि तूप',        emoji: '🫒', sortOrder: 3 },
-  { nameEn: 'Dairy & Drinks',  nameMr: 'दूध आणि पेये',       emoji: '🥛', sortOrder: 4 },
-  { nameEn: 'Spices',          nameMr: 'मसाले',               emoji: '🌶️', sortOrder: 5 },
-  { nameEn: 'Snacks',          nameMr: 'नाश्ता',              emoji: '🍪', sortOrder: 6 },
-  { nameEn: 'Beverages',       nameMr: 'पेये',                emoji: '🥤', sortOrder: 7 },
-  { nameEn: 'Home Care',       nameMr: 'घरगुती काळजी',        emoji: '🧽', sortOrder: 8 },
-  { nameEn: 'Personal Care',   nameMr: 'वैयक्तिक काळजी',     emoji: '🧴', sortOrder: 9 },
-  { nameEn: 'Stationery',      nameMr: 'स्टेशनरी',            emoji: '✏️', sortOrder: 10 },
+  { nameEn: 'Atta & Grains',   nameMr: 'आटा आणि धान्य',     iconKey: 'grains', sortOrder: 1 },
+  { nameEn: 'Dals & Pulses',   nameMr: 'डाळ आणि कडधान्ये',  iconKey: 'dals', sortOrder: 2 },
+  { nameEn: 'Oils & Ghee',     nameMr: 'तेल आणि तूप',        iconKey: 'oils', sortOrder: 3 },
+  { nameEn: 'Dairy & Drinks',  nameMr: 'दूध आणि पेये',       iconKey: 'dairy', sortOrder: 4 },
+  { nameEn: 'Spices',          nameMr: 'मसाले',               iconKey: 'spices', sortOrder: 5 },
+  { nameEn: 'Snacks',          nameMr: 'नाश्ता',              iconKey: 'snacks', sortOrder: 6 },
+  { nameEn: 'Beverages',       nameMr: 'पेये',                iconKey: 'beverages', sortOrder: 7 },
+  { nameEn: 'Home Care',       nameMr: 'घरगुती काळजी',        iconKey: 'homecare', sortOrder: 8 },
+  { nameEn: 'Personal Care',   nameMr: 'वैयक्तिक काळजी',     iconKey: 'personalcare', sortOrder: 9 },
+  { nameEn: 'Stationery',      nameMr: 'स्टेशनरी',            iconKey: 'stationery', sortOrder: 10 },
 ];
 
 const PRODUCT_DEFS = [
   // Atta & Grains
-  { c: 'Atta & Grains',  nameEn: 'Wheat Atta',        nameMr: 'गहू आटा',           packSize: '5 kg',   price: 210, mrp: 240, emoji: '🌾', unitType: 'kg',    sortOrder: 1, aliases: ['atta', 'aata', 'gehu', 'pith', 'गहू'], search_keywords: ['atta', 'aata', 'gehu', 'pith', 'flour', 'गहू आटा'] },
-  { c: 'Atta & Grains',  nameEn: 'Basmati Rice',      nameMr: 'बासमती तांदूळ',     packSize: '1 kg',   price:  95, mrp: 110, emoji: '🍚', unitType: 'kg',    sortOrder: 2, aliases: ['rice', 'tandul', 'chawal', 'तांदूळ'], search_keywords: ['rice', 'tandul', 'chawal', 'basmati', 'तांदूळ'] },
-  { c: 'Atta & Grains',  nameEn: 'Sugar',             nameMr: 'साखर',             packSize: '1 kg',   price:  42, mrp:  48, emoji: '🍬', unitType: 'kg',    sortOrder: 3, aliases: ['sugar', 'sakhar', 'shakkar', 'साखर'], search_keywords: ['sugar', 'sakhar', 'shakkar', 'साखर'] },
+  { c: 'Atta & Grains',  nameEn: 'Wheat Atta',        nameMr: 'गहू आटा',           packSize: '5 kg',   price: 210, mrp: 240, unitType: 'kg',    sortOrder: 1, aliases: ['atta', 'aata', 'gehu', 'pith', 'गहू'], search_keywords: ['atta', 'aata', 'gehu', 'pith', 'flour', 'गहू आटा'] },
+  { c: 'Atta & Grains',  nameEn: 'Basmati Rice',      nameMr: 'बासमती तांदूळ',     packSize: '1 kg',   price:  95, mrp: 110, unitType: 'kg',    sortOrder: 2, aliases: ['rice', 'tandul', 'chawal', 'तांदूळ'], search_keywords: ['rice', 'tandul', 'chawal', 'basmati', 'तांदूळ'] },
+  { c: 'Atta & Grains',  nameEn: 'Sugar',             nameMr: 'साखर',             packSize: '1 kg',   price:  42, mrp:  48, unitType: 'kg',    sortOrder: 3, aliases: ['sugar', 'sakhar', 'shakkar', 'साखर'], search_keywords: ['sugar', 'sakhar', 'shakkar', 'साखर'] },
   // Dals & Pulses
-  { c: 'Dals & Pulses',  nameEn: 'Toor Dal',          nameMr: 'तूर डाळ',           packSize: '1 kg',   price: 140, mrp: 160, emoji: '🫘', unitType: 'kg',    sortOrder: 1, aliases: ['tur dal', 'toor', 'varan', 'तूर डाळ'], search_keywords: ['dal', 'daal', 'tur', 'toor', 'वरण', 'तूर'] },
-  { c: 'Dals & Pulses',  nameEn: 'Moong Dal',         nameMr: 'मूग डाळ',           packSize: '1 kg',   price: 130, mrp: 145, emoji: '🫛', unitType: 'kg',    sortOrder: 2, aliases: ['mung dal', 'moong', 'मूग डाळ'], search_keywords: ['dal', 'daal', 'moong', 'mung', 'मूग'] },
+  { c: 'Dals & Pulses',  nameEn: 'Toor Dal',          nameMr: 'तूर डाळ',           packSize: '1 kg',   price: 140, mrp: 160, unitType: 'kg',    sortOrder: 1, aliases: ['tur dal', 'toor', 'varan', 'तूर डाळ'], search_keywords: ['dal', 'daal', 'tur', 'toor', 'वरण', 'तूर'] },
+  { c: 'Dals & Pulses',  nameEn: 'Moong Dal',         nameMr: 'मूग डाळ',           packSize: '1 kg',   price: 130, mrp: 145, unitType: 'kg',    sortOrder: 2, aliases: ['mung dal', 'moong', 'मूग डाळ'], search_keywords: ['dal', 'daal', 'moong', 'mung', 'मूग'] },
   // Oils & Ghee
-  { c: 'Oils & Ghee',    nameEn: 'Sunflower Oil',     nameMr: 'सूर्यफूल तेल',      packSize: '1 L',    price: 135, mrp: 155, emoji: '🫒', unitType: 'litre', sortOrder: 1, aliases: ['oil', 'tel', 'cooking oil', 'तेल', 'खाद्य तेल'], search_keywords: ['oil', 'tel', 'cooking oil', 'तेल', 'खाद्य तेल', 'mitha tel'] },
-  { c: 'Oils & Ghee',    nameEn: 'Cow Ghee',          nameMr: 'गाय तूप',           packSize: '500 g',  price: 290, mrp: 330, emoji: '🧈', unitType: 'g',     sortOrder: 2, aliases: ['ghee', 'tup', 'toop', 'तूप', 'गाय तूप'], search_keywords: ['ghee', 'tup', 'toop', 'तूप', 'clarified butter'] },
+  { c: 'Oils & Ghee',    nameEn: 'Sunflower Oil',     nameMr: 'सूर्यफूल तेल',      packSize: '1 L',    price: 135, mrp: 155, unitType: 'litre', sortOrder: 1, aliases: ['oil', 'tel', 'cooking oil', 'तेल', 'खाद्य तेल'], search_keywords: ['oil', 'tel', 'cooking oil', 'तेल', 'खाद्य तेल', 'mitha tel'] },
+  { c: 'Oils & Ghee',    nameEn: 'Cow Ghee',          nameMr: 'गाय तूप',           packSize: '500 g',  price: 290, mrp: 330, unitType: 'g',     sortOrder: 2, aliases: ['ghee', 'tup', 'toop', 'तूप', 'गाय तूप'], search_keywords: ['ghee', 'tup', 'toop', 'तूप', 'clarified butter'] },
   // Dairy & Drinks
-  { c: 'Dairy & Drinks', nameEn: 'Toned Milk',        nameMr: 'टोन्ड दूध',         packSize: '500 ml', price:  27, mrp:  30, emoji: '🥛', unitType: 'ml',    sortOrder: 1, aliases: ['milk', 'dudh', 'दूध'], search_keywords: ['milk', 'dudh', 'दूध'] },
-  { c: 'Dairy & Drinks', nameEn: 'Curd',              nameMr: 'दही',               packSize: '400 g',  price:  38, mrp:  42, emoji: '🍶', unitType: 'g',     sortOrder: 2, aliases: ['dahi', 'curd', 'दही', 'yogurt'], search_keywords: ['curd', 'dahi', 'दही'] },
+  { c: 'Dairy & Drinks', nameEn: 'Toned Milk',        nameMr: 'टोन्ड दूध',         packSize: '500 ml', price:  27, mrp:  30, unitType: 'ml',    sortOrder: 1, aliases: ['milk', 'dudh', 'दूध'], search_keywords: ['milk', 'dudh', 'दूध'] },
+  { c: 'Dairy & Drinks', nameEn: 'Curd',              nameMr: 'दही',               packSize: '400 g',  price:  38, mrp:  42, unitType: 'g',     sortOrder: 2, aliases: ['dahi', 'curd', 'दही', 'yogurt'], search_keywords: ['curd', 'dahi', 'दही'] },
   // Spices
-  { c: 'Spices',         nameEn: 'Turmeric Powder',   nameMr: 'हळद पावडर',         packSize: '200 g',  price:  45, mrp:  55, emoji: '🌶️', unitType: 'g',     sortOrder: 1, aliases: ['haldi', 'turmeric', 'हळद'], search_keywords: ['haldi', 'turmeric', 'हळद पावडर'] },
-  { c: 'Spices',         nameEn: 'Red Chilli Powder', nameMr: 'लाल मिरची पावडर',   packSize: '200 g',  price:  60, mrp:  75, emoji: '🌶️', unitType: 'g',     sortOrder: 2, aliases: ['mirchi', 'chilli', 'लाल तिखट', 'मिरची'], search_keywords: ['chilli', 'mirchi', 'tikhat', 'मिरची', 'लाल तिखट'] },
+  { c: 'Spices',         nameEn: 'Turmeric Powder',   nameMr: 'हळद पावडर',         packSize: '200 g',  price:  45, mrp:  55, unitType: 'g',     sortOrder: 1, aliases: ['haldi', 'turmeric', 'हळद'], search_keywords: ['haldi', 'turmeric', 'हळद पावडर'] },
+  { c: 'Spices',         nameEn: 'Red Chilli Powder', nameMr: 'लाल मिरची पावडर',   packSize: '200 g',  price:  60, mrp:  75, unitType: 'g',     sortOrder: 2, aliases: ['mirchi', 'chilli', 'लाल तिखट', 'मिरची'], search_keywords: ['chilli', 'mirchi', 'tikhat', 'मिरची', 'लाल तिखट'] },
   // Snacks
-  { c: 'Snacks',         nameEn: 'Namkeen Mix',       nameMr: 'नमकीन मिक्स',       packSize: '200 g',  price:  40, mrp:  50, emoji: '🍪', unitType: 'g',     sortOrder: 1, aliases: ['farsan', 'chivda', 'namkeen', 'फरसाण'], search_keywords: ['farsan', 'namkeen', 'chivda', 'फरसाण'] },
-  { c: 'Snacks',         nameEn: 'Biscuits Pack',     nameMr: 'बिस्किट पॅक',       packSize: '250 g',  price:  30, mrp:  35, emoji: '🍪', unitType: 'pack',  sortOrder: 2, aliases: ['biscuit', 'parle', 'बिस्किट'], search_keywords: ['biscuit', 'cookies', 'बिस्किट'] },
+  { c: 'Snacks',         nameEn: 'Namkeen Mix',       nameMr: 'नमकीन मिक्स',       packSize: '200 g',  price:  40, mrp:  50, unitType: 'g',     sortOrder: 1, aliases: ['farsan', 'chivda', 'namkeen', 'फरसाण'], search_keywords: ['farsan', 'namkeen', 'chivda', 'फरसाण'] },
+  { c: 'Snacks',         nameEn: 'Biscuits Pack',     nameMr: 'बिस्किट पॅक',       packSize: '250 g',  price:  30, mrp:  35, unitType: 'pack',  sortOrder: 2, aliases: ['biscuit', 'parle', 'बिस्किट'], search_keywords: ['biscuit', 'cookies', 'बिस्किट'] },
   // Beverages
-  { c: 'Beverages',      nameEn: 'Cold Drink',        nameMr: 'कोल्ड ड्रिंक',      packSize: '750 ml', price:  40, mrp:  45, emoji: '🥤', unitType: 'ml',    sortOrder: 1, aliases: ['soda', 'coke', 'pepsi', 'पेये'], search_keywords: ['drink', 'soda', 'cold drink'] },
-  { c: 'Beverages',      nameEn: 'Tea Powder',        nameMr: 'चहा पावडर',         packSize: '250 g',  price: 110, mrp: 125, emoji: '🍵', unitType: 'g',     sortOrder: 2, aliases: ['chai', 'tea', 'चहा पत्ती', 'चहा'], search_keywords: ['chai', 'tea', 'chaha', 'चहा'] },
+  { c: 'Beverages',      nameEn: 'Cold Drink',        nameMr: 'कोल्ड ड्रिंक',      packSize: '750 ml', price:  40, mrp:  45, unitType: 'ml',    sortOrder: 1, aliases: ['soda', 'coke', 'pepsi', 'पेये'], search_keywords: ['drink', 'soda', 'cold drink'] },
+  { c: 'Beverages',      nameEn: 'Tea Powder',        nameMr: 'चहा पावडर',         packSize: '250 g',  price: 110, mrp: 125, unitType: 'g',     sortOrder: 2, aliases: ['chai', 'tea', 'चहा पत्ती', 'चहा'], search_keywords: ['chai', 'tea', 'chaha', 'चहा'] },
   // Home Care
-  { c: 'Home Care',      nameEn: 'Dish Wash Bar',     nameMr: 'भांडी घासण्याची बार', packSize: '1 pc',  price:  20, mrp:  25, emoji: '🧽', unitType: 'piece', sortOrder: 1, aliases: ['bartan', 'vim', 'भांडी साबण'], search_keywords: ['dishwash', 'vim', 'bar', 'भांडी'] },
-  { c: 'Home Care',      nameEn: 'Detergent Powder',  nameMr: 'कपडे धुण्याची पावडर', packSize: '1 kg', price:  95, mrp: 110, emoji: '🧼', unitType: 'kg',    sortOrder: 2, aliases: ['surf', 'washing powder', 'निरमा', 'सर्फ'], search_keywords: ['detergent', 'surf', 'powder', 'कपडे'] },
+  { c: 'Home Care',      nameEn: 'Dish Wash Bar',     nameMr: 'भांडी घासण्याची बार', packSize: '1 pc',  price:  20, mrp:  25, unitType: 'piece', sortOrder: 1, aliases: ['bartan', 'vim', 'भांडी साबण'], search_keywords: ['dishwash', 'vim', 'bar', 'भांडी'] },
+  { c: 'Home Care',      nameEn: 'Detergent Powder',  nameMr: 'कपडे धुण्याची पावडर', packSize: '1 kg', price:  95, mrp: 110, unitType: 'kg',    sortOrder: 2, aliases: ['surf', 'washing powder', 'निरमा', 'सर्फ'], search_keywords: ['detergent', 'surf', 'powder', 'कपडे'] },
   // Personal Care
-  { c: 'Personal Care',  nameEn: 'Toothpaste',        nameMr: 'टूथपेस्ट',          packSize: '150 g',  price:  65, mrp:  75, emoji: '🧴', unitType: 'g',     sortOrder: 1, aliases: ['colgate', 'paste', 'टूथपेस्ट', 'दंतमंजन'], search_keywords: ['toothpaste', 'colgate', 'दंतमंजन'] },
-  { c: 'Personal Care',  nameEn: 'Bath Soap',         nameMr: 'आंघोळीचा साबण',     packSize: '100 g',  price:  35, mrp:  40, emoji: '🧼', unitType: 'piece', sortOrder: 2, aliases: ['soap', 'saban', 'साबण', 'lifebuoy', 'lux'], search_keywords: ['soap', 'saban', 'साबण'] },
+  { c: 'Personal Care',  nameEn: 'Toothpaste',        nameMr: 'टूथपेस्ट',          packSize: '150 g',  price:  65, mrp:  75, unitType: 'g',     sortOrder: 1, aliases: ['colgate', 'paste', 'टूथपेस्ट', 'दंतमंजन'], search_keywords: ['toothpaste', 'colgate', 'दंतमंजन'] },
+  { c: 'Personal Care',  nameEn: 'Bath Soap',         nameMr: 'आंघोळीचा साबण',     packSize: '100 g',  price:  35, mrp:  40, unitType: 'piece', sortOrder: 2, aliases: ['soap', 'saban', 'साबण', 'lifebuoy', 'lux'], search_keywords: ['soap', 'saban', 'साबण'] },
   // Stationery
-  { c: 'Stationery',     nameEn: 'Notebook',          nameMr: 'वही',               packSize: '1 pc',   price:  30, mrp:  35, emoji: '📓', unitType: 'piece', sortOrder: 1, aliases: ['vahi', 'book', 'वही'], search_keywords: ['notebook', 'vahi', 'वही'] },
-  { c: 'Stationery',     nameEn: 'Pen Set',           nameMr: 'पेन सेट',           packSize: '5 pc',   price:  25, mrp:  30, emoji: '✏️', unitType: 'pack',  sortOrder: 2, aliases: ['pen', 'ballpen', 'पेन'], search_keywords: ['pen', 'ballpen', 'पेन'] },
+  { c: 'Stationery',     nameEn: 'Notebook',          nameMr: 'वही',               packSize: '1 pc',   price:  30, mrp:  35, unitType: 'piece', sortOrder: 1, aliases: ['vahi', 'book', 'वही'], search_keywords: ['notebook', 'vahi', 'वही'] },
+  { c: 'Stationery',     nameEn: 'Pen Set',           nameMr: 'पेन सेट',           packSize: '5 pc',   price:  25, mrp:  30, unitType: 'pack',  sortOrder: 2, aliases: ['pen', 'ballpen', 'पेन'], search_keywords: ['pen', 'ballpen', 'पेन'] },
 ];
 
 // ─── Main ─────────────────────────────────────────────────────────────────────

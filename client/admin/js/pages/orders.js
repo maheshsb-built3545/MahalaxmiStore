@@ -145,7 +145,7 @@ async function loadOrders(search = searchQuery) {
     if (listEl) {
       listEl.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">⚠️</div>
+          <div class="empty-state-icon"><svg class="icon icon--xl" aria-hidden="true"><use href="/images/icons.svg#warning"></use></svg></div>
           <div class="empty-state-title">ऑर्डर्स लोड करताना त्रुटी / Error loading orders</div>
           <div class="empty-state-desc">${window.esc(err.message)}</div>
           <button type="button" class="btn btn-primary" onclick="loadOrders()">पुन्हा प्रयत्न करा / Retry</button>
@@ -212,7 +212,7 @@ function renderOrdersQueue() {
   if (!filtered.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">📦</div>
+        <div class="empty-state-icon"><svg class="icon icon--xl" aria-hidden="true"><use href="/images/icons.svg#box"></use></svg></div>
         <div class="empty-state-title">कोणतीही ऑर्डर आढळली नाही / No orders found</div>
         <div class="empty-state-desc">निवडलेल्या फिल्टरनुसार ऑर्डर्स उपलब्ध नाहीत.</div>
       </div>
@@ -257,7 +257,7 @@ function renderPaymentBadge(order) {
     bg = '#fee2e2';
   }
 
-  return `<button type="button" onclick="event.stopPropagation(); window.openPaymentActionsModal('${order._id}')" style="cursor:pointer;font-weight:700;color:${color};background:${bg};border:1px solid ${color}40;border-radius:12px;padding:3px 8px;font-size:0.75rem;display:inline-flex;align-items:center;gap:4px;" title="पेमेंट स्थिती बदला / Change Payment Status">${label} ⚙️</button>`;
+  return `<button type="button" onclick="event.stopPropagation(); window.openPaymentActionsModal('${order._id}')" style="cursor:pointer;font-weight:700;color:${color};background:${bg};border:1px solid ${color}40;border-radius:12px;padding:3px 8px;font-size:0.75rem;display:inline-flex;align-items:center;gap:4px;" title="पेमेंट स्थिती बदला / Change Payment Status">${label} <svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#settings"></use></svg></button>`;
 }
 
 function renderActionButtons(order) {
@@ -324,10 +324,10 @@ function renderOrderCardMobile(order) {
         <button type="button" class="btn btn-primary" id="btnAdvance_${order._id}" style="flex:1;" onclick="advanceOrderStatusById('${order._id}', '${next.status}')">
           ${next.label}
         </button>
-      ` : '<span class="text-sm font-semibold" style="color:#16a34a;flex:1;">✓ पूर्ण झाले / Completed</span>'}
+      ` : '<span class="text-sm font-semibold" style="color:#16a34a;flex:1;display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#check"></use></svg> पूर्ण झाले / Completed</span>'}
       ${phone ? `
-        <a href="https://wa.me/91${digits}?text=${encodeURIComponent(statusMsg)}" target="_blank" class="btn btn-secondary" style="min-width:44px;min-height:44px;padding:0 10px;color:#16a34a;" title="WhatsApp Customer">
-          💬
+        <a href="https://wa.me/91${digits}?text=${encodeURIComponent(statusMsg)}" target="_blank" class="btn btn-secondary" style="min-width:44px;min-height:44px;padding:0 10px;color:#16a34a;display:inline-flex;align-items:center;justify-content:center;" title="WhatsApp Customer">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#whatsapp"></use></svg>
         </a>
       ` : ''}
       <button type="button" class="btn btn-secondary" style="min-width:44px;min-height:44px;padding:0 12px;font-size:1.25rem;" onclick="openOrderActionsSheetById('${order._id}')" title="अधिक पर्याय / More Actions">
@@ -374,26 +374,26 @@ function openOrderActionsSheet(order) {
   list.style.padding = '8px 0';
 
   list.innerHTML = `
-    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;" onclick="orderActionSheet_view('${order._id}')">
-      👁️ संपूर्ण ऑर्डर तपशील / View Order Details
+    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;display:inline-flex;align-items:center;gap:8px;" onclick="orderActionSheet_view('${order._id}')">
+      <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#eye"></use></svg> संपूर्ण ऑर्डर तपशील / View Details
     </button>
     ${phone ? `
-      <a href="tel:${phone}" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;">
-        📞 ग्राहकाला कॉल करा / Call Customer (${phone})
+      <a href="tel:${phone}" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;display:inline-flex;align-items:center;gap:8px;">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#phone"></use></svg> ग्राहकाला कॉल करा / Call (${phone})
       </a>
-      <a href="https://wa.me/91${digits}?text=${encodeURIComponent(statusMsg)}" target="_blank" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;color:#16a34a;">
-        💬 WhatsApp वर संदेश पाठवा / WhatsApp Customer
+      <a href="https://wa.me/91${digits}?text=${encodeURIComponent(statusMsg)}" target="_blank" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;color:#16a34a;display:inline-flex;align-items:center;gap:8px;">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp संदेश / WhatsApp
       </a>
     ` : ''}
-    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;" onclick="printThermalBill('${order._id}')">
-      🖨️ थर्मल पावती प्रिंट / Print Slip
+    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;display:inline-flex;align-items:center;gap:8px;" onclick="printThermalBill('${order._id}')">
+      <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#print"></use></svg> थर्मल पावती प्रिंट / Print Slip
     </button>
-    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;" onclick="openPaymentActionsModal('${order._id}')">
-      💳 पेमेंट स्थिती बदला / Payment Actions (${order.paymentStatus || 'pending'})
+    <button type="button" class="btn btn-secondary" style="justify-content:flex-start;min-height:48px;display:inline-flex;align-items:center;gap:8px;" onclick="openPaymentActionsModal('${order._id}')">
+      <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#credit"></use></svg> पेमेंट स्थिती / Payment Actions (${order.paymentStatus || 'pending'})
     </button>
     ${order.status !== 'cancelled' && order.status !== 'delivered' ? `
-      <button type="button" class="btn btn-danger" style="justify-content:flex-start;min-height:48px;margin-top:8px;" onclick="promptCancelOrder('${order._id}')">
-        ❌ ऑर्डर रद्द करा / Cancel Order (Restore Stock)
+      <button type="button" class="btn btn-danger" style="justify-content:flex-start;min-height:48px;margin-top:8px;display:inline-flex;align-items:center;gap:8px;" onclick="promptCancelOrder('${order._id}')">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#close"></use></svg> ऑर्डर रद्द करा (साठा पूर्ववत होईल) / Cancel Order
       </button>
     ` : ''}
   `;
@@ -430,11 +430,11 @@ window.openPaymentActionsModal = (id) => {
       <div><strong>रक्कम / Amount:</strong> ${window.AdminFormat.currency(order.total)}</div>
     </div>
     <div class="flex flex-col gap-2">
-      <button type="button" class="btn btn-primary" style="min-height:48px;" onclick="submitPaymentStatus('${order._id}', 'paid')">
-        ✅ पेमेंट जमा झाले / Mark Paid (Verified)
+      <button type="button" class="btn btn-primary" style="min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;" onclick="submitPaymentStatus('${order._id}', 'paid')">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#check"></use></svg> पेमेंट जमा (खात्री करा) / Mark Paid
       </button>
-      <button type="button" class="btn btn-secondary" style="min-height:48px;" onclick="submitPaymentStatus('${order._id}', 'pending')">
-        ⏳ पेमेंट बाकी / Mark Unpaid (Pending)
+      <button type="button" class="btn btn-secondary" style="min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;" onclick="submitPaymentStatus('${order._id}', 'pending')">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#clock"></use></svg> पेमेंट बाकी / Mark Unpaid
       </button>
     </div>
   `;
@@ -473,7 +473,7 @@ window.submitPaymentStatus = async (id, status) => {
 
 window.promptCancelOrder = async (id) => {
   if (window._activeActionSheet) window._activeActionSheet.close();
-  const reason = prompt('ऑर्डर रद्द करण्याचे कारण प्रविष्ट करा / Enter cancellation reason:\n(उदा. ग्राहकाची विनंती / Customer request, माल उपलब्ध नाही / Out of stock)');
+  const reason = prompt('ऑर्डर रद्द केल्यास साठा पूर्ववत केला जाईल. कारण प्रविष्ट करा / Order cancellation will restore inventory stock. Enter reason:\n(उदा. ग्राहकाची विनंती / Customer request, माल उपलब्ध नाही / Out of stock)');
   if (!reason || !reason.trim()) {
     if (window.AdminToast) window.AdminToast.show('रद्द करण्याचे कारण आवश्यक आहे / Reason is required to cancel', 'warning');
     return;
@@ -514,7 +514,7 @@ async function advanceOrderStatus(order, nextStatus, triggerBtn = null) {
     let note = '';
     if (nextStatus === 'delivered' && order.paymentMethod === 'cod') {
       const confirmed = await window.AdminConfirm({
-        title: '💵 रोख रक्कम जमा (Cash Collected)',
+        title: 'रोख रक्कम जमा (Cash Collected)',
         message: `ग्राहकाकडून ₹${order.total} रोख रक्कम मिळाली आहे का?\nDid you collect ${window.AdminFormat.currency(order.total)} cash from customer?`,
         confirmText: 'होय, जमा झाले / Yes, Collected',
         cancelText: 'रद्द करा / Cancel',
@@ -523,7 +523,7 @@ async function advanceOrderStatus(order, nextStatus, triggerBtn = null) {
       note = 'Cash collected on delivery';
     } else if (nextStatus === 'delivered' && order.paymentMethod === 'udhar') {
       const confirmed = await window.AdminConfirm({
-        title: '📝 उधारी डिलिव्हरी (Udhar Delivery)',
+        title: 'उधारी डिलिव्हरी (Udhar Delivery)',
         message: `या ऑर्डरचे ₹${order.total} ग्राहकाच्या उधारी खात्यावर नोंदवून डिलिव्हरी पूर्ण करावी का?\nConfirm delivery and update customer credit ledger?`,
         confirmText: 'होय, पूर्ण करा / Deliver',
         cancelText: 'रद्द करा / Cancel',
@@ -589,15 +589,15 @@ function openOrderDetail(order) {
     <div style="background:var(--bg-subtle);border-radius:12px;padding:12px;">
       <div class="flex justify-between items-center" style="margin-bottom:6px;">
         <strong style="font-size:0.95rem;">${customerName}</strong>
-        ${phone ? `<a href="tel:${phone}" class="btn btn-sm btn-outline">📞 Call ${phone}</a>` : ''}
+        ${phone ? `<a href="tel:${phone}" class="btn btn-sm btn-outline" style="display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#phone"></use></svg> Call ${phone}</a>` : ''}
       </div>
-      <div class="text-sm text-muted">
-        📍 ${village}${landmark ? ` (जवळ: ${landmark})` : ''}
+      <div class="text-sm text-muted" style="display:flex;align-items:center;gap:4px;">
+        <svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#map-pin"></use></svg> ${village}${landmark ? ` (जवळ: ${landmark})` : ''}
       </div>
       ${phone ? `
         <div style="margin-top:8px;">
-          <button type="button" class="btn btn-sm btn-secondary" onclick="shareOrderWhatsApp('${order._id}')" style="background:#22c55e;color:#fff;border-color:#16a34a;">
-            📲 WhatsApp Customer
+          <button type="button" class="btn btn-sm btn-secondary" onclick="shareOrderWhatsApp('${order._id}')" style="background:#22c55e;color:#fff;border-color:#16a34a;display:inline-flex;align-items:center;gap:6px;">
+            <svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp Customer
           </button>
         </div>
       ` : ''}
@@ -605,7 +605,7 @@ function openOrderDetail(order) {
 
     <!-- Items Pick Checklist -->
     <div>
-      <h3 style="font-size:0.95rem;margin-bottom:8px;">📋 साहित्याची यादी (Items Checklist)</h3>
+      <h3 style="font-size:0.95rem;margin-bottom:8px;display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#list"></use></svg> साहित्याची यादी (Items Checklist)</h3>
       <div class="flex flex-col gap-2">
         ${(order.items || []).map((item, idx) => `
           <div class="flex items-center justify-between text-sm" style="padding:8px 10px;background:#ffffff;border:1px solid var(--border-subtle);border-radius:8px;">
@@ -643,8 +643,8 @@ function openOrderDetail(order) {
 
     <!-- Action Bar -->
     <div class="flex gap-2" style="margin-top:8px;">
-      <button type="button" class="btn btn-secondary flex-1" onclick="printThermalBill('${order._id}')">
-        🖨️ बिल प्रिंट (Thermal Bill)
+      <button type="button" class="btn btn-secondary flex-1" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="printThermalBill('${order._id}')">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#print"></use></svg> बिल प्रिंट (Thermal Bill)
       </button>
       <button type="button" class="btn btn-danger btn-sm" onclick="cancelOrderAction('${order._id}')">
         रद्द करा / Cancel
@@ -744,7 +744,7 @@ window.cancelOrderAction = async (id) => {
       orderDetailSheet.close();
       loadOrders();
       if (window.AdminToast) {
-        window.AdminToast.show('✅ ऑर्डर रद्द करण्यात आली / Order cancelled', 'success');
+        window.AdminToast.show('ऑर्डर रद्द करण्यात आली / Order cancelled', 'success');
       }
     }
   } catch (err) {
@@ -763,7 +763,7 @@ function renderPackingList() {
   if (!packingOrders.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-icon"><svg class="icon icon--xl" aria-hidden="true"><use href="/images/icons.svg#list"></use></svg></div>
         <div class="empty-state-title">पॅक करण्यासाठी ऑर्डर्स नाहीत / All Packed</div>
         <div class="empty-state-desc">सर्व ऑर्डर्स पॅक झाल्या आहेत किंवा नवीन ऑर्डर्स उपलब्ध नाहीत.</div>
       </div>
@@ -799,13 +799,13 @@ function renderPackingList() {
   container.innerHTML = `
     <div class="flex justify-between items-center" style="margin-bottom:16px;">
       <div>
-        <h2 style="font-size:1.15rem;margin:0;">📦 आजची पॅकिंग यादी (${packingOrders.length} ऑर्डर्स)</h2>
+        <h2 style="font-size:1.15rem;margin:0;display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#box"></use></svg> आजची पॅकिंग यादी (${packingOrders.length} ऑर्डर्स)</h2>
         <span class="text-xs text-muted">एकूण ${aggregated.length} प्रकारच्या वस्तू पॅक करायच्या आहेत.</span>
       </div>
       <div class="flex gap-2">
-        <button type="button" class="btn btn-sm btn-secondary" onclick="sharePackingWhatsApp()" style="background:#22c55e;color:#fff;border-color:#16a34a;">📲 WhatsApp</button>
-        <button type="button" class="btn btn-sm btn-secondary" onclick="printPackingSlip()">🖨️ प्रिंट (Print)</button>
-        <button type="button" class="btn btn-sm btn-secondary" onclick="copyPackingText()">📋 कॉपी (Copy)</button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="sharePackingWhatsApp()" style="background:#22c55e;color:#fff;border-color:#16a34a;display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp</button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="printPackingSlip()" style="display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#print"></use></svg> प्रिंट (Print)</button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="copyPackingText()" style="display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#copy"></use></svg> कॉपी (Copy)</button>
       </div>
     </div>
     <div class="flex flex-col gap-2">
@@ -849,13 +849,13 @@ window.copyPackingText = () => {
   const container = document.getElementById('packingListContainer');
   if (!container) return;
   const items = container.querySelectorAll('.flex.items-center.justify-between');
-  const lines = ['📦 महालक्ष्मी किराणा — पॅकिंग यादी:\n'];
+  const lines = ['महालक्ष्मी किराणा — पॅकिंग यादी:\n'];
   items.forEach((item) => {
     const text = item.innerText.replace(/\n+/g, ' ');
     lines.push(`• ${text}`);
   });
   navigator.clipboard.writeText(lines.join('\n')).then(() => {
-    if (window.AdminToast) window.AdminToast.show('📋 पॅकिंग यादी कॉपी केली / Copied to clipboard', 'success');
+    if (window.AdminToast) window.AdminToast.show('पॅकिंग यादी कॉपी केली / Copied to clipboard', 'success');
   });
 };
 
@@ -863,7 +863,7 @@ window.sharePackingWhatsApp = () => {
   const container = document.getElementById('packingListContainer');
   if (!container) return;
   const items = container.querySelectorAll('.flex.items-center.justify-between');
-  const lines = ['📦 *महालक्ष्मी किराणा — पॅकिंग यादी (Packing List)*\n'];
+  const lines = ['*महालक्ष्मी किराणा — पॅकिंग यादी (Packing List)*\n'];
   items.forEach((item) => {
     const text = item.innerText.replace(/\n+/g, ' ').trim();
     lines.push(`• ${text}`);

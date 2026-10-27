@@ -190,7 +190,7 @@ async function copySettlementText() {
   if (!pre) return;
   try {
     await navigator.clipboard.writeText(pre.textContent);
-    alert('📋 हिशोब कॉपी झाला! (Copied to clipboard)');
+    alert('हिशोब कॉपी झाला! (Copied to clipboard)');
   } catch (_) {
     alert('Could not copy text automatically.');
   }

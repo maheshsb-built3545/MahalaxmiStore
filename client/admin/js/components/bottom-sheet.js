@@ -59,7 +59,7 @@ class BottomSheet {
     this.closeBtn = document.createElement('button');
     this.closeBtn.type = 'button';
     this.closeBtn.className = 'btn btn-sm btn-secondary';
-    this.closeBtn.innerHTML = '✕';
+    this.closeBtn.innerHTML = '<svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#close"></use></svg>';
     this.closeBtn.setAttribute('aria-label', 'Close modal');
     this.closeBtn.onclick = () => this.close();
 

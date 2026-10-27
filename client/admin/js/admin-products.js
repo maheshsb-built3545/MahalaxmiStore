@@ -112,12 +112,12 @@ function renderProductRow(p) {
       </td>
       <td style="padding: 0.6rem; text-align: right;">
         <button class="btn-action btn-outline" style="min-width: 50px; padding: 0.3rem 0.5rem; font-size: 0.8rem;" onclick="openEditProductModal('${id}')">
-          ✏️ Edit
+          Edit
         </button>
         ${
           active
-            ? `<button type="button" class="btn-action btn-danger btn-archive-product" style="min-width: 50px; padding: 0.3rem 0.5rem; font-size: 0.8rem; margin-left: 4px;" data-id="${id}" data-name="${nameEn}">
-                🗑️
+            ? `<button type="button" class="btn-action btn-danger btn-archive-product" style="min-width: 50px; padding: 0.3rem 0.5rem; font-size: 0.8rem; margin-left: 4px;" data-id="${id}" data-name="${nameEn}" title="Delete">
+                <svg class="icon icon-sm"><use href="/images/icons.svg#trash"></use></svg>
               </button>`
             : ''
         }
@@ -321,14 +321,14 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('imagePreview').src = res.url;
           document.getElementById('imagePreviewWrap').style.display = 'block';
           uploadStatus.style.color = '#16a34a';
-          uploadStatus.textContent = '✅ Image uploaded to Cloudinary!';
+          uploadStatus.textContent = 'Image uploaded to Cloudinary!';
         } else {
           uploadStatus.style.color = '#dc2626';
-          uploadStatus.textContent = `❌ Upload failed: ${res.message || 'Unknown server error.'}`;
+          uploadStatus.textContent = `Upload failed: ${res.message || 'Unknown server error.'}`;
         }
       } catch (uploadErr) {
         uploadStatus.style.color = '#dc2626';
-        uploadStatus.textContent = `❌ Upload failed: ${uploadErr.message}`;
+        uploadStatus.textContent = `Upload failed: ${uploadErr.message}`;
       }
     });
   }

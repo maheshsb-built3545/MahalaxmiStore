@@ -32,11 +32,11 @@
           </p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button type="button" class="btn btn-secondary" id="btn-push-toggle" style="min-height:44px;font-size:0.82rem;font-weight:600;">
-            🔔 ${t('inbox_push_toggle')}
+          <button type="button" class="btn btn-secondary" id="btn-push-toggle" style="min-height:44px;font-size:0.82rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#bell"></use></svg> ${t('inbox_push_toggle')}
           </button>
-          <button type="button" class="btn btn-primary" id="btn-mark-all-read" style="min-height:44px;font-size:0.82rem;font-weight:700;">
-            ✓ ${t('inbox_mark_all_read')}
+          <button type="button" class="btn btn-primary" id="btn-mark-all-read" style="min-height:44px;font-size:0.82rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#check"></use></svg> ${t('inbox_mark_all_read')}
           </button>
         </div>
       </div>
@@ -44,10 +44,10 @@
       <!-- Filter Chips -->
       <div class="inbox-filters" style="background:var(--surface);padding:10px 14px;border-radius:var(--radius-lg);border:1px solid var(--border);margin-bottom:16px;display:flex;gap:6px;overflow-x:auto;" id="inbox-chips-container">
         <button type="button" class="chip active" data-filter="all">सर्व / All</button>
-        <button type="button" class="chip" data-filter="unread">🔴 न वाचलेले / Unread</button>
-        <button type="button" class="chip" data-filter="orders">📦 ऑर्डर्स / Orders</button>
-        <button type="button" class="chip" data-filter="stock">⚠️ साठा / Stock</button>
-        <button type="button" class="chip" data-filter="udhar">📖 उधारी / Udhar</button>
+        <button type="button" class="chip" data-filter="unread">न वाचलेले / Unread</button>
+        <button type="button" class="chip" data-filter="orders">ऑर्डर्स / Orders</button>
+        <button type="button" class="chip" data-filter="stock">साठा / Stock</button>
+        <button type="button" class="chip" data-filter="udhar">उधारी / Udhar</button>
       </div>
 
       <!-- Notifications Feed Container -->
@@ -217,7 +217,7 @@
   function createGroupHeader(title, count) {
     const div = document.createElement('div');
     div.style.cssText = 'font-size:0.85rem;font-weight:700;color:var(--text-muted);margin:16px 0 8px;padding-left:4px;display:flex;align-items:center;gap:6px;';
-    div.innerHTML = `<span>📅 ${AdminDOM.escape(title)}</span> <span style="font-size:0.75rem;background:var(--bg-muted);padding:2px 6px;border-radius:10px;">${count}</span>`;
+    div.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><svg class="icon icon-sm"><use href="/images/icons.svg#clock"></use></svg> ${AdminDOM.escape(title)}</span> <span style="font-size:0.75rem;background:var(--bg-muted);padding:2px 6px;border-radius:10px;">${count}</span>`;
     return div;
   }
 
@@ -260,18 +260,20 @@
     card.style.cssText = `padding:14px 16px;border-radius:var(--radius-lg);border:1px solid ${isUnread ? 'var(--primary)' : 'var(--border)'};background:${isUnread ? 'var(--surface)' : 'var(--surface)'};margin-bottom:10px;border-left:5px solid ${isUnread ? 'var(--primary)' : 'var(--border)'};position:relative;transition:all 0.15s;`;
 
     // Type icon
-    let icon = '🔔';
-    if (n.type === 'order_new') icon = '🛒';
-    else if (n.type === 'order_status') icon = '🚚';
-    else if (n.type === 'order_cancelled') icon = '❌';
-    else if (n.type === 'low_stock') icon = '⚠️';
-    else if (n.type === 'udhar_request' || n.type === 'udhar_status') icon = '📖';
+    let iconSymbol = 'bell';
+    if (n.type === 'order_new') iconSymbol = 'cart';
+    else if (n.type === 'order_status') iconSymbol = 'truck';
+    else if (n.type === 'order_cancelled') iconSymbol = 'close';
+    else if (n.type === 'low_stock') iconSymbol = 'warning';
+    else if (n.type === 'udhar_request' || n.type === 'udhar_status') iconSymbol = 'book';
 
     const deepLink = getDeepLinkInfo(n);
 
     card.innerHTML = `
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <span style="font-size:1.4rem;line-height:1;margin-top:2px;">${icon}</span>
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--bg-muted);margin-top:2px;flex-shrink:0;">
+          <svg class="icon" style="width:18px;height:18px;"><use href="/images/icons.svg#${iconSymbol}"></use></svg>
+        </span>
         <div style="flex:1;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px;">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">

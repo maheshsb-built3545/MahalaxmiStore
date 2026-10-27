@@ -43,16 +43,16 @@ function show(message, variant = 'info', durationMs = 4000) {
   }
 
   const iconMap = {
-    success: '✅',
-    danger: '❌',
-    error: '❌',
-    warning: '⚠️',
-    info: 'ℹ️',
+    success: 'check',
+    danger: 'close',
+    error: 'close',
+    warning: 'warning',
+    info: 'info',
   };
 
-  // Strip leading emojis from message text to avoid doubled icons (e.g. "❌ ❌ Route not found")
+  // Strip leading emojis from message text to avoid doubled icons
   let cleanMessage = String(message || '').trim();
-  const leadingEmojiRegex = /^([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}✅❌⚠️ℹ️🛑🚨]+)\s*/u;
+  const leadingEmojiRegex = /^([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u2705\u274C\u26A0\u2139\u{1F6D1}\u{1F6A8}]+)\s*/u;
   cleanMessage = cleanMessage.replace(leadingEmojiRegex, '').trim();
 
   const toast = document.createElement('div');
@@ -60,7 +60,8 @@ function show(message, variant = 'info', durationMs = 4000) {
 
   const iconSpan = document.createElement('span');
   iconSpan.className = 'toast-icon';
-  iconSpan.textContent = iconMap[normVariant] || 'ℹ️';
+  const iconName = iconMap[normVariant] || 'info';
+  iconSpan.innerHTML = `<svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#${iconName}"></use></svg>`;
 
   const textSpan = document.createElement('span');
   textSpan.className = 'toast-text';
@@ -70,7 +71,7 @@ function show(message, variant = 'info', durationMs = 4000) {
   const closeBtn = document.createElement('button');
   closeBtn.type = 'button';
   closeBtn.className = 'toast-close-btn';
-  closeBtn.textContent = '✕';
+  closeBtn.innerHTML = `<svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#close"></use></svg>`;
   closeBtn.setAttribute('aria-label', 'Close toast');
   closeBtn.style.background = 'none';
   closeBtn.style.border = 'none';

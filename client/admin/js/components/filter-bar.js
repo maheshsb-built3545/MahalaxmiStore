@@ -32,7 +32,7 @@ class FilterBar {
     this.container.className = 'filter-bar';
     this.container.innerHTML = `
       <div class="filter-search-wrap">
-        <span class="search-icon-left">🔍</span>
+        <span class="search-icon-left"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#search"></use></svg></span>
         <input
           type="search"
           class="filter-search-input"
@@ -41,7 +41,7 @@ class FilterBar {
           autocomplete="off"
           aria-label="Search"
         />
-        <button type="button" class="search-clear-btn" id="filterSearchClear" style="display:none;" aria-label="Clear search">✕</button>
+        <button type="button" class="search-clear-btn" id="filterSearchClear" style="display:none;" aria-label="Clear search"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#close"></use></svg></button>
       </div>
       ${this.chips.length ? `
         <div class="chip-scroll-row" id="filterChipRow">

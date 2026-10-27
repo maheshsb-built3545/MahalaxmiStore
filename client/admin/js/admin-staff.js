@@ -57,7 +57,7 @@ function renderStaffTable(staffList) {
     tr.innerHTML = `
       <td>
         <strong>${escapeHtml(s.name)}</strong>
-        <div style="font-size:0.8rem;color:#64748b;">📞 ${escapeHtml(s.phone)}</div>
+        <div style="font-size:0.8rem;color:#64748b;"><svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> ${escapeHtml(s.phone)}</div>
       </td>
       <td>
         <span style="font-size:0.8rem;text-transform:uppercase;background:#f1f5f9;padding:2px 8px;border-radius:4px;">
@@ -75,7 +75,7 @@ function renderStaffTable(staffList) {
             ${s.blocked ? 'Unblock' : 'Block'}
           </button>
           <button type="button" class="btn btn-secondary btn-sm btn-remove-staff" style="color:#ef4444;border-color:#fca5a5;" data-id="${s._id}" data-name="${escapeHtml(s.name)}">
-            ✕ Remove
+            Remove
           </button>
         </div>
       </td>
@@ -110,7 +110,7 @@ async function handleAddStaff(e) {
     alert(`Error creating staff: ${err.message}`);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = '✓ कर्मचारी खाते तयार करा (Create Staff)';
+    submitBtn.textContent = 'कर्मचारी खाते तयार करा (Create Staff)';
   }
 }
 

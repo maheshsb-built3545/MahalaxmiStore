@@ -40,14 +40,14 @@ const Notification = require('../src/models/Notification');
 const AuditLog = require('../src/models/AuditLog');
 
 const CATEGORIES = [
-  { nameEn: 'Atta & Grains', nameMr: 'आटा आणि धान्य', emoji: '🌾', sortOrder: 1 },
-  { nameEn: 'Dals & Pulses', nameMr: 'डाळ आणि कडधान्ये', emoji: '🫘', sortOrder: 2 },
-  { nameEn: 'Oils & Ghee', nameMr: 'तेल आणि तूप', emoji: '🫒', sortOrder: 3 },
-  { nameEn: 'Dairy & Drinks', nameMr: 'दूध आणि पेये', emoji: '🥛', sortOrder: 4 },
-  { nameEn: 'Spices', nameMr: 'मसाले', emoji: '🌶️', sortOrder: 5 },
-  { nameEn: 'Snacks & Biscuits', nameMr: 'नाश्ता आणि बिस्किटे', emoji: '🍪', sortOrder: 6 },
-  { nameEn: 'Cleaning & Home', nameMr: 'स्वच्छता आणि घरगुती', emoji: '🧽', sortOrder: 7 },
-  { nameEn: 'Personal Care', nameMr: 'वैयक्तिक स्वच्छता', emoji: '🧴', sortOrder: 8 },
+  { nameEn: 'Atta & Grains', nameMr: 'आटा आणि धान्य', iconKey: 'grains', sortOrder: 1 },
+  { nameEn: 'Dals & Pulses', nameMr: 'डाळ आणि कडधान्ये', iconKey: 'dals', sortOrder: 2 },
+  { nameEn: 'Oils & Ghee', nameMr: 'तेल आणि तूप', iconKey: 'oils', sortOrder: 3 },
+  { nameEn: 'Dairy & Drinks', nameMr: 'दूध आणि पेये', iconKey: 'dairy', sortOrder: 4 },
+  { nameEn: 'Spices', nameMr: 'मसाले', iconKey: 'spices', sortOrder: 5 },
+  { nameEn: 'Snacks & Biscuits', nameMr: 'नाश्ता आणि बिस्किटे', iconKey: 'snacks', sortOrder: 6 },
+  { nameEn: 'Cleaning & Home', nameMr: 'स्वच्छता आणि घरगुती', iconKey: 'homecare', sortOrder: 7 },
+  { nameEn: 'Personal Care', nameMr: 'वैयक्तिक स्वच्छता', iconKey: 'personalcare', sortOrder: 8 },
 ];
 
 const PRODUCTS_DEF = [

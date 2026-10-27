@@ -23,14 +23,14 @@
   <div id="app-shell">
     <!-- Top Inventory Tabs -->
     <div class="tab-scroll-row" id="inventoryModeTabs" role="tablist">
-      <button type="button" class="btn btn-secondary active" id="tabBtn_stock-in" style="border-radius:10px;">
-        📥 स्टॉक भरा (Stock In)
+      <button type="button" class="btn btn-secondary active" id="tabBtn_stock-in" style="border-radius:10px;display:inline-flex;align-items:center;gap:6px;">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#inbox"></use></svg> स्टॉक भरा (Stock In)
       </button>
-      <button type="button" class="btn btn-secondary" id="tabBtn_alerts" style="border-radius:10px;">
-        ⚠️ इशारे (Alerts)
+      <button type="button" class="btn btn-secondary" id="tabBtn_alerts" style="border-radius:10px;display:inline-flex;align-items:center;gap:6px;">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#warning"></use></svg> इशारे (Alerts)
       </button>
-      <button type="button" class="btn btn-secondary" id="tabBtn_log" style="border-radius:10px;">
-        📝 नोंदवही (Log & Adjust)
+      <button type="button" class="btn btn-secondary" id="tabBtn_log" style="border-radius:10px;display:inline-flex;align-items:center;gap:6px;">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#file-text"></use></svg> नोंदवही (Log & Adjust)
       </button>
     </div>
 
@@ -39,7 +39,7 @@
       <!-- Search & Barcode Scan Bar -->
       <div style="display:flex;gap:8px;margin-bottom:12px;">
         <div class="filter-search-wrap" style="flex:1;">
-          <span class="search-icon-left">🔍</span>
+          <span class="search-icon-left"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#search"></use></svg></span>
           <input
             type="search"
             class="filter-search-input"
@@ -49,8 +49,8 @@
             aria-label="Search product to receive"
           />
         </div>
-        <button type="button" class="btn btn-secondary" id="cameraScanBtn" title="Scan Barcode with Camera" style="flex-shrink:0;">
-          📷 बारकोड
+        <button type="button" class="btn btn-secondary" id="cameraScanBtn" title="Scan Barcode with Camera" style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#camera"></use></svg> बारकोड
         </button>
       </div>
 
@@ -73,8 +73,8 @@
       <div id="receiveCartContainer" style="margin-bottom:16px;"></div>
 
       <!-- Submit Receive Button -->
-      <button type="button" class="btn btn-primary btn-lg w-full" id="submitReceiveCartBtn" onclick="submitBatchStockIn()" disabled>
-        ✅ सर्व साठा जतन करा (Save All Stock)
+      <button type="button" class="btn btn-primary btn-lg w-full" id="submitReceiveCartBtn" onclick="submitBatchStockIn()" disabled style="display:inline-flex;align-items:center;justify-content:center;gap:8px;">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#check"></use></svg> सर्व साठा जतन करा (Save All Stock)
       </button>
     </div>
 

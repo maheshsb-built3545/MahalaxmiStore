@@ -109,18 +109,18 @@ async function generatePackingList() {
       <div class="printable-card" style="background: #ffffff; border: 1px solid var(--admin-border); border-radius: var(--admin-radius); padding: 1.25rem; margin-top: 1rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--admin-border); padding-bottom: 0.75rem; margin-bottom: 1rem;">
           <div>
-            <h2 style="font-size: 1.2rem; font-weight: 800; color: #0f172a;">📦 Packing Checklist / पॅकिंग यादी</h2>
+            <h2 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;"><svg class="icon"><use href="/images/icons.svg#box"></use></svg> Packing Checklist / पॅकिंग यादी</h2>
             <div style="font-size: 0.8rem; color: var(--admin-muted);">Generated on: ${nowIST} | Orders (${ordersCount}): ${orderNumbers.join(', ')}</div>
           </div>
-          <button class="btn-action btn-primary no-print" onclick="window.print()">
-            🖨️ Print Packing List
+          <button class="btn-action btn-primary no-print" onclick="window.print()" style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="icon"><use href="/images/icons.svg#print"></use></svg> Print Packing List
           </button>
         </div>
 
         <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
           <thead>
             <tr style="background: #f8fafc; border-bottom: 2px solid var(--admin-border);">
-              <th style="padding: 0.6rem; text-align: left; width: 40px;">✓</th>
+              <th style="padding: 0.6rem; text-align: left; width: 40px;">#</th>
               <th style="padding: 0.6rem; text-align: left;">Item Name / वस्तू</th>
               <th style="padding: 0.6rem; text-align: left;">Pack Size</th>
               <th style="padding: 0.6rem; text-align: right;">Total Qty</th>

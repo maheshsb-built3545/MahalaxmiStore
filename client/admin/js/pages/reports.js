@@ -66,7 +66,7 @@
         </div>
         <div style="display:flex;gap:8px;">
           <button type="button" class="btn btn-primary" id="btn-daily-settlement" style="min-height:44px;font-weight:700;">
-            📋 आजचा हिशोब / Daily Settlement
+            <svg class="icon"><use href="/images/icons.svg#list"></use></svg> आजचा हिशोब / Daily Settlement
           </button>
         </div>
       </div>
@@ -99,14 +99,14 @@
 
       <!-- Tabs Navigation -->
       <div class="tabs-container" style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;gap:8px;">
-        <button type="button" class="tab-btn active" data-tab="sales" style="padding:10px 16px;font-weight:700;font-size:0.85rem;background:none;border:none;border-bottom:2px solid var(--primary);color:var(--primary);cursor:pointer;">
-          📈 विक्री व नफा / Sales & Profit
+        <button type="button" class="tab-btn active" data-tab="sales" style="padding:10px 16px;font-weight:700;font-size:0.85rem;background:none;border:none;border-bottom:2px solid var(--primary);color:var(--primary);cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#chart"></use></svg> विक्री व नफा / Sales & Profit
         </button>
-        <button type="button" class="tab-btn" data-tab="valuation" style="padding:10px 16px;font-weight:600;font-size:0.85rem;background:none;border:none;color:var(--text-muted);cursor:pointer;">
-          🏬 साठा मूल्य व उधारी / Valuation & Aging
+        <button type="button" class="tab-btn" data-tab="valuation" style="padding:10px 16px;font-weight:600;font-size:0.85rem;background:none;border:none;color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#store"></use></svg> साठा मूल्य व उधारी / Valuation & Aging
         </button>
-        <button type="button" class="tab-btn" data-tab="export" style="padding:10px 16px;font-weight:600;font-size:0.85rem;background:none;border:none;color:var(--text-muted);cursor:pointer;">
-          📥 CSV डाऊनलोड / Exports
+        <button type="button" class="tab-btn" data-tab="export" style="padding:10px 16px;font-weight:600;font-size:0.85rem;background:none;border:none;color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#box"></use></svg> CSV डाऊनलोड / Exports
         </button>
       </div>
 
@@ -276,8 +276,8 @@
     container.innerHTML = `
       ${missingCosts > 0 ? `
         <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-md);padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div style="font-size:0.85rem;color:#b45309;font-weight:600;">
-            ⚠️ <strong>${missingCosts} विक्री झालेल्या वस्तूंना खरेदी किंमत (Cost Price) जोडलेली नाही!</strong> अचूक नफ्यासाठी कॅटलॉगमध्ये खरेदी दर अपडेट करा.
+          <div style="font-size:0.85rem;color:#b45309;font-weight:600;display:flex;align-items:center;gap:6px;">
+            <svg class="icon" style="color:var(--warning);"><use href="/images/icons.svg#warning"></use></svg> <strong>${missingCosts} विक्री झालेल्या वस्तूंना खरेदी किंमत (Cost Price) जोडलेली नाही!</strong> अचूक नफ्यासाठी कॅटलॉगमध्ये खरेदी दर अपडेट करा.
           </div>
           <a href="catalog.html" class="btn btn-secondary btn-sm" style="min-height:36px;font-size:0.78rem;">
             खरेदी दर भरा / Update Cost
@@ -289,8 +289,8 @@
       <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
           <div>
-            <h3 style="font-size:1.05rem;font-weight:700;margin:0;color:var(--text);">
-              📈 ${t('reports_daily_trend')}
+            <h3 style="font-size:1.05rem;font-weight:700;margin:0;color:var(--text);display:flex;align-items:center;gap:6px;">
+              <svg class="icon"><use href="/images/icons.svg#chart"></use></svg> ${t('reports_daily_trend')}
             </h3>
             <p style="font-size:0.78rem;color:var(--text-muted);margin:2px 0 0;">
               निवडलेल्या कालावधीतील दैनिक विक्री कल / Daily net revenue trend
@@ -304,8 +304,8 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" style="margin-bottom:16px;">
         <!-- Category Breakdown -->
         <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
-          <h3 style="font-size:1rem;font-weight:700;margin:0 0 12px;color:var(--text);">
-            🏷️ ${t('reports_category_profit')}
+          <h3 style="font-size:1rem;font-weight:700;margin:0 0 12px;color:var(--text);display:flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#tag"></use></svg> ${t('reports_category_profit')}
           </h3>
           ${categories.length === 0 ? `
             <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:0.85rem;">माहिती उपलब्ध नाही / No data</div>
@@ -377,8 +377,8 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" style="margin-bottom:16px;">
         <!-- Warehouse Stock Valuation -->
         <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
-          <h3 style="font-size:1.05rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-            🏬 ${t('reports_stock_valuation')}
+          <h3 style="font-size:1.05rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#store"></use></svg> ${t('reports_stock_valuation')}
           </h3>
           <p style="font-size:0.8rem;color:var(--text-muted);margin:0 0 14px;">
             खरेदी दरानुसार गोदाम साठ्याचे वास्तव मूल्यांकन / Real cost-based warehouse valuation
@@ -429,8 +429,8 @@
 
         <!-- Udhar Aging Analysis -->
         <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
-          <h3 style="font-size:1.05rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-            ⏳ ${t('reports_udhar_aging')}
+          <h3 style="font-size:1.05rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#clock"></use></svg> ${t('reports_udhar_aging')}
           </h3>
           <p style="font-size:0.8rem;color:var(--text-muted);margin:0 0 14px;">
             उधारी वसुली मुदत विश्लेषण / Credit collection aging timeline
@@ -483,8 +483,8 @@
   function renderExportsTab(container) {
     container.innerHTML = `
       <div class="card" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
-        <h3 style="font-size:1.15rem;font-weight:800;margin:0 0 6px;color:var(--text);">
-          📥 अधिकृत CSV डाऊनलोड (Authenticated CSV Exports)
+        <h3 style="font-size:1.15rem;font-weight:800;margin:0 0 6px;color:var(--text);display:flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#box"></use></svg> अधिकृत CSV डाऊनलोड (Authenticated CSV Exports)
         </h3>
         <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 16px;">
           Bearer Token द्वारे सुरक्षितपणे डेटा Excel / Sheets मध्ये वापरण्यासाठी डाउनलोड करा.
@@ -493,43 +493,43 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;background:var(--bg-muted);display:flex;flex-direction:column;justify-content:space-between;gap:12px;">
             <div>
-              <h4 style="font-size:1rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-                📦 ${t('reports_export_orders')}
+              <h4 style="font-size:1rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+                <svg class="icon icon-sm"><use href="/images/icons.svg#box"></use></svg> ${t('reports_export_orders')}
               </h4>
               <p style="font-size:0.8rem;color:var(--text-muted);margin:0;">
                 सर्व ऑर्डर्स, ग्राहक नाव, गाव, रक्कम, पेमेंट मोड आणि स्थिती.
               </p>
             </div>
             <button type="button" class="btn btn-primary" id="btn-dl-orders-csv" style="min-height:44px;font-weight:700;">
-              📥 Orders CSV डाऊनलोड
+              <svg class="icon"><use href="/images/icons.svg#box"></use></svg> Orders CSV डाऊनलोड
             </button>
           </div>
 
           <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;background:var(--bg-muted);display:flex;flex-direction:column;justify-content:space-between;gap:12px;">
             <div>
-              <h4 style="font-size:1rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-                📋 ${t('reports_export_stock')}
+              <h4 style="font-size:1rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+                <svg class="icon icon-sm"><use href="/images/icons.svg#list"></use></svg> ${t('reports_export_stock')}
               </h4>
               <p style="font-size:0.8rem;color:var(--text-muted);margin:0;">
                 स्टॉक आवक, जावक, फेरफार आणि बॅलन्स नोंदी (Stock Log).
               </p>
             </div>
             <button type="button" class="btn btn-primary" id="btn-dl-stock-csv" style="min-height:44px;font-weight:700;">
-              📥 Stock Log CSV डाऊनलोड
+              <svg class="icon"><use href="/images/icons.svg#box"></use></svg> Stock Log CSV डाऊनलोड
             </button>
           </div>
 
           <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;background:var(--bg-muted);display:flex;flex-direction:column;justify-content:space-between;gap:12px;">
             <div>
-              <h4 style="font-size:1rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-                📖 ${t('reports_export_udhar')}
+              <h4 style="font-size:1rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+                <svg class="icon icon-sm"><use href="/images/icons.svg#book"></use></svg> ${t('reports_export_udhar')}
               </h4>
               <p style="font-size:0.8rem;color:var(--text-muted);margin:0;">
                 उधारी खरेदी, जमा पावती आणि प्रत्येक ग्राहकाची शिल्लक वही.
               </p>
             </div>
             <button type="button" class="btn btn-primary" id="btn-dl-udhar-csv" style="min-height:44px;font-weight:700;">
-              📥 Udhar CSV डाऊनलोड
+              <svg class="icon"><use href="/images/icons.svg#box"></use></svg> Udhar CSV डाऊनलोड
             </button>
           </div>
         </div>
@@ -560,8 +560,8 @@
         const modalContent = document.createElement('div');
         modalContent.innerHTML = `
           <div style="padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:12px;">
-            <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);">
-              📋 आजचा दैनिक हिशोब / Daily Settlement
+            <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);display:flex;align-items:center;gap:6px;">
+              <svg class="icon"><use href="/images/icons.svg#list"></use></svg> आजचा दैनिक हिशोब / Daily Settlement
             </h3>
             <p style="font-size:0.8rem;color:var(--text-muted);margin:3px 0 0;">
               आजच्या सर्व व्यवहारांचा संक्षेप (IST) / Today's shop closure settlement
@@ -572,10 +572,10 @@
 
           <div style="display:flex;gap:8px;">
             <button type="button" class="btn btn-secondary" id="btn-copy-settlement" style="flex:1;min-height:44px;">
-              📋 कॉपी करा / Copy Text
+              <svg class="icon"><use href="/images/icons.svg#copy"></use></svg> कॉपी करा / Copy Text
             </button>
-            <a href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" class="btn btn-primary" id="btn-share-settlement" style="flex:1;min-height:44px;display:inline-flex;align-items:center;justify-content:center;background:#15803d;border-color:#15803d;text-decoration:none;font-weight:700;">
-              📲 WhatsApp शेअर
+            <a href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" class="btn btn-primary" id="btn-share-settlement" style="flex:1;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#15803d;border-color:#15803d;text-decoration:none;font-weight:700;">
+              <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> WhatsApp शेअर
             </a>
           </div>
         `;

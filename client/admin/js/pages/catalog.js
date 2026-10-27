@@ -18,6 +18,25 @@ let stockAdjustSheet = null;
 let editingProductId = null;
 let editingCategoryId = null;
 
+function getCatIconKey(c) {
+  if (c && c.iconKey) return c.iconKey;
+  const name = ((c && (c.nameMr || c.nameEn)) || '').toLowerCase();
+  if (name.includes('धान्य') || name.includes('आटा') || name.includes('atta') || name.includes('grain')) return 'wheat';
+  if (name.includes('डाळ') || name.includes('कडधान्य') || name.includes('dal') || name.includes('pulse')) return 'beans';
+  if (name.includes('तेल') || name.includes('तूप') || name.includes('oil') || name.includes('ghee')) return 'oil';
+  if (name.includes('दूध') || name.includes('पेये') || name.includes('dairy') || name.includes('drink') || name.includes('beverage')) return 'milk';
+  if (name.includes('मसाले') || name.includes('spice') || name.includes('तिखट') || name.includes('मिरची')) return 'chilli';
+  if (name.includes('नाश्ता') || name.includes('बिस्किट') || name.includes('snack') || name.includes('biscuit')) return 'cookie';
+  if (name.includes('स्वच्छता') || name.includes('घरगुती') || name.includes('भांडी') || name.includes('साबण') || name.includes('home') || name.includes('clean')) return 'sponge';
+  if (name.includes('वैयक्तिक') || name.includes('काळजी') || name.includes('personal')) return 'sparkles';
+  if (name.includes('स्टेशनरी') || name.includes('वही') || name.includes('stationery') || name.includes('pen') || name.includes('book')) return 'book';
+  return 'box';
+}
+function renderCatIconSvg(c, cls = 'icon--sm') {
+  const k = getCatIconKey(c);
+  return `<svg class="icon ${cls}" aria-hidden="true"><use href="/images/icons.svg#${k}"></use></svg>`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   window.shell = new window.AdminShell({
     activeRoute: 'catalog',
@@ -134,7 +153,7 @@ function renderCategoryChips() {
       const count = allProducts.filter((p) => p.categoryId && (p.categoryId._id === c._id || p.categoryId === c._id)).length;
       return `
         <button type="button" class="chip ${activeCategoryFilter === c._id ? 'active' : ''}" data-cat-id="${c._id}">
-          <span>${c.emoji || '🏷️'} ${window.esc(c.nameMr || c.nameEn)} (${count})</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;">${renderCatIconSvg(c, 'icon--xs')} ${window.esc(c.nameMr || c.nameEn)} (${count})</span>
         </button>
       `;
     }).join('')}
@@ -174,10 +193,12 @@ function renderProductsView() {
   if (!filtered.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">🏷️</div>
+        <div class="empty-state-icon" style="margin-bottom:8px;"><svg class="icon icon--2xl" aria-hidden="true"><use href="/images/icons.svg#tag"></use></svg></div>
         <div class="empty-state-title">कोणतेही उत्पादन सापडले नाही / No products found</div>
         <div class="empty-state-desc">शोध संज्ञा बदला किंवा नवीन उत्पादन जोडा.</div>
-        <button type="button" class="btn btn-primary" onclick="openProductModal()">➕ नवीन उत्पादन जोडा</button>
+        <button type="button" class="btn btn-primary" onclick="openProductModal()" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#plus"></use></svg> नवीन उत्पादन जोडा
+        </button>
       </div>
     `;
     return;
@@ -214,7 +235,7 @@ function renderProductsView() {
         label: 'साठा / Stock',
         render: (v, p) => `
           <button type="button" class="badge ${(v ?? 0) === 0 ? 'badge-danger' : (v <= (p.reorderLevel ?? 5) ? 'badge-warning' : 'badge-success')}" style="cursor:pointer;border:none;font-size:0.85rem;" onclick="openStockAdjustSheet('${p._id}')" title="साठा बदला / Adjust Stock">
-            ${v} ${p.unitType || 'piece'} ✏️
+            ${v} ${p.unitType || 'piece'}
           </button>
         `,
       },
@@ -223,7 +244,7 @@ function renderProductsView() {
         label: 'उपलब्ध / Available',
         render: (flag, p) => `
           <button type="button" class="btn btn-sm ${flag ? 'btn-danger' : 'btn-outline'}" onclick="toggleProductAvailability('${p._id}', ${Boolean(flag)})">
-            ${flag ? '🚫 बंद / Out' : '✅ सुरू / In Stock'}
+            ${flag ? 'बंद / Out' : 'सुरू / In Stock'}
           </button>
         `,
       },
@@ -232,8 +253,8 @@ function renderProductsView() {
         label: 'कृती / Action',
         render: (_, p) => `
           <div style="display:flex;gap:6px;">
-            <button type="button" class="btn btn-sm btn-secondary" onclick="openProductModal('${p._id}')">✏️ Edit</button>
-            <button type="button" class="btn btn-sm btn-outline" onclick="openStockAdjustSheet('${p._id}')" title="साठा / Stock">📦</button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="openProductModal('${p._id}')" style="display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#edit"></use></svg> Edit</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="openStockAdjustSheet('${p._id}')" title="साठा / Stock" style="display:inline-flex;align-items:center;justify-content:center;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#box"></use></svg></button>
           </div>
         `,
       },
@@ -267,14 +288,14 @@ function renderProductCardMobile(p) {
     <div class="item-card-footer flex justify-between items-center" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border-subtle);">
       <div style="display:flex;align-items:center;gap:6px;">
         <button type="button" class="badge ${isOut ? 'badge-danger' : isLow ? 'badge-warning' : 'badge-success'}" style="cursor:pointer;border:none;padding:6px 10px;" onclick="openStockAdjustSheet('${p._id}')" title="साठा बदला / Adjust Stock">
-          ${isOut ? 'साठा संपला ✏️' : `${p.stockQuantity} ${p.unitType || 'pcs'} ✏️`}
+          ${isOut ? 'साठा संपला' : `${p.stockQuantity} ${p.unitType || 'pcs'}`}
         </button>
         <button type="button" class="btn btn-sm ${p.unavailableFlag ? 'btn-danger' : 'btn-outline'}" onclick="toggleProductAvailability('${p._id}', ${Boolean(p.unavailableFlag)})">
-          ${p.unavailableFlag ? '🚫 बंद' : '✅ चालू'}
+          ${p.unavailableFlag ? 'बंद' : 'चालू'}
         </button>
       </div>
-      <button type="button" class="btn btn-sm btn-secondary" onclick="openProductModal('${p._id}')">
-        ✏️ बदला (Edit)
+      <button type="button" class="btn btn-sm btn-secondary" onclick="openProductModal('${p._id}')" style="display:inline-flex;align-items:center;gap:4px;">
+        <svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#edit"></use></svg> बदला (Edit)
       </button>
     </div>
   `;
@@ -321,9 +342,9 @@ window.openStockAdjustSheet = (productId) => {
     <div>
       <label class="form-label">कृती प्रकार निवडा (Action Type)</label>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <button type="button" class="btn btn-secondary active" id="btnModeIn" onclick="setAdjustMode('in')">📥 साठा वाढवा</button>
-        <button type="button" class="btn btn-secondary" id="btnModeOut" onclick="setAdjustMode('out')">📉 साठा कमी</button>
-        <button type="button" class="btn btn-secondary" id="btnModeSet" onclick="setAdjustMode('set')">✏️ अचूक संख्या</button>
+        <button type="button" class="btn btn-secondary active" id="btnModeIn" onclick="setAdjustMode('in')" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#inbox"></use></svg> साठा वाढवा</button>
+        <button type="button" class="btn btn-secondary" id="btnModeOut" onclick="setAdjustMode('out')" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#minus"></use></svg> साठा कमी</button>
+        <button type="button" class="btn btn-secondary" id="btnModeSet" onclick="setAdjustMode('set')" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#edit"></use></svg> अचूक संख्या</button>
       </div>
     </div>
 
@@ -351,12 +372,12 @@ window.openStockAdjustSheet = (productId) => {
 
       <div class="modal-footer" style="padding-top:8px;">
         <button type="button" class="btn btn-secondary" onclick="stockAdjustSheet.close()">रद्द करा / Cancel</button>
-        <button type="submit" class="btn btn-primary" id="saveQuickAdjustBtn">✅ साठा जतन करा (Save)</button>
+        <button type="submit" class="btn btn-primary" id="saveQuickAdjustBtn">साठा जतन करा (Save)</button>
       </div>
     </form>
   `;
 
-  stockAdjustSheet.setTitle(`📦 साठा दुरुस्ती — ${window.esc(p.nameMr || p.nameEn)}`);
+  stockAdjustSheet.setTitle(`साठा दुरुस्ती — ${window.esc(p.nameMr || p.nameEn)}`);
   stockAdjustSheet.setContent(body);
   stockAdjustSheet.open();
 
@@ -427,12 +448,12 @@ window.openStockAdjustSheet = (productId) => {
       stockAdjustSheet.close();
       loadCatalogData();
       if (window.AdminToast) {
-        window.AdminToast.show('✅ साठा यशस्वीरीत्या अद्यतनित केला! / Stock updated', 'success');
+        window.AdminToast.show('साठा यशस्वीरीत्या अद्यतनित केला! / Stock updated', 'success');
       }
     } catch (err) {
       if (window.AdminToast) window.AdminToast.show('Error: ' + err.message, 'danger');
       saveBtn.disabled = false;
-      saveBtn.textContent = '✅ साठा जतन करा (Save)';
+      saveBtn.textContent = 'साठा जतन करा (Save)';
     }
   };
 };
@@ -492,8 +513,8 @@ window.openProductModal = (id = null) => {
           />
           <div style="flex:1;">
             <input type="file" id="formImageFile" accept="image/*" style="display:none;" />
-            <button type="button" class="btn btn-sm btn-secondary" id="btnUploadImageTrigger">
-              📷 फोटो निवडा / कॅमेरा (Upload Image)
+            <button type="button" class="btn btn-sm btn-secondary" id="btnUploadImageTrigger" style="display:inline-flex;align-items:center;gap:6px;">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#camera"></use></svg> फोटो निवडा / कॅमेरा
             </button>
             <div id="imageUploadStatus" class="text-xs text-muted" style="margin-top:4px;">फोन कॅमेरा फोटो आपोआप कॉम्प्रेस केला जाईल.</div>
           </div>
@@ -529,7 +550,7 @@ window.openProductModal = (id = null) => {
           <label class="form-label">वर्ग (Category) *</label>
           <select class="form-select" id="formCategory" required>
             <option value="">-- निवडा --</option>
-            ${allCategories.map((c) => `<option value="${c._id}" ${p && (p.categoryId?._id === c._id || p.categoryId === c._id) ? 'selected' : ''}>${c.emoji || '🏷️'} ${window.esc(c.nameMr || c.nameEn)}</option>`).join('')}
+            ${allCategories.map((c) => `<option value="${c._id}" ${p && (p.categoryId?._id === c._id || p.categoryId === c._id) ? 'selected' : ''}>${window.esc(c.nameMr || c.nameEn)}</option>`).join('')}
           </select>
         </div>
       </div>
@@ -580,20 +601,20 @@ window.openProductModal = (id = null) => {
       <div class="modal-footer" style="padding:12px 0 0;margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
         <div>
           ${p ? `
-            <button type="button" class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="deleteProductPrompt('${p._id}', '${window.esc(p.nameEn)}')">
-              🗑️ हटवा (Delete)
+            <button type="button" class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#fca5a5;display:inline-flex;align-items:center;gap:4px;" onclick="deleteProductPrompt('${p._id}', '${window.esc(p.nameEn)}')">
+              <svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#trash"></use></svg> हटवा (Delete)
             </button>
           ` : ''}
         </div>
         <div style="display:flex;gap:8px;">
           <button type="button" class="btn btn-secondary" onclick="productModal.close()">रद्द करा / Cancel</button>
-          <button type="submit" class="btn btn-primary" id="saveProductBtn">✅ जतन करा (Save Product)</button>
+          <button type="submit" class="btn btn-primary" id="saveProductBtn">जतन करा (Save Product)</button>
         </div>
       </div>
     </form>
   `;
 
-  productModal.setTitle(id ? '✏️ उत्पादन बदला (Edit Product)' : '➕ नवीन उत्पादन जोडा (Add Product)');
+  productModal.setTitle(id ? 'उत्पादन बदला (Edit Product)' : 'नवीन उत्पादन जोडा (Add Product)');
   productModal.setContent(body);
   productModal.open();
 
@@ -631,12 +652,12 @@ window.openProductModal = (id = null) => {
         if (res.success && res.url) {
           urlInput.value = res.url;
           previewImg.src = res.url;
-          if (statusEl) statusEl.textContent = '✅ फोटो अपलोड यशस्वी! / Uploaded to Cloudinary';
+          if (statusEl) statusEl.textContent = 'फोटो अपलोड यशस्वी! / Uploaded to Cloudinary';
         } else {
           throw new Error(res.message || 'Upload failed');
         }
       } catch (err) {
-        if (statusEl) statusEl.textContent = `❌ अपलोड अयशस्वी: ${err.message}`;
+        if (statusEl) statusEl.textContent = `अपलोड अयशस्वी: ${err.message}`;
       } finally {
         if (triggerBtn) triggerBtn.disabled = false;
       }
@@ -690,7 +711,7 @@ window.openProductModal = (id = null) => {
       productModal.close();
       loadCatalogData();
       if (window.AdminToast) {
-        window.AdminToast.show('✅ उत्पादन यशस्वीरीत्या जतन झाले!', 'success');
+        window.AdminToast.show('उत्पादन यशस्वीरीत्या जतन झाले!', 'success');
       }
     } catch (err) {
       alert(`Save Error: ${err.message}`);
@@ -730,11 +751,11 @@ function renderCategoriesView() {
   container.innerHTML = `
     <div class="flex justify-between items-center" style="margin-bottom:16px;">
       <div>
-        <h2 style="font-size:1.15rem;margin:0;">🏷️ वर्ग व्यवस्थापन (Categories)</h2>
+        <h2 style="font-size:1.15rem;margin:0;display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--md" aria-hidden="true"><use href="/images/icons.svg#tag"></use></svg> वर्ग व्यवस्थापन (Categories)</h2>
         <span class="text-xs text-muted">क्रम बदलण्यासाठी बाण (↑ / ↓) वापरा. Storefront वर याच क्रमाने दिसेल.</span>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="openCategoryModal()">
-        ➕ नवीन वर्ग (Add Category)
+      <button type="button" class="btn btn-sm btn-primary" onclick="openCategoryModal()" style="display:inline-flex;align-items:center;gap:6px;">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#plus"></use></svg> नवीन वर्ग (Add Category)
       </button>
     </div>
     <div class="flex flex-col gap-2" id="categoriesListTarget">
@@ -745,7 +766,7 @@ function renderCategoriesView() {
         return `
           <div class="flex items-center justify-between" style="padding:12px 14px;background:#ffffff;border:1px solid var(--border-subtle);border-radius:12px;${!isActive ? 'opacity:0.6;background:#f8fafc;' : ''}">
             <div style="display:flex;align-items:center;gap:12px;">
-              <span style="font-size:1.5rem;">${c.emoji || '🏷️'}</span>
+              <span style="display:inline-flex;align-items:center;">${renderCatIconSvg(c, 'icon--lg')}</span>
               <div>
                 <strong style="font-size:1rem;">${window.esc(c.nameMr || c.nameEn)}</strong>
                 <div class="text-xs text-muted">${window.esc(c.nameEn)} • ${prodCount} उत्पादने (Products)</div>
@@ -755,8 +776,8 @@ function renderCategoriesView() {
             <div style="display:flex;align-items:center;gap:6px;">
               <button type="button" class="btn btn-sm btn-secondary" onclick="moveCategory(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="वर हलवा / Move Up">↑</button>
               <button type="button" class="btn btn-sm btn-secondary" onclick="moveCategory(${idx}, 1)" ${idx === allCategories.length - 1 ? 'disabled' : ''} title="खाली हलवा / Move Down">↓</button>
-              <button type="button" class="btn btn-sm btn-outline" onclick="openCategoryModal('${c._id}')" title="बदला / Edit">✏️</button>
-              <button type="button" class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="deleteCategoryPrompt('${c._id}', '${window.esc(c.nameMr || c.nameEn)}', ${prodCount})" title="हटवा / Delete">🗑️</button>
+              <button type="button" class="btn btn-sm btn-outline" onclick="openCategoryModal('${c._id}')" title="बदला / Edit" style="display:inline-flex;align-items:center;justify-content:center;"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#edit"></use></svg></button>
+              <button type="button" class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#fca5a5;display:inline-flex;align-items:center;justify-content:center;" onclick="deleteCategoryPrompt('${c._id}', '${window.esc(c.nameMr || c.nameEn)}', ${prodCount})" title="हटवा / Delete"><svg class="icon icon--xs" aria-hidden="true"><use href="/images/icons.svg#trash"></use></svg></button>
             </div>
           </div>
         `;
@@ -778,7 +799,7 @@ window.moveCategory = async (index, delta) => {
 
   try {
     await Promise.all(allCategories.map((c) =>
-      window.AdminAPI.put(`/admin/categories/${c._id}`, { sortOrder: c.sortOrder, nameEn: c.nameEn, nameMr: c.nameMr, emoji: c.emoji })
+      window.AdminAPI.put(`/admin/categories/${c._id}`, { sortOrder: c.sortOrder, nameEn: c.nameEn, nameMr: c.nameMr, iconKey: c.iconKey })
     ));
     if (window.AdminToast) {
       window.AdminToast.show('वर्गांचा क्रम जतन केला / Order saved', 'success', 1500);
@@ -794,8 +815,20 @@ window.openCategoryModal = (id = null) => {
   body.innerHTML = `
     <form id="categoryEditForm" class="flex flex-col gap-3">
       <div>
-        <label class="form-label">इमोजी (Emoji Icon) *</label>
-        <input type="text" class="form-input" id="formCatEmoji" value="${c?.emoji || '🏷️'}" style="font-size:1.5rem;width:80px;text-align:center;" required />
+        <label class="form-label">वर्ग चिन्ह (Category Icon) *</label>
+        <select class="form-select" id="formCatIconKey" required>
+          <option value="grains" ${(c?.iconKey === 'grains' || c?.iconKey === 'wheat') ? 'selected' : ''}>धान्य व आटा (Atta & Grains)</option>
+          <option value="dals" ${(c?.iconKey === 'dals' || c?.iconKey === 'beans') ? 'selected' : ''}>डाळी व कडधान्ये (Dals & Pulses)</option>
+          <option value="oils" ${(c?.iconKey === 'oils' || c?.iconKey === 'oil') ? 'selected' : ''}>तेल व तूप (Oils & Ghee)</option>
+          <option value="dairy" ${(c?.iconKey === 'dairy' || c?.iconKey === 'milk') ? 'selected' : ''}>दूध व पेये (Dairy & Drinks)</option>
+          <option value="spices" ${(c?.iconKey === 'spices' || c?.iconKey === 'chilli') ? 'selected' : ''}>मसाले (Spices)</option>
+          <option value="snacks" ${(c?.iconKey === 'snacks' || c?.iconKey === 'cookie') ? 'selected' : ''}>नाश्ता व बिस्किटे (Snacks & Biscuits)</option>
+          <option value="beverages" ${c?.iconKey === 'beverages' ? 'selected' : ''}>शीतपेये व सरबत (Beverages)</option>
+          <option value="homecare" ${(c?.iconKey === 'homecare' || c?.iconKey === 'sponge') ? 'selected' : ''}>घरगुती काळजी (Home Care)</option>
+          <option value="personalcare" ${(c?.iconKey === 'personalcare' || c?.iconKey === 'sparkles') ? 'selected' : ''}>वैयक्तिक काळजी (Personal Care)</option>
+          <option value="stationery" ${(c?.iconKey === 'stationery' || c?.iconKey === 'book') ? 'selected' : ''}>स्टेशनरी व इतर (Stationery)</option>
+          <option value="box" ${(!c?.iconKey || c?.iconKey === 'box') ? 'selected' : ''}>इतर (General / Box)</option>
+        </select>
       </div>
       <div>
         <label class="form-label">मराठी नाव (Marathi Name) *</label>
@@ -813,18 +846,18 @@ window.openCategoryModal = (id = null) => {
       </div>
       <div class="modal-footer" style="padding:12px 0 0;margin-top:12px;">
         <button type="button" class="btn btn-secondary" onclick="categoryModal.close()">रद्द करा / Cancel</button>
-        <button type="submit" class="btn btn-primary" id="saveCatBtn">✅ जतन करा (Save Category)</button>
+        <button type="submit" class="btn btn-primary" id="saveCatBtn">जतन करा (Save Category)</button>
       </div>
     </form>
   `;
 
-  categoryModal.setTitle(id ? '✏️ वर्ग बदला (Edit Category)' : '➕ नवीन वर्ग जोडा (Add Category)');
+  categoryModal.setTitle(id ? 'वर्ग बदला (Edit Category)' : 'नवीन वर्ग जोडा (Add Category)');
   categoryModal.setContent(body);
   categoryModal.open();
 
   body.querySelector('#categoryEditForm').onsubmit = async (e) => {
     e.preventDefault();
-    const emoji = body.querySelector('#formCatEmoji').value.trim() || '🏷️';
+    const iconKey = body.querySelector('#formCatIconKey').value.trim() || 'box';
     const nameMr = body.querySelector('#formCatNameMr').value.trim();
     const nameEn = body.querySelector('#formCatNameEn').value.trim();
     const active = body.querySelector('#formCatActive').checked;
@@ -834,13 +867,13 @@ window.openCategoryModal = (id = null) => {
 
     try {
       if (editingCategoryId) {
-        await window.AdminAPI.put(`/admin/categories/${editingCategoryId}`, { emoji, nameMr, nameEn, active });
+        await window.AdminAPI.put(`/admin/categories/${editingCategoryId}`, { iconKey, emoji: '', nameMr, nameEn, active });
       } else {
-        await window.AdminAPI.post('/admin/categories', { emoji, nameMr, nameEn, active });
+        await window.AdminAPI.post('/admin/categories', { iconKey, emoji: '', nameMr, nameEn, active });
       }
       categoryModal.close();
       loadCatalogData();
-      if (window.AdminToast) window.AdminToast.show('✅ वर्ग जतन केला!', 'success');
+      if (window.AdminToast) window.AdminToast.show('वर्ग जतन केला! / Category saved', 'success');
     } catch (err) {
       alert(`Error: ${err.message}`);
       saveBtn.disabled = false;
@@ -882,7 +915,7 @@ function renderBulkView() {
 
   container.innerHTML = `
     <div class="chart-card" style="max-width:580px;margin:0 auto;">
-      <h3 style="font-size:1.15rem;margin-bottom:8px;">⚖️ घाऊक दर बदल साधन (Bulk Price Adjustment)</h3>
+      <h3 style="font-size:1.15rem;margin-bottom:8px;display:inline-flex;align-items:center;gap:6px;"><svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#edit"></use></svg> घाऊक दर बदल साधन (Bulk Price Adjustment)</h3>
       <p class="text-sm text-muted" style="margin-bottom:16px;">
         निवडलेल्या वर्गातील उत्पादनांची किंमत एकाच वेळी टक्केवारीने (%) किंवा ठराविक रकमेने (+/- ₹) बदला. खाली थेट पूर्वावलोकन दिसेल.
       </p>
@@ -891,7 +924,7 @@ function renderBulkView() {
           <label class="form-label">वर्ग निवडा / Select Category</label>
           <select class="form-select" id="bulkCategorySelect" required>
             <option value="all">सर्व उत्पादने (All Products - ${allProducts.length})</option>
-            ${allCategories.map((c) => `<option value="${c._id}">${c.emoji || '🏷️'} ${window.esc(c.nameMr || c.nameEn)}</option>`).join('')}
+            ${allCategories.map((c) => `<option value="${c._id}">${window.esc(c.nameMr || c.nameEn)}</option>`).join('')}
           </select>
         </div>
         <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:10px;">
@@ -916,8 +949,8 @@ function renderBulkView() {
           <div id="bulkPreviewTable" style="margin-top:8px;"></div>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="btnSubmitBulkPrice" style="margin-top:12px;min-height:48px;">
-          🔍 बदल तपासा व जतन करा (Confirm & Apply)
+        <button type="submit" class="btn btn-primary" id="btnSubmitBulkPrice" style="margin-top:12px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="/images/icons.svg#check"></use></svg> बदल तपासा व जतन करा (Confirm & Apply)
         </button>
       </form>
     </div>
@@ -1025,11 +1058,11 @@ function renderBulkView() {
     }
 
     submitBtn.disabled = false;
-    submitBtn.textContent = '🔍 बदल तपासा व जतन करा (Confirm & Apply)';
+    submitBtn.textContent = 'बदल तपासा व जतन करा (Confirm & Apply)';
     loadCatalogData();
 
     if (window.AdminToast) {
-      window.AdminToast.show(`✅ ${count} उत्पादनांचे दर यशस्वीरीत्या बदलले! / Updated ${count} products`, 'success', 3500);
+      window.AdminToast.show(`${count} उत्पादनांचे दर यशस्वीरीत्या बदलले! / Updated ${count} products`, 'success', 3500);
     }
   };
 }

@@ -77,8 +77,8 @@
         <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
             <div>
-              <h2 style="font-size:1.1rem;font-weight:700;margin:0;color:var(--text);">
-                🏪 दुकान चालू / बंद स्थिती (Store Open Status)
+              <h2 style="font-size:1.1rem;font-weight:700;margin:0;color:var(--text);display:flex;align-items:center;gap:6px;">
+                <svg class="icon"><use href="/images/icons.svg#store"></use></svg> दुकान चालू / बंद स्थिती (Store Open Status)
               </h2>
               <p style="font-size:0.78rem;color:var(--text-muted);margin:2px 0 0;">
                 दुकान बंद केल्यास ग्राहक नवीन ऑर्डर नोंदवू शकणार नाहीत.
@@ -125,8 +125,8 @@
 
         <!-- SECTION 2: Delivery Rules, Pincodes & Slots -->
         <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
-          <h2 style="font-size:1.1rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-            🚚 ${t('settings_delivery_rules')}
+          <h2 style="font-size:1.1rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#truck"></use></svg> ${t('settings_delivery_rules')}
           </h2>
           <p style="font-size:0.78rem;color:var(--text-muted);margin:0 0 14px;">
             ग्राहकांच्या कार्टमधील डिलिव्हरी फी व किमान मर्यादेचे नियम.
@@ -160,8 +160,8 @@
 
           <!-- Pincodes Chips Editor -->
           <div class="form-group" style="margin-bottom:14px;">
-            <label style="font-weight:700;font-size:0.82rem;display:block;margin-bottom:6px;">
-              📍 ${t('settings_pincodes')} (६ अंकी भारतीय पिनकोड) *
+            <label style="font-weight:700;font-size:0.82rem;display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+              <svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> ${t('settings_pincodes')} (६ अंकी भारतीय पिनकोड) *
             </label>
             <div id="pincodes-chips-box" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-muted);min-height:44px;align-items:center;"></div>
             <div style="display:flex;gap:8px;margin-top:6px;">
@@ -172,8 +172,8 @@
 
           <!-- Delivery Slots Textarea -->
           <div class="form-group">
-            <label style="font-weight:700;font-size:0.82rem;display:block;margin-bottom:4px;">
-              ⏰ डिलिव्हरी वेळा / स्लॉट्स (Delivery Slots - प्रति ओळ एक) *
+            <label style="font-weight:700;font-size:0.82rem;display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <svg class="icon icon-sm"><use href="/images/icons.svg#clock"></use></svg> डिलिव्हरी वेळा / स्लॉट्स (Delivery Slots - प्रति ओळ एक) *
             </label>
             <textarea id="set-slots" class="input" rows="3" required style="line-height:1.4;font-size:0.85rem;padding:8px 12px;">${AdminDOM.escape(slotsText)}</textarea>
           </div>
@@ -181,8 +181,8 @@
 
         <!-- SECTION 3: Payments & UPI Configuration -->
         <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
-          <h2 style="font-size:1.1rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-            💳 UPI व पेमेंट पर्याय (Payments & UPI)
+          <h2 style="font-size:1.1rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#credit"></use></svg> UPI व पेमेंट पर्याय (Payments & UPI)
           </h2>
           <p style="font-size:0.78rem;color:var(--text-muted);margin:0 0 14px;">
             ग्राहकांना Google Pay / PhonePe द्वारे पैसे भरण्यासाठी VPA व QR कोड.
@@ -214,8 +214,8 @@
               <img id="qr-preview" src="${settings.upiQrImage || '/images/placeholder-upi-qr.svg'}" alt="UPI QR" style="width:90px;height:90px;border-radius:var(--radius-md);border:1px solid var(--border);object-fit:cover;background:#fff;" />
               <div>
                 <input type="file" id="file-qr-upload" accept="image/*" style="display:none;" />
-                <button type="button" class="btn btn-secondary btn-sm" id="btn-upload-qr" style="height:38px;">
-                  📁 नवीन QR अपलोड करा (Upload QR)
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-upload-qr" style="height:38px;display:inline-flex;align-items:center;gap:6px;">
+                  <svg class="icon icon-sm"><use href="/images/icons.svg#camera"></use></svg> नवीन QR अपलोड करा (Upload QR)
                 </button>
                 <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
                   Cloudinary वर स्वयंचलित सुरक्षित अपलोड
@@ -228,8 +228,8 @@
 
         <!-- SECTION 4: Database Backup & Danger Zone -->
         <div class="card" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--surface);">
-          <h2 style="font-size:1.1rem;font-weight:700;margin:0 0 4px;color:var(--text);">
-            💾 डेटा बॅकअप व सुरक्षा (Backup & Danger Zone)
+          <h2 style="font-size:1.1rem;font-weight:700;margin:0 0 4px;color:var(--text);display:flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#lock"></use></svg> डेटा बॅकअप व सुरक्षा (Backup & Danger Zone)
           </h2>
           <p style="font-size:0.78rem;color:var(--text-muted);margin:0 0 14px;">
             पूर्ण डेटाबेस बॅकअप आणि जुन्या नोंदींची स्वच्छता.
@@ -237,17 +237,17 @@
 
           <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-muted);border-radius:var(--radius-md);margin-bottom:12px;flex-wrap:wrap;gap:8px;">
             <div>
-              <strong>📦 संपूर्ण डेटाबेस बॅकअप (Full DB Snapshot)</strong>
+              <strong style="display:flex;align-items:center;gap:6px;"><svg class="icon icon-sm"><use href="/images/icons.svg#box"></use></svg> संपूर्ण डेटाबेस बॅकअप (Full DB Snapshot)</strong>
               <div style="font-size:0.75rem;color:var(--text-muted);">उत्पादने, ऑर्डर्स, ग्राहक, उधारी खातेवही यांचा JSON बॅकअप</div>
             </div>
-            <button type="button" class="btn btn-secondary btn-sm" id="btn-export-backup" style="min-height:38px;">
-              📥 बॅकअप डाउनलोड करा / Export
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-export-backup" style="min-height:38px;display:inline-flex;align-items:center;gap:6px;">
+              <svg class="icon icon-sm"><use href="/images/icons.svg#box"></use></svg> बॅकअप डाउनलोड करा / Export
             </button>
           </div>
 
           <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius-md);flex-wrap:wrap;gap:8px;">
             <div>
-              <strong style="color:#991b1b;">🗑️ जुन्या सूचनांची स्वच्छता (Cleanup Old Notifications)</strong>
+              <strong style="color:#991b1b;display:flex;align-items:center;gap:6px;"><svg class="icon icon-sm"><use href="/images/icons.svg#trash"></use></svg> जुन्या सूचनांची स्वच्छता (Cleanup Old Notifications)</strong>
               <div style="font-size:0.75rem;color:#b91c1c;">९० दिवसांपेक्षा जुन्या वाचलेल्या सूचना हटवा</div>
             </div>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-cleanup-notifs" style="min-height:38px;color:#b91c1c;border-color:#f87171;">
@@ -261,8 +261,8 @@
           <div style="font-size:0.85rem;font-weight:600;color:var(--text);">
             <span id="dirty-status-indicator" style="display:none;color:var(--accent);">● बदल जतन केलेले नाहीत / Unsaved changes</span>
           </div>
-          <button type="submit" class="btn btn-primary" id="btn-save-settings" style="min-height:46px;padding:0 24px;font-weight:700;font-size:0.95rem;">
-            ✓ ${t('save')}
+          <button type="submit" class="btn btn-primary" id="btn-save-settings" style="min-height:46px;padding:0 24px;font-weight:700;font-size:0.95rem;display:inline-flex;align-items:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#check"></use></svg> ${t('save')}
           </button>
         </div>
 
@@ -281,7 +281,7 @@
     pincodesList.forEach((pin, idx) => {
       const chip = document.createElement('span');
       chip.style.cssText = 'background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:0.82rem;font-weight:700;color:var(--primary);display:inline-flex;align-items:center;gap:6px;';
-      chip.innerHTML = `${pin} <button type="button" style="border:none;background:none;cursor:pointer;color:#ef4444;font-size:0.9rem;padding:0;">✕</button>`;
+      chip.innerHTML = `${pin} <button type="button" style="border:none;background:none;cursor:pointer;color:#ef4444;font-size:0.9rem;padding:0;line-height:1;">&times;</button>`;
       chip.querySelector('button')?.addEventListener('click', () => {
         pincodesList.splice(idx, 1);
         markDirty();
@@ -368,7 +368,7 @@
       } finally {
         if (uploadBtn) {
           uploadBtn.disabled = false;
-          uploadBtn.textContent = '📁 नवीन QR अपलोड करा (Upload QR)';
+          uploadBtn.innerHTML = '<svg class="icon icon-sm"><use href="/images/icons.svg#camera"></use></svg> नवीन QR अपलोड करा (Upload QR)';
         }
       }
     });
@@ -471,7 +471,7 @@
         AdminToast.error(err.message || t('error_generic'));
       } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = `✓ ${t('save')}`;
+        saveBtn.innerHTML = `<svg class="icon"><use href="/images/icons.svg#check"></use></svg> ${t('save')}`;
       }
     });
   }

@@ -15,7 +15,7 @@ class ResponsiveDataList {
     this.items = options.items || [];
     this.renderCard = options.renderCard || this.defaultRenderCard.bind(this);
     this.emptyMessage = options.emptyMessage || 'कोणतीही नोंद सापडली नाही / No records found';
-    this.emptyIcon = options.emptyIcon || '📂';
+    this.emptyIcon = options.emptyIcon || 'box';
     this.pagination = options.pagination || null; // { page, totalPages, onPageChange }
 
     if (this.container) {
@@ -65,8 +65,12 @@ class ResponsiveDataList {
     if (!this.items.length) {
       const empty = document.createElement('div');
       empty.className = 'empty-state';
+      const iconKey = (this.emptyIcon === 'inbox' || this.emptyIcon === '\u{1F4C2}') ? 'inbox' : (this.emptyIcon || 'box');
+      const iconHtml = typeof iconKey === 'string' && iconKey.includes('<svg')
+        ? iconKey
+        : `<svg class="icon icon--2xl" aria-hidden="true"><use href="/images/icons.svg#${iconKey}"></use></svg>`;
       empty.innerHTML = `
-        <div class="empty-state-icon">${this.emptyIcon}</div>
+        <div class="empty-state-icon" style="margin-bottom:8px;">${iconHtml}</div>
         <div class="empty-state-title">${this.emptyMessage}</div>
       `;
       this.container.appendChild(empty);

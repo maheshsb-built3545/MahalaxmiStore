@@ -16,13 +16,13 @@
   let isLoading = false;
 
   const ALL_PERMISSIONS = [
-    { id: 'orders_view', label: '📦 ऑर्डर्स व पॅकिंग पाहणे / View Orders & Packing' },
-    { id: 'orders_status', label: '🚚 ऑर्डर स्थिती पुढे नेणे / Advance Order Status' },
-    { id: 'udhar_payments', label: '💰 उधारी जमा घेणे / Take Udhar Payments' },
-    { id: 'stock_manage', label: '📦 साठा भरणे व फेरफार / Inward Stock & Adjust' },
-    { id: 'catalog_edit', label: '🏷️ उत्पादने व किंमत बदल / Edit Catalog & Prices' },
-    { id: 'reports_view', label: '📈 नफा व विक्री अहवाल / View Profit Reports' },
-    { id: 'customers_manage', label: '👥 ग्राहक व्यवस्थापन / Manage Customers' },
+    { id: 'orders_view', label: 'ऑर्डर्स व पॅकिंग पाहणे / View Orders & Packing' },
+    { id: 'orders_status', label: 'ऑर्डर स्थिती पुढे नेणे / Advance Order Status' },
+    { id: 'udhar_payments', label: 'उधारी जमा घेणे / Take Udhar Payments' },
+    { id: 'stock_manage', label: 'साठा भरणे व फेरफार / Inward Stock & Adjust' },
+    { id: 'catalog_edit', label: 'उत्पादने व किंमत बदल / Edit Catalog & Prices' },
+    { id: 'reports_view', label: 'नफा व विक्री अहवाल / View Profit Reports' },
+    { id: 'customers_manage', label: 'ग्राहक व्यवस्थापन / Manage Customers' },
   ];
 
   async function init() {
@@ -42,7 +42,7 @@
   function renderOwnerOnlyGuard() {
     root.innerHTML = `
       <div style="max-width:500px;margin:40px auto;text-align:center;padding:24px;background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);">
-        <span style="font-size:3rem;line-height:1;">🔒</span>
+        <span style="font-size:3rem;line-height:1;"><svg class="icon" style="width:48px;height:48px;"><use href="/images/icons.svg#lock"></use></svg></span>
         <h2 style="font-size:1.3rem;font-weight:800;color:var(--text);margin:12px 0 6px;">
           केवळ दुकान मालकासाठी / Owner Access Only
         </h2>
@@ -76,7 +76,7 @@
 
       <!-- Explanatory Box -->
       <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;font-size:0.85rem;color:#166534;line-height:1.5;">
-        <span>ℹ️</span>
+        <span><svg class="icon icon-sm"><use href="/images/icons.svg#info"></use></svg></span>
         <div>
           <strong>कर्मचारी अधिकार (Staff Access):</strong><br>
           प्रत्येक कर्मचाऱ्याला गरजेनुसार अधिकार द्या (उदा. पॅकिंग कर्मचाऱ्याला फक्त ऑर्डर्स, कॅशियरला उधारी जमा). कर्मचाऱ्याने केलेल्या सर्व कृती <b>Audit Log</b> मध्ये नावासह नोंदवल्या जातात.
@@ -85,11 +85,11 @@
 
       <!-- Tabs Navigation -->
       <div class="tabs-container" style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;gap:8px;">
-        <button type="button" class="tab-btn active" data-tab="staff" style="padding:10px 16px;font-weight:700;font-size:0.85rem;background:none;border:none;border-bottom:2px solid var(--primary);color:var(--primary);cursor:pointer;">
-          👥 ${t('nav_staff')}
+        <button type="button" class="tab-btn active" data-tab="staff" style="padding:10px 16px;font-weight:700;font-size:0.85rem;background:none;border:none;border-bottom:2px solid var(--primary);color:var(--primary);cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#users"></use></svg> ${t('nav_staff')}
         </button>
-        <button type="button" class="tab-btn" data-tab="audit" style="padding:10px 16px;font-weight:600;font-size:0.85rem;background:none;border:none;color:var(--text-muted);cursor:pointer;">
-          📜 ${t('staff_audit_feed')}
+        <button type="button" class="tab-btn" data-tab="audit" style="padding:10px 16px;font-weight:600;font-size:0.85rem;background:none;border:none;color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#list"></use></svg> ${t('staff_audit_feed')}
         </button>
       </div>
 
@@ -189,10 +189,10 @@
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <h3 style="font-size:1.05rem;font-weight:700;margin:0;color:var(--text);">${AdminDOM.escape(s.name)}</h3>
             <span class="badge badge-primary">कर्मचारी / Staff</span>
-            ${isBlocked ? '<span class="badge badge-danger">🚫 ब्लॉक / Blocked</span>' : '<span class="badge badge-success">सक्रिय / Active</span>'}
+            ${isBlocked ? '<span class="badge badge-danger">ब्लॉक / Blocked</span>' : '<span class="badge badge-success">सक्रिय / Active</span>'}
           </div>
-          <div style="font-size:0.8rem;color:var(--text-muted);margin-top:3px;">
-            📞 <a href="tel:${s.phone}" style="color:var(--primary);font-weight:600;text-decoration:none;">${s.phone}</a>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:6px;">
+            <svg class="icon icon-sm"><use href="/images/icons.svg#phone"></use></svg> <a href="tel:${s.phone}" style="color:var(--primary);font-weight:600;text-decoration:none;">${s.phone}</a>
             • नोंदणी: ${AdminFormat.date(s.createdAt)}
           </div>
         </div>
@@ -210,14 +210,14 @@
 
       <!-- Action Buttons (Thumb friendly >= 44px) -->
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button type="button" class="btn btn-secondary btn-edit-perms" style="flex:2;min-height:44px;font-size:0.82rem;font-weight:600;">
-          ⚙️ अधिकार बदला / Permissions
+        <button type="button" class="btn btn-secondary btn-edit-perms" style="flex:2;min-height:44px;font-size:0.82rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#settings"></use></svg> अधिकार बदला / Permissions
         </button>
-        <button type="button" class="btn btn-secondary btn-toggle-block" style="flex:1;min-height:44px;font-size:0.82rem;font-weight:600;">
-          ${isBlocked ? '✓ अनब्लॉक' : '🚫 ब्लॉक'}
+        <button type="button" class="btn btn-secondary btn-toggle-block" style="flex:1;min-height:44px;font-size:0.82rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+          ${isBlocked ? '<svg class="icon"><use href="/images/icons.svg#check"></use></svg> अनब्लॉक' : '<svg class="icon"><use href="/images/icons.svg#close"></use></svg> ब्लॉक'}
         </button>
-        <button type="button" class="btn btn-secondary btn-delete-staff" style="min-height:44px;font-size:0.82rem;font-weight:600;color:#ef4444;border-color:#fca5a5;">
-          🗑️ काढा
+        <button type="button" class="btn btn-secondary btn-delete-staff" style="min-height:44px;font-size:0.82rem;font-weight:600;color:#ef4444;border-color:#fca5a5;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#trash"></use></svg> काढा
         </button>
       </div>
     `;
@@ -285,8 +285,8 @@
     const sheetContent = document.createElement('div');
     sheetContent.innerHTML = `
       <div style="padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;">
-        <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);">
-          ⚙️ कर्मचारी अधिकार बदला (Edit Permissions)
+        <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);display:flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#settings"></use></svg> कर्मचारी अधिकार बदला (Edit Permissions)
         </h3>
         <p style="font-size:0.82rem;color:var(--text-muted);margin:3px 0 0;">
           कर्मचारी: <strong>${AdminDOM.escape(s.name)}</strong> (${s.phone})
@@ -347,8 +347,8 @@
     const sheetContent = document.createElement('div');
     sheetContent.innerHTML = `
       <div style="padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;">
-        <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);">
-          ➕ ${t('staff_add_title')}
+        <h3 style="font-size:1.15rem;font-weight:800;margin:0;color:var(--text);display:flex;align-items:center;gap:6px;">
+          <svg class="icon"><use href="/images/icons.svg#plus"></use></svg> ${t('staff_add_title')}
         </h3>
         <p style="font-size:0.82rem;color:var(--text-muted);margin:3px 0 0;">
           कर्मचाऱ्यासाठी लॉगिन क्रेडेंशियल्स व कार्य अधिकार निश्चित करा
@@ -396,8 +396,8 @@
           <button type="button" class="btn btn-secondary" id="btn-cancel-add-staff" style="flex:1;min-height:44px;">
             ${t('cancel')}
           </button>
-          <button type="submit" class="btn btn-primary" id="btn-submit-add-staff" style="flex:2;min-height:44px;font-weight:700;">
-            ✓ खाते तयार करा / Create Staff
+          <button type="submit" class="btn btn-primary" id="btn-submit-add-staff" style="flex:2;min-height:44px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+            <svg class="icon"><use href="/images/icons.svg#check"></use></svg> खाते तयार करा / Create Staff
           </button>
         </div>
       </form>
@@ -434,7 +434,7 @@
       } catch (err) {
         AdminToast.error(err.message || t('error_generic'));
         submitBtn.disabled = false;
-        submitBtn.textContent = '✓ खाते तयार करा / Create Staff';
+        submitBtn.innerHTML = '<svg class="icon"><use href="/images/icons.svg#check"></use></svg> खाते तयार करा / Create Staff';
       }
     });
   }
@@ -472,8 +472,8 @@
         ${auditLogs.map((log) => `
           <div style="padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;flex-wrap:wrap;gap:6px;">
-              <div style="font-weight:700;font-size:0.85rem;color:var(--text);">
-                👤 ${AdminDOM.escape(log.actor?.name || 'Unknown')} <span style="font-size:0.75rem;color:var(--text-muted);">(${log.actor?.role || 'user'})</span>
+              <div style="font-weight:700;font-size:0.85rem;color:var(--text);display:flex;align-items:center;gap:6px;">
+                <svg class="icon icon-sm"><use href="/images/icons.svg#user"></use></svg> ${AdminDOM.escape(log.actor?.name || 'Unknown')} <span style="font-size:0.75rem;color:var(--text-muted);">(${log.actor?.role || 'user'})</span>
                 • <span style="color:var(--primary);">${AdminDOM.escape(log.action)}</span>
               </div>
               <span style="font-size:0.75rem;color:var(--text-muted);">
