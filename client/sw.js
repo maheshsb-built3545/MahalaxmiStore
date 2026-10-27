@@ -10,7 +10,7 @@
  * NEVER caches mutations, auth tokens, or order placement.
  */
 
-const CACHE_VERSION = 'v1.0.11';
+const CACHE_VERSION = 'v1.0.12';
 const CACHE_NAME = `mk-cache-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
