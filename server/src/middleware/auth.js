@@ -13,7 +13,7 @@ const verifyToken = async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         success: false,
-        message: 'Authentication required. Please log in.',
+        message: 'Authentication required. Please log in. / पुढे जाण्यासाठी लॉगिन करा.',
       });
     }
 
@@ -21,7 +21,7 @@ const verifyToken = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid authorization token format.',
+        message: 'Invalid authorization token format. / अवैध अधिकृतता टोकन प्रारूप.',
       });
     }
 
@@ -32,12 +32,12 @@ const verifyToken = async (req, res, next) => {
       if (err.name === 'TokenExpiredError') {
         return res.status(401).json({
           success: false,
-          message: 'Your session has expired. Please log in again.',
+          message: 'Your session has expired. Please log in again. / तुमचे सत्र संपले आहे. कृपया पुन्हा लॉगिन करा.',
         });
       }
       return res.status(401).json({
         success: false,
-        message: 'Invalid authentication token.',
+        message: 'Invalid authentication token. / अवैध प्रमाणीकरण टोकन.',
       });
     }
 
@@ -45,7 +45,7 @@ const verifyToken = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'User account no longer exists.',
+        message: 'User account no longer exists. / वापरकर्ता खाते अस्तित्वात नाही.',
       });
     }
 

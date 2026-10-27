@@ -574,10 +574,18 @@ const ordersApp = (() => {
       // Rule 14: Check if cart already has items
       const existingCount = cart.itemCount();
       if (existingCount > 0) {
-        showReorderPromptModal(available);
+        showReorderPromptModal(available, orderId);
       } else {
         // Cart is empty: directly add all available items
         populateCartWithItems(available, true);
+        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+          if (window.ui && window.ui.showLoginPrompt) {
+            ui.showLoginPrompt({ type: 'reorder', orderId, alreadyInCart: true, returnUrl: 'checkout.html' });
+          } else {
+            window.location.href = 'login.html?redirect=checkout.html';
+          }
+          return;
+        }
         window.location.href = 'checkout.html';
       }
     } catch (err) {
@@ -610,7 +618,7 @@ const ordersApp = (() => {
     }
   }
 
-  function showReorderPromptModal(availableItems) {
+  function showReorderPromptModal(availableItems, orderId) {
     const modal = document.getElementById('reorderModal');
     if (!modal) return;
 
@@ -619,12 +627,28 @@ const ordersApp = (() => {
     document.getElementById('reorderReplaceBtn').onclick = () => {
       populateCartWithItems(availableItems, true);
       modal.style.display = 'none';
+      if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+        if (window.ui && window.ui.showLoginPrompt) {
+          ui.showLoginPrompt({ type: 'reorder', orderId, alreadyInCart: true, returnUrl: 'checkout.html' });
+        } else {
+          window.location.href = 'login.html?redirect=checkout.html';
+        }
+        return;
+      }
       window.location.href = 'checkout.html';
     };
 
     document.getElementById('reorderMergeBtn').onclick = () => {
       populateCartWithItems(availableItems, false);
       modal.style.display = 'none';
+      if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+        if (window.ui && window.ui.showLoginPrompt) {
+          ui.showLoginPrompt({ type: 'reorder', orderId, alreadyInCart: true, returnUrl: 'checkout.html' });
+        } else {
+          window.location.href = 'login.html?redirect=checkout.html';
+        }
+        return;
+      }
       window.location.href = 'checkout.html';
     };
 

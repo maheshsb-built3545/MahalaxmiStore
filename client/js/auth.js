@@ -127,6 +127,14 @@ const auth = (() => {
     if (!action) return;
     clearPendingAction(); // Auto-apply strictly once
 
+    if (action.alreadyInCart) {
+      if (window.ui) {
+        if (ui.updateCartBadge) ui.updateCartBadge();
+        if (ui.renderCartDrawer) ui.renderCartDrawer();
+      }
+      return;
+    }
+
     if (action.type === 'add_item') {
       const prod = action.product;
       const qty = action.qty || 1;

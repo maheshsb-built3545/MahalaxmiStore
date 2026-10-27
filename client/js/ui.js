@@ -303,21 +303,10 @@ const ui = (() => {
         </div>
         <div class="login-sheet-title-box">
           <h3 id="loginPromptTitle" class="login-sheet-title">
-            <span class="lang-mr">आधी लॉगिन करा</span><span class="lang-en">Please log in first</span>
+            <span class="lang-mr">पुढे जाण्यासाठी लॉगिन करा</span><span class="lang-en">Please log in to continue</span>
           </h3>
-          <p class="login-sheet-body">
-            <span class="lang-mr">तुमचा कार्ट सुरक्षित राहील आणि ऑर्डर ट्रॅक करता येईल.</span>
-            <span class="lang-en">Log in to save your cart and track orders.</span>
-          </p>
         </div>
         <button type="button" class="login-sheet-close" id="loginPromptClose" aria-label="Close"><svg class="icon"><use href="/images/icons.svg#close"></use></svg></button>
-      </div>
-      <div class="login-sheet-reassurance">
-        <span class="reassurance-sparkle"><svg class="icon icon--sm"><use href="/images/icons.svg#check"></use></svg></span>
-        <span class="reassurance-text">
-          <span class="lang-mr">निवडलेली वस्तू लॉगिननंतर आपोआप कार्टमध्ये येईल.</span>
-          <span class="lang-en">Your item will be added automatically after login.</span>
-        </span>
       </div>
       <div class="login-sheet-actions">
         <a href="login.html" id="loginPromptLoginBtn" class="btn btn-primary btn-login-action">
@@ -358,7 +347,9 @@ const ui = (() => {
     if (!overlay || !sheet) return;
 
     // Build return redirect URL with safe relative path
-    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const currentPath = (pendingAction && pendingAction.returnUrl)
+      ? pendingAction.returnUrl
+      : ((window.location.pathname.split('/').pop() || 'index.html') + window.location.search);
     const loginBtn = document.getElementById('loginPromptLoginBtn');
     const regBtn = document.getElementById('loginPromptRegisterBtn');
     if (loginBtn) loginBtn.href = `login.html?redirect=${encodeURIComponent(currentPath)}`;
@@ -504,6 +495,10 @@ const ui = (() => {
         updateCartBadge();
         renderCartDrawer();
         showToast(p.nameEn + ' added to cart');
+        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+          const curPage = (window.location.pathname.split('/').pop() || 'index.html') + window.location.search;
+          showLoginPrompt({ type: 'cart_update', product: p, qty: incStep, alreadyInCart: true, returnUrl: curPage });
+        }
       });
 
       step.append(minus, qtySpan, plus);
@@ -607,7 +602,7 @@ const ui = (() => {
     if (auth.isLoggedIn()) {
       window.location.href = 'checkout.html';
     } else {
-      window.location.href = 'login.html?redirect=checkout.html';
+      showLoginPrompt({ type: 'checkout', returnUrl: 'checkout.html' });
     }
   }
 

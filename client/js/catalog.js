@@ -237,6 +237,10 @@ const catalog = (() => {
           renderBestSellers();
           ui.updateCartBadge();
           ui.showToast(p.nameEn + ' added to cart');
+          if (typeof auth !== 'undefined' && !auth.isLoggedIn() && typeof ui !== 'undefined' && ui.showLoginPrompt) {
+            const curPage = (window.location.pathname.split('/').pop() || 'index.html') + window.location.search;
+            ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1, alreadyInCart: true, returnUrl: curPage });
+          }
         });
       }
 
@@ -257,6 +261,10 @@ const catalog = (() => {
         renderBestSellers();
         ui.updateCartBadge();
         ui.showToast(p.nameEn + ' added to cart');
+        if (typeof auth !== 'undefined' && !auth.isLoggedIn() && typeof ui !== 'undefined' && ui.showLoginPrompt) {
+          const curPage = (window.location.pathname.split('/').pop() || 'index.html') + window.location.search;
+          ui.showLoginPrompt({ type: 'add_item', product: p, qty: 1, alreadyInCart: true, returnUrl: curPage });
+        }
       });
       card.appendChild(addBtn);
     }
