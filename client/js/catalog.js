@@ -17,6 +17,17 @@ const catalog = (() => {
   /** Safely create a text node. */
   function t(str) { return document.createTextNode(str ?? ''); }
 
+  /** Escape HTML for safe template insertion. */
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   /** Create element with optional className and optional text content. */
   function el(tag, className, text) {
     const e = document.createElement(tag);
@@ -160,24 +171,22 @@ const catalog = (() => {
     }
     card.appendChild(imgWrap);
 
-    card.appendChild(el('h4', null, p.nameEn));
-    const mrEl = el('div', 'wt', (p.nameMr ? p.nameMr + ' · ' : '') + p.packSize);
-    card.appendChild(mrEl);
+    const nameH4 = el('h4');
+    nameH4.innerHTML = `<span class="lang-mr">${escapeHtml(p.nameMr || p.nameEn)}</span><span class="lang-en">${escapeHtml(p.nameEn || p.nameMr)}</span>`;
+    card.appendChild(nameH4);
+
+    const packEl = el('div', 'wt', p.packSize || '');
+    card.appendChild(packEl);
 
     const priceRow = el('div', 'price-row');
     priceRow.appendChild(el('span', 'price', fmt(p.price)));
-    priceRow.appendChild(el('span', 'mrp',   fmt(p.mrp)));
+    if (p.mrp && p.mrp > p.price) {
+      priceRow.appendChild(el('span', 'mrp', fmt(p.mrp)));
+    }
     if (off > 0) {
       priceRow.appendChild(el('span', 'save-chip', `${off}% OFF`));
     }
     card.appendChild(priceRow);
-
-    // R1: Low-stock indicator — "Only N left"
-    if (isLow) {
-      const lowBadge = el('span', 'low-stock-badge');
-      lowBadge.innerHTML = `<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#warning"></use></svg> <span class="lang-mr">फक्त ${stock} शिल्लक</span><span class="lang-en">Only ${stock} left</span>`;
-      card.appendChild(lowBadge);
-    }
 
     // Out-of-stock (R1: based on virtual inStock which checks stockQuantity + unavailableFlag)
     if (!p.inStock || stock <= 0) {
@@ -217,7 +226,7 @@ const catalog = (() => {
         plus.style.opacity = '0.4';
         plus.style.cursor  = 'not-allowed';
         plus.addEventListener('click', () => {
-          ui.showToast(`फक्त ${stock} उपलब्ध आहेत / Only ${stock} available in stock.`);
+          ui.showToast(`फक्त ${stock} उपलब्ध / Only ${stock} available`, 'warning');
         });
       } else {
         plus.addEventListener('click', () => {
@@ -234,7 +243,8 @@ const catalog = (() => {
       stepper.append(minus, qtySpan, plus);
       card.appendChild(stepper);
     } else {
-      const addBtn = el('button', 'add-btn', '+ जोडा / Add');
+      const addBtn = el('button', 'add-btn');
+      addBtn.innerHTML = '<span class="lang-mr">+ जोडा</span><span class="lang-en">+ Add</span>';
       addBtn.setAttribute('aria-label', 'Add ' + p.nameEn + ' to cart');
       addBtn.addEventListener('click', () => {
         if (window.PWA) window.PWA.haptic(25);

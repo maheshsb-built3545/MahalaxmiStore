@@ -50,8 +50,8 @@
   <div class="auth-card">
     <div class="auth-card-head">
       <span class="auth-icon"><svg class="icon icon--xl"><use href="/images/icons.svg#lock"></use></svg></span>
-      <h1>Customer Login <span class="mr">ग्राहक लॉगिन</span></h1>
-      <p>Log in with your mobile number to checkout and view your orders.</p>
+      <h1><span class="lang-mr">ग्राहक लॉगिन</span><span class="lang-en">Customer Login</span></h1>
+      <p><span class="lang-mr">ऑर्डर देण्यासाठी मोबाईल नंबरने लॉगिन करा.</span><span class="lang-en">Log in with your phone to order.</span></p>
     </div>
 
     <!-- Error Alert Box -->
@@ -60,7 +60,7 @@
     <form id="loginForm" novalidate>
       <div class="form-group">
         <label for="phone">
-          Mobile Number <span class="mr">मोबाईल नंबर</span>
+          <span class="lang-mr">मोबाईल नंबर</span><span class="lang-en">Mobile Number</span>
           <span class="req">*</span>
         </label>
         <div class="input-with-prefix">
@@ -77,17 +77,17 @@
             aria-describedby="phoneHelp"
           >
         </div>
-        <small id="phoneHelp" class="form-hint">Enter your 10-digit Indian mobile number</small>
+        <small id="phoneHelp" class="form-hint">१० अंकी मोबाईल नंबर प्रविष्ट करा</small>
       </div>
 
       <div class="form-group">
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <label for="password" style="margin:0;">
-            Password <span class="mr">पासवर्ड</span>
+            <span class="lang-mr">पासवर्ड</span><span class="lang-en">Password</span>
             <span class="req">*</span>
           </label>
           <a id="forgotPassLink" href="https://wa.me/919860924504?text=Hi%20Mahalaxmi%20Kirana,%20I%20forgot%20my%20password%20and%20need%20a%20reset" target="_blank" rel="noopener" style="font-size:0.8rem;color:#047857;text-decoration:underline;font-weight:600;">
-            पासवर्ड विसरलात? (Reset via WhatsApp)
+            <span class="lang-mr">पासवर्ड विसरलात?</span><span class="lang-en">Forgot password?</span>
           </a>
         </div>
         <div style="position:relative;display:flex;align-items:center;margin-top:6px;">
@@ -111,17 +111,17 @@
       <div class="form-group" style="margin-bottom:1.25rem;">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:#475569;cursor:pointer;font-weight:500;">
           <input type="checkbox" id="rememberMe" checked style="width:18px;height:18px;accent-color:#047857;">
-          <span>मला लक्षात ठेवा / Remember me on this device</span>
+          <span><span class="lang-mr">मला लक्षात ठेवा</span><span class="lang-en">Remember me</span></span>
         </label>
       </div>
 
       <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
-        Log In <span class="mr">लॉगिन करा</span>
+        <span class="lang-mr">लॉगिन</span><span class="lang-en">Log In</span>
       </button>
     </form>
 
     <div class="auth-card-foot">
-      <p>Don't have an account? <a id="registerLink" href="register.html">Register here <span class="mr">नोंदणी करा</span></a></p>
+      <p><span class="lang-mr">खाते नाही? <a id="registerLink" href="register.html">नोंदणी करा</a></span><span class="lang-en">New here? <a id="registerLinkEn" href="register.html">Register</a></span></p>
     </div>
   </div>
 </main>
@@ -134,7 +134,11 @@
 <script>
   // Forward safe redirect parameter to register link
   const redirectTarget = auth.getSafeRedirect();
-  document.getElementById('registerLink').href = `register.html?next=${encodeURIComponent(redirectTarget)}&redirect=${encodeURIComponent(redirectTarget)}`;
+  const regHref = `register.html?next=${encodeURIComponent(redirectTarget)}&redirect=${encodeURIComponent(redirectTarget)}`;
+  const regEl = document.getElementById('registerLink');
+  if (regEl) regEl.href = regHref;
+  const regEn = document.getElementById('registerLinkEn');
+  if (regEn) regEn.href = regHref;
 
   // Already logged in? Redirect directly based on role
   if (auth.isLoggedIn()) {

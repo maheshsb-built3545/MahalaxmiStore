@@ -248,7 +248,7 @@ const ordersApp = (() => {
       const shopBtn = document.createElement('a');
       shopBtn.href = 'index.html';
       shopBtn.className = 'btn btn-primary';
-      shopBtn.textContent = 'Browse Catalog / किराणा खरेदी करा';
+      shopBtn.innerHTML = '<span class="lang-mr">किराणा खरेदी करा</span><span class="lang-en">Browse Store</span>';
       emptyCard.appendChild(shopBtn);
 
       container.appendChild(emptyCard);
@@ -279,7 +279,7 @@ const ordersApp = (() => {
       const statusMeta = STATUS_LABELS[order.status] || { en: order.status, mr: '', cls: 'status-new' };
       const statusPill = document.createElement('span');
       statusPill.className = `status-pill ${statusMeta.cls}`;
-      statusPill.textContent = `${statusMeta.en} / ${statusMeta.mr}`;
+      statusPill.innerHTML = `<span class="lang-mr">${statusMeta.mr}</span><span class="lang-en">${statusMeta.en}</span>`;
 
       head.appendChild(headLeft);
       head.appendChild(statusPill);
@@ -465,7 +465,7 @@ const ordersApp = (() => {
         const cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
         cancelBtn.className = 'btn btn-outline btn-sm btn-danger-outline';
-        cancelBtn.textContent = 'Cancel / रद्द करा';
+        cancelBtn.innerHTML = '<span class="lang-mr">रद्द करा</span><span class="lang-en">Cancel</span>';
         cancelBtn.addEventListener('click', () => handleCancelOrder(order));
         actions.appendChild(cancelBtn);
       }
@@ -474,7 +474,7 @@ const ordersApp = (() => {
       const reorderBtn = document.createElement('button');
       reorderBtn.type = 'button';
       reorderBtn.className = 'btn btn-primary btn-sm';
-      reorderBtn.textContent = 'Reorder / पुन्हा मागवा';
+      reorderBtn.innerHTML = '<span class="lang-mr">पुन्हा मागवा</span><span class="lang-en">Reorder</span>';
       reorderBtn.addEventListener('click', () => handleReorder(order));
       actions.appendChild(reorderBtn);
 

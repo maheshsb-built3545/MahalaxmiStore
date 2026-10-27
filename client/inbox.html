@@ -225,12 +225,12 @@
 <main class="inbox-container">
   <div class="inbox-header">
     <div class="inbox-title">
-      <h1><svg class="icon"><use href="/images/icons.svg#bell"></use></svg> संदेश आणि सूचना <span style="font-size:1rem;font-weight:500;color:#64748b;">(Inbox)</span></h1>
-      <p>तुमच्या ऑर्डर्स आणि महत्त्वाच्या घडामोडींचे ताजे अपडेट्स</p>
+      <h1><svg class="icon"><use href="/images/icons.svg#bell"></use></svg> <span class="lang-mr">सूचना</span><span class="lang-en">Inbox</span></h1>
+      <p><span class="lang-mr">ऑर्डर व डिलिव्हरीचे ताजे संदेश.</span><span class="lang-en">Latest order and delivery updates.</span></p>
     </div>
     <div>
       <button id="markAllReadBtn" class="btn btn-outline" style="font-size:0.85rem;padding:0.4rem 0.8rem;">
-        <svg class="icon"><use href="/images/icons.svg#check"></use></svg> Mark All Read
+        <svg class="icon"><use href="/images/icons.svg#check"></use></svg> <span class="lang-mr">सर्व वाचले</span><span class="lang-en">Mark Read</span>
       </button>
     </div>
   </div>
@@ -240,24 +240,24 @@
     <div class="push-info">
       <span class="bell-icon"><svg class="icon"><use href="/images/icons.svg#bell"></use></svg></span>
       <div>
-        <div class="push-title">मोबाईलवर तात्काळ सूचना सुरू करा / Enable Web Push</div>
-        <div class="push-sub">ब्राउझर बंद असतानाही ऑर्डर कन्फर्मेशन आणि डिलिव्हरीचे मेसेज मिळवा.</div>
+        <div class="push-title"><span class="lang-mr">सूचना सुरू करा</span><span class="lang-en">Enable Push Alerts</span></div>
+        <div class="push-sub"><span class="lang-mr">ऑर्डर आणि डिलिव्हरीचे ताजे अपडेट्स मिळवा.</span><span class="lang-en">Get real-time order and delivery updates.</span></div>
       </div>
     </div>
     <button id="enablePushBtn" class="btn btn-primary" style="font-size:0.85rem;padding:0.4rem 0.9rem;">
-      <svg class="icon"><use href="/images/icons.svg#bell"></use></svg> सुरू करा (Enable)
+      <svg class="icon"><use href="/images/icons.svg#bell"></use></svg> <span class="lang-mr">सुरू करा</span><span class="lang-en">Enable</span>
     </button>
   </div>
 
   <!-- Filter tabs -->
   <div class="inbox-tabs">
-    <button class="inbox-tab active" data-filter="all" id="tabAll">सर्व संदेश (All)</button>
-    <button class="inbox-tab" data-filter="unread" id="tabUnread">न वाचलेले (Unread)</button>
+    <button class="inbox-tab active" data-filter="all" id="tabAll"><span class="lang-mr">सर्व</span><span class="lang-en">All</span></button>
+    <button class="inbox-tab" data-filter="unread" id="tabUnread"><span class="lang-mr">न वाचलेले</span><span class="lang-en">Unread</span></button>
   </div>
 
   <!-- List container -->
   <div class="inbox-list" id="inboxList">
-    <div style="text-align:center;padding:2rem;color:#64748b;">लोड होत आहे… / Loading messages…</div>
+    <div style="text-align:center;padding:2rem;color:#64748b;"><span class="lang-mr">लोड होत आहे...</span><span class="lang-en">Loading...</span></div>
   </div>
 </main>
 

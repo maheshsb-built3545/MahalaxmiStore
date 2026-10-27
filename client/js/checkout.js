@@ -37,7 +37,7 @@ const checkoutApp = (() => {
     // Check cart has items
     if (cart.itemCount() === 0) {
       if (typeof ui !== 'undefined' && ui.showToast) {
-        ui.showToast('आपली कार्ट रिकामी आहे / Your cart is empty. Please add items before checking out.', 'warning');
+        ui.showToast('कार्ट रिकामी आहे / Cart is empty', 'warning');
       }
       setTimeout(() => {
         window.location.href = 'index.html';
@@ -157,7 +157,7 @@ const checkoutApp = (() => {
 
       const line = document.createElement('div');
       line.className = 'addr-line';
-      line.innerHTML = `<strong>${addr.line}</strong>${addr.isDefault ? ' <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px;">मुख्य (Default)</span>' : ''}`;
+      line.innerHTML = `<strong>${addr.line}</strong>${addr.isDefault ? ' <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px;"><span class="lang-mr">मुख्य</span><span class="lang-en">Default</span></span>' : ''}`;
       body.appendChild(line);
 
       if (addr.landmark) {
@@ -300,7 +300,7 @@ const checkoutApp = (() => {
       });
 
       const span = document.createElement('span');
-      span.textContent = `${slot}${timingLabel}`;
+      span.innerHTML = `<span class="lang-mr">${slot} (${isPastCutoff ? 'उद्या' : 'आज'})</span><span class="lang-en">${slot} (${isPastCutoff ? 'Tomorrow' : 'Today'})</span>`;
 
       label.appendChild(radio);
       label.appendChild(span);
@@ -354,7 +354,7 @@ const checkoutApp = (() => {
     const deliveryEl = document.getElementById('reviewDelivery');
     if (deliveryEl) {
       if (isFreeDelivery) {
-        deliveryEl.textContent = 'FREE / मोफत';
+        deliveryEl.innerHTML = '<span class="lang-mr">मोफत</span><span class="lang-en">FREE</span>';
         deliveryEl.style.color = '#10b981';
       } else {
         deliveryEl.textContent = fmt(deliveryCharge);
@@ -478,7 +478,7 @@ const checkoutApp = (() => {
       toggleBtn.addEventListener('click', () => {
         const isHidden = formContainer.style.display === 'none';
         formContainer.style.display = isHidden ? 'block' : 'none';
-        toggleBtn.textContent = isHidden ? '− Cancel Adding Address' : '+ Add New Address / नवीन पत्ता';
+        toggleBtn.innerHTML = isHidden ? '<span class="lang-mr">रद्द करा</span><span class="lang-en">Cancel</span>' : '<span class="lang-mr">+ नवीन पत्ता</span><span class="lang-en">+ Add Address</span>';
       });
     }
 
@@ -584,7 +584,7 @@ const checkoutApp = (() => {
       document.getElementById('newAddrLandmark').value = '';
       document.getElementById('newAddrPincode').value = '';
       document.getElementById('newAddressForm').style.display = 'none';
-      document.getElementById('toggleNewAddressBtn').textContent = '+ Add New Address / नवीन पत्ता';
+      document.getElementById('toggleNewAddressBtn').innerHTML = '<span class="lang-mr">+ नवीन पत्ता</span><span class="lang-en">+ Add Address</span>';
 
       btn.disabled = false;
       btn.textContent = 'Save Address';
@@ -629,7 +629,7 @@ const checkoutApp = (() => {
 
     const placeBtn = document.getElementById('placeOrderBtn');
     placeBtn.disabled = true;
-    placeBtn.textContent = 'Placing Order… / ऑर्डर देत आहे…';
+    placeBtn.innerHTML = '<span class="lang-mr">ऑर्डर देत आहे...</span><span class="lang-en">Placing...</span>';
 
     const orderChannel = localStorage.getItem('kirana_order_channel') || 'website';
     const idempotencyKey = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
@@ -661,7 +661,7 @@ const checkoutApp = (() => {
       if (res.status === 400 && data.invalidItems && data.invalidItems.length > 0) {
         showInvalidItemsModal(data.invalidItems);
         placeBtn.disabled = false;
-        placeBtn.textContent = 'Place Order / ऑर्डर द्या';
+        placeBtn.innerHTML = '<span class="lang-mr">ऑर्डर द्या</span><span class="lang-en">Place Order</span>';
         return;
       }
 
@@ -675,7 +675,7 @@ const checkoutApp = (() => {
       if (!res.ok || !data.success) {
         showGlobalError(data.message || 'Order creation failed. Please try again.');
         placeBtn.disabled = false;
-        placeBtn.textContent = 'Place Order / ऑर्डर द्या';
+        placeBtn.innerHTML = '<span class="lang-mr">ऑर्डर द्या</span><span class="lang-en">Place Order</span>';
         return;
       }
 
@@ -689,7 +689,7 @@ const checkoutApp = (() => {
     } catch (err) {
       showGlobalError('Network error while placing order. Please check your internet connection.');
       placeBtn.disabled = false;
-      placeBtn.textContent = 'Place Order / ऑर्डर द्या';
+      placeBtn.innerHTML = '<span class="lang-mr">ऑर्डर द्या</span><span class="lang-en">Place Order</span>';
     }
   }
 

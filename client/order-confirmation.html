@@ -41,6 +41,7 @@
     </a>
     <div class="loc-chip hide-mobile"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Yesgaon, Kopargaon</div>
     <div style="flex:1"></div>
+    <button id="langToggleBtn" class="lang-toggle-btn" type="button" aria-label="Toggle Language" style="margin-right:8px;"><span class="lang-mr">English</span><span class="lang-en">मराठी</span></button>
     <div id="userHeaderArea"></div>
   </div>
 </header>
@@ -49,44 +50,45 @@
   <div class="wrap">
     <div class="confirm-card">
       <div class="confirm-icon"><svg class="icon icon--2xl" style="width:56px;height:56px;color:#059669;"><use href="/images/icons.svg#check"></use></svg></div>
-      <h1>Order Received! <span class="mr">ऑर्डर यशस्वीरीत्या नोंदवली!</span></h1>
+      <h1><span class="lang-mr">ऑर्डर नोंदवली</span><span class="lang-en">Order Confirmed</span></h1>
       <p class="confirm-subtitle">
-        Thank you for shopping with Mahalaxmi Kirana Store. Your order is registered in our system and will be delivered shortly.
+        <span class="lang-mr">ऑर्डर यशस्वीरीत्या नोंद झाली असून लवकरच पाठवली जाईल.</span>
+        <span class="lang-en">Your order has been placed and will be delivered shortly.</span>
       </p>
 
       <div class="order-id-badge">
-        <span>Order Number / ऑर्डर क्रमांक:</span>
+        <span><span class="lang-mr">ऑर्डर क्रमांक:</span><span class="lang-en">Order Number:</span></span>
         <strong id="displayOrderNumber">MK-Loading…</strong>
       </div>
 
       <!-- Receipt summary box -->
       <div id="orderDetailsBox" class="receipt-box">
         <div class="receipt-row">
-          <span>Status / स्थिती:</span>
-          <b id="displayStatus" class="status-pill status-new">New / नवीन</b>
+          <span><span class="lang-mr">स्थिती:</span><span class="lang-en">Status:</span></span>
+          <b id="displayStatus" class="status-pill status-new"><span class="lang-mr">नवीन</span><span class="lang-en">New</span></b>
         </div>
         <div class="receipt-row">
-          <span>Delivery Timing / वेळ:</span>
+          <span><span class="lang-mr">वेळ:</span><span class="lang-en">Delivery Slot:</span></span>
           <b id="displaySlot">—</b>
         </div>
         <div class="receipt-row">
-          <span>Payment / पेमेंट:</span>
+          <span><span class="lang-mr">पेमेंट:</span><span class="lang-en">Payment:</span></span>
           <b id="displayPayment">—</b>
         </div>
         <div class="receipt-row">
-          <span>Delivery Address / पत्ता:</span>
+          <span><span class="lang-mr">पत्ता:</span><span class="lang-en">Address:</span></span>
           <span id="displayAddress">—</span>
         </div>
         <div class="receipt-row" id="displayNoteRow" style="display:none;">
-          <span>Special Note / विशेष सूचना:</span>
+          <span><span class="lang-mr">विशेष सूचना:</span><span class="lang-en">Note:</span></span>
           <span id="displayNote" style="color: #b45309; font-weight: 600;">—</span>
         </div>
         <div class="receipt-row" id="displayMapRow" style="display:none;">
-          <span>Village Map / नकाशा:</span>
+          <span><span class="lang-mr">नकाशा:</span><span class="lang-en">Location:</span></span>
           <a id="displayMapLink" href="#" target="_blank" rel="noopener" style="color: var(--brand-primary); font-weight: 600;"><svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> View Location Map</a>
         </div>
         <div class="receipt-row grand-row">
-          <span>Total Amount / एकूण रक्कम:</span>
+          <span><span class="lang-mr">एकूण रक्कम:</span><span class="lang-en">Total:</span></span>
           <strong id="displayTotal">₹0</strong>
         </div>
       </div>
@@ -94,20 +96,19 @@
       <!-- WhatsApp Action -->
       <div class="wa-action-box">
         <p>
-          <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> <b>Send order copy on WhatsApp:</b>
-          <span class="mr" style="display:block;margin-top:2px;">सोप्या संपर्कासाठी ही ऑर्डर थेट दुकानदाराला व्हॉट्सॲपवर पाठवा:</span>
+          <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> <b><span class="lang-mr">व्हॉट्सॲपवर ऑर्डर पाठवा:</span><span class="lang-en">Send order on WhatsApp:</span></b>
         </p>
         <a id="waSendBtn" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-block btn-lg">
-          <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> Send on WhatsApp
+          <svg class="icon"><use href="/images/icons.svg#whatsapp"></use></svg> <span class="lang-mr">व्हॉट्सॲपवर पाठवा</span><span class="lang-en">Send WhatsApp</span>
         </a>
         <small class="wa-safe-note">
-          <svg class="icon"><use href="/images/icons.svg#check"></use></svg> <b>Note:</b> Order saved! WhatsApp message is optional. Sending on WhatsApp is an optional fast way to stay in touch with the store owner.
+          <svg class="icon"><use href="/images/icons.svg#check"></use></svg> <span class="lang-mr">नोंद: ऑर्डर सेव्ह झाली आहे. व्हॉट्सॲप संदेश ऐच्छिक आहे.</span><span class="lang-en">Note: Order saved. WhatsApp message is optional.</span>
         </small>
       </div>
 
       <div class="confirm-actions">
-        <a href="orders.html" class="btn btn-outline">View Order History / माझ्या ऑर्डर्स</a>
-        <a href="index.html" class="btn btn-primary">Back to Store / मुख्य पृष्ठ</a>
+        <a href="orders.html" class="btn btn-outline"><span class="lang-mr">माझ्या ऑर्डर्स</span><span class="lang-en">Orders</span></a>
+        <a href="index.html" class="btn btn-primary"><span class="lang-mr">मुख्य पृष्ठ</span><span class="lang-en">Home</span></a>
       </div>
     </div>
   </div>
@@ -144,7 +145,12 @@
       const order = data.data;
       document.getElementById('displayOrderNumber').textContent = order.orderNumber;
       document.getElementById('displaySlot').textContent = order.slot;
-      document.getElementById('displayPayment').textContent = order.paymentMethod === 'upi_qr' ? 'UPI QR Code' : 'Cash on Delivery';
+      const payMethod = order.paymentMethod === 'upi_qr'
+        ? '<span class="lang-mr">UPI क्यूआर</span><span class="lang-en">UPI QR</span>'
+        : (order.paymentMethod === 'udhar'
+          ? '<span class="lang-mr">उधारी</span><span class="lang-en">Udhar Credit</span>'
+          : '<span class="lang-mr">रोख</span><span class="lang-en">Cash on Delivery</span>');
+      document.getElementById('displayPayment').innerHTML = payMethod;
       document.getElementById('displayTotal').textContent = '₹' + order.total;
 
       const addr = order.address;

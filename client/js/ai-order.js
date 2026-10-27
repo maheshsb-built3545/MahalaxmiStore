@@ -525,7 +525,7 @@ const aiOrderBox = (() => {
     if ($addBtn) {
       const inStockCount = _resolvedItems.filter((i) => i.product.inStock && i.product.stockQuantity > 0).length;
       $addBtn.disabled = inStockCount === 0;
-      $addBtn.innerHTML = `<svg class="icon" style="margin-right:5px;"><use href="/images/icons.svg#cart"></use></svg> <span class="lang-mr">सर्व ${inStockCount} वस्तू कार्टमध्ये जोडा (₹${total.toFixed(0)})</span><span class="lang-en">Add All ${inStockCount} to Cart (₹${total.toFixed(0)})</span> →`;
+      $addBtn.innerHTML = `<svg class="icon" style="margin-right:5px;"><use href="/images/icons.svg#cart"></use></svg> <span class="lang-mr">कार्टमध्ये जोडा (₹${total.toFixed(0)})</span><span class="lang-en">Add to Cart (₹${total.toFixed(0)})</span>`;
     }
   }
 

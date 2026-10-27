@@ -94,17 +94,21 @@
 <body class="offline-page">
   <div class="offline-card">
     <div class="offline-icon"><svg class="icon icon--2xl" style="width:64px;height:64px;color:#f59e0b;"><use href="/images/icons.svg#warning"></use></svg></div>
-    <h1 class="offline-title">इंटरनेट कनेक्शन नाही</h1>
-    <p class="offline-sub">You seem to be offline. Don't worry, your cart items are safely saved on your device.</p>
+    <h1 class="offline-title"><span class="lang-mr">इंटरनेट कनेक्शन नाही</span><span class="lang-en">No Connection</span></h1>
+    <p class="offline-sub">
+      <span class="lang-mr">इंटरनेट बंद आहे. कार्टमधील वस्तू सुरक्षित आहेत.</span>
+      <span class="lang-en">You are offline. Your cart items are saved.</span>
+    </p>
     
     <div class="offline-actions">
       <button class="btn-offline-retry" onclick="window.location.reload();">
-        <svg class="icon"><use href="/images/icons.svg#refresh"></use></svg> पुन्हा प्रयत्न करा • Retry
+        <svg class="icon"><use href="/images/icons.svg#refresh"></use></svg> <span class="lang-mr">पुन्हा प्रयत्न</span><span class="lang-en">Retry</span>
       </button>
       <a href="tel:+919860924504" class="btn-offline-call">
-        <svg class="icon"><use href="/images/icons.svg#phone"></use></svg> थेट दुकानात कॉल करा • Call Store
+        <svg class="icon"><use href="/images/icons.svg#phone"></use></svg> <span class="lang-mr">कॉल करा</span><span class="lang-en">Call Store</span>
       </a>
     </div>
   </div>
+  <script>document.documentElement.setAttribute('data-lang', localStorage.getItem('mk_lang') || 'mr');</script>
 </body>
 </html>

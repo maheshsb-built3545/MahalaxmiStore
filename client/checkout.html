@@ -104,7 +104,7 @@
             </div>
 
             <button type="button" id="saveAddressBtn" class="btn btn-primary btn-sm">
-              Save Address <span class="mr">पत्ता जतन करा</span>
+              <span class="lang-mr">जतन करा</span><span class="lang-en">Save Address</span>
             </button>
           </div>
         </section>
@@ -113,9 +113,9 @@
         <section class="step-card" id="stepSlot">
           <div class="step-title">
             <span class="step-num">2</span>
-            <h2>Delivery Timing <span class="mr">डिलिव्हरीची वेळ</span></h2>
+            <h2><span class="lang-mr">डिलिव्हरी वेळ</span><span class="lang-en">Delivery Slot</span></h2>
           </div>
-          <p class="step-desc">Select when you would like the store owner to deliver your items:</p>
+          <p class="step-desc"><span class="lang-mr">डिलिव्हरीसाठी सोयीची वेळ निवडा.</span><span class="lang-en">Select preferred delivery time.</span></p>
           <div id="slotsContainer" class="slots-grid">
             <p style="color:#5b7a6f;">Loading delivery slots…</p>
           </div>
@@ -125,23 +125,22 @@
         <section class="step-card" id="stepNotes">
           <div class="step-title">
             <span class="step-num"><svg class="icon"><use href="/images/icons.svg#edit"></use></svg></span>
-            <h2>Order Note &amp; Village Landmark <span class="mr">विशेष सूचना आणि गावातील खूण</span></h2>
+            <h2><span class="lang-mr">नोंद व खूण</span><span class="lang-en">Order Note</span></h2>
           </div>
-          <p class="step-desc">गावातील घर शोधणे सोपे जावे म्हणून जवळची खूण किंवा सूचना लिहा (Optional):</p>
+          <p class="step-desc"><span class="lang-mr">घर शोधण्यासाठी जवळची खूण किंवा सूचना लिहा.</span><span class="lang-en">Add a landmark or delivery note.</span></p>
           <div class="form-group" style="margin-bottom: 0.75rem;">
             <label for="orderNoteInput">
-              Special Note / विशेष सूचना:
-              <span class="mr" style="font-weight:400;color:#64748b;">(उदा. ५०० चे सुट्टे आणा, फोन करून या)</span>
+              <span class="lang-mr">विशेष सूचना:</span><span class="lang-en">Special Note:</span>
             </label>
             <input type="text" id="orderNoteInput" placeholder="e.g. Please bring change for 500, call before coming" maxlength="200">
           </div>
           <div class="form-group">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
               <label for="orderLocationPinInput" style="margin:0;">
-                Village Landmark or Maps link / गावातील खूण किंवा नकाशा लिंक:
+                <span class="lang-mr">गावातील खूण किंवा नकाशा लिंक:</span><span class="lang-en">Landmark or Maps Link:</span>
               </label>
               <button type="button" id="shareLocationBtn" class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:3px 10px;min-height:36px;display:inline-flex;align-items:center;gap:4px;">
-                <svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> Share Location
+                <svg class="icon"><use href="/images/icons.svg#map-pin"></use></svg> <span class="lang-mr">लोकेशन जोडा</span><span class="lang-en">Share Location</span>
               </button>
             </div>
             <input type="text" id="orderLocationPinInput" placeholder="e.g. Behind Vitthal Temple or https://maps.google.com/?q=..." maxlength="300">
@@ -152,23 +151,23 @@
         <section class="step-card" id="stepPayment">
           <div class="step-title">
             <span class="step-num">3</span>
-            <h2>Payment Method <span class="mr">पेमेंट पद्धत</span></h2>
+            <h2><span class="lang-mr">पेमेंट पद्धत</span><span class="lang-en">Payment Method</span></h2>
           </div>
 
           <div class="payment-options">
             <label class="payment-card">
               <input type="radio" name="paymentMethod" value="upi_qr" checked>
               <div class="payment-info">
-                <b>Pay via UPI QR Code <span class="mr">ऑनलाइन UPI द्वारे पैसे भरा</span></b>
-                <span>Google Pay, PhonePe, Paytm, BHIM or any UPI app</span>
+                <b><span class="lang-mr">UPI ने भरा</span><span class="lang-en">Pay via UPI</span></b>
+                <span>Google Pay, PhonePe, Paytm, BHIM</span>
               </div>
             </label>
 
             <label class="payment-card">
               <input type="radio" name="paymentMethod" value="cod">
               <div class="payment-info">
-                <b>Cash on Delivery <span class="mr">कॅश ऑन डिलिव्हरी</span></b>
-                <span>Pay cash to the owner when groceries arrive at your door</span>
+                <b><span class="lang-mr">कॅश ऑन डिलिव्हरी</span><span class="lang-en">Cash on Delivery</span></b>
+                <span>Pay cash to the owner on delivery</span>
               </div>
             </label>
 
@@ -176,7 +175,7 @@
             <label id="udharPaymentOption" class="payment-card" style="display:none">
               <input type="radio" name="paymentMethod" value="udhar">
               <div class="payment-info">
-                <b><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> खाते (Udhar Credit) <span class="badge-udhar" id="udharCreditBadge">Active</span></b>
+                <b><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> <span class="lang-mr">उधारी खाते</span><span class="lang-en">Udhar Credit</span> <span class="badge-udhar" id="udharCreditBadge">Active</span></b>
                 <span id="udharCreditSubtitle">दुकानदार मंजूर खाते • चालू शिल्लक मर्यादा: ₹<span id="udharAvailableLimit">0</span></span>
               </div>
             </label>
@@ -185,37 +184,35 @@
           <!-- UPI Details Box -->
           <div id="upiPaymentDetails" class="upi-box">
             <div class="upi-head">
-              <h3>Scan &amp; Pay <span class="mr">स्कॅन करून पैसे भरा</span></h3>
-              <p>Amount to Pay: <b id="upiPayableAmount" class="upi-amount">₹0</b></p>
+              <h3><span class="lang-mr">स्कॅन करून भरा</span><span class="lang-en">Scan &amp; Pay</span></h3>
+              <p>Amount: <b id="upiPayableAmount" class="upi-amount">₹0</b></p>
             </div>
             
             <div class="upi-qr-wrapper">
               <img id="upiQrImg" src="images/placeholder-upi-qr.svg" alt="Store UPI QR Code" class="upi-qr-img">
               <div class="upi-details">
                 <div class="upi-row">
-                  <span>UPI Mobile Number:</span>
+                  <span>UPI Number:</span>
                   <b id="upiMobileText">+91 98609 24504</b>
                 </div>
                 <div class="upi-notice">
-                  <svg class="icon"><use href="/images/icons.svg#info"></use></svg> <b>Manual Verification:</b> Please pay using your UPI app. The store owner will verify this payment manually when packing your order.
-                  <span class="mr" style="display:block;margin-top:4px;">कृपया कोणत्याही UPI ॲपवरून स्कॅन करून पैसे भरा. दुकानाचे मालक ऑर्डर पॅक करताना खात्री करतील.</span>
+                  <svg class="icon"><use href="/images/icons.svg#info"></use></svg> <span class="lang-mr">पेमेंट झाल्यावर UTR क्रमांक प्रविष्ट करा.</span><span class="lang-en">Enter UTR number after payment.</span>
                 </div>
                 <div class="upi-actions" style="margin-top:10px;">
                   <a id="upiDeepLinkBtn" href="#" class="btn btn-primary btn-block" style="text-decoration:none;font-size:0.9rem;padding:10px 14px;background:#059669;display:none;">
-                    <svg class="icon"><use href="/images/icons.svg#upi"></use></svg> Open UPI App (GPay/PhonePe/Paytm) →
+                    <svg class="icon"><use href="/images/icons.svg#upi"></use></svg> <span class="lang-mr">UPI ने भरा</span><span class="lang-en">Pay via UPI</span> →
                   </a>
                 </div>
                 <div class="form-group" style="margin-top:12px;">
                   <label for="upiPaymentRef">
-                    Last 4 digits of UPI Ref / UTR (optional)
-                    <span class="mr">UPI व्यवहाराचे शेवटचे ४ अंक (पर्यायी)</span>
+                    <span class="lang-mr">UTR / संदर्भ क्रमांक (पर्यायी):</span><span class="lang-en">UTR / Ref Number (Optional):</span>
                   </label>
                   <input type="text" id="upiPaymentRef" placeholder="e.g. 5892" maxlength="20">
                 </div>
                 <div class="form-group" style="margin-top:10px;background:#f0fdf4;padding:8px 12px;border-radius:8px;border:1px solid #bbf7d0;">
                   <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.85rem;color:#166534;margin:0;">
                     <input type="checkbox" id="upiCustomerMarkedPaid" style="width:18px;height:18px;accent-color:#16a34a;">
-                    <span>मी वरील रकमेचा UPI पेमेंट केला आहे (Mark as Paid)</span>
+                    <span><span class="lang-mr">मी UPI पेमेंट केले आहे</span><span class="lang-en">I have paid via UPI</span></span>
                   </label>
                 </div>
               </div>
@@ -224,15 +221,13 @@
 
           <!-- COD Notice Box -->
           <div id="codPaymentDetails" class="cod-box" style="display:none">
-            <p><svg class="icon"><use href="/images/icons.svg#cash"></use></svg> Please keep exact cash ready on delivery.</p>
-            <p class="mr">कृपया ऑर्डर पोहोचल्यावर रोख रक्कम तयार ठेवा.</p>
+            <p><svg class="icon"><use href="/images/icons.svg#cash"></use></svg> <span class="lang-mr">कृपया डिलिव्हरी वेळी सुट्टे पैसे तयार ठेवा.</span><span class="lang-en">Please keep exact cash ready on delivery.</span></p>
           </div>
 
           <!-- Udhar Notice Box (UDH-01, UDH-02) -->
           <div id="udharPaymentDetails" class="cod-box" style="display:none;background:#f0fdf4;border-color:#86efac;">
-            <p><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> <b>खात्यावर नोंद (Udhar Credit):</b> या ऑर्डरची रक्कम आपल्या उधारी खात्यावर नोंदवली जाईल.</p>
-            <p style="margin:4px 0;">चालू बाकी (Current Balance): <b id="udharCurrentBalText">₹0</b> | उपलब्ध मर्यादा: <b id="udharAvailLimitText">₹0</b></p>
-            <p class="mr" style="font-size:0.85rem;color:#047857;margin-top:4px;">महालक्ष्मी किराणा स्टोअर्स येसगाव — आपले हक्काचे दुकान.</p>
+            <p><svg class="icon"><use href="/images/icons.svg#credit"></use></svg> <span class="lang-mr">फक्त अधिकृत नियमित ग्राहकांसाठी.</span><span class="lang-en">Authorized customers only.</span></p>
+            <p style="margin:4px 0;">चालू बाकी: <b id="udharCurrentBalText">₹0</b> | उपलब्ध मर्यादा: <b id="udharAvailLimitText">₹0</b></p>
           </div>
         </section>
 
@@ -241,22 +236,22 @@
       <!-- Right Column: Order Summary & Place Order -->
       <div class="checkout-summary">
         <div class="summary-card">
-          <h3>Order Summary <span class="mr">ऑर्डर तपशील</span></h3>
+          <h3><span class="lang-mr">ऑर्डर तपशील</span><span class="lang-en">Order Summary</span></h3>
 
           <div id="reviewItemsList" class="summary-items"></div>
 
           <div class="summary-calc">
             <div class="calc-row">
-              <span>Subtotal <span class="mr">एकूण वस्तू</span></span>
+              <span><span class="lang-mr">उपएकूण</span><span class="lang-en">Subtotal</span></span>
               <span id="reviewSubtotal">₹0</span>
             </div>
             <div class="calc-row">
-              <span>Delivery Charge <span class="mr">डिलिव्हरी शुल्क</span></span>
+              <span><span class="lang-mr">डिलिव्हरी</span><span class="lang-en">Delivery Fee</span></span>
               <span id="reviewDelivery">₹30</span>
             </div>
             <div id="freeDeliveryHint" class="free-delivery-badge" style="display:none"></div>
             <div class="calc-row grand-total-row">
-              <span>Total Amount <span class="mr">एकूण देय रक्कम</span></span>
+              <span><span class="lang-mr">एकूण देय</span><span class="lang-en">Total Amount</span></span>
               <span id="reviewGrandTotal">₹0</span>
             </div>
           </div>
@@ -264,11 +259,11 @@
           <div id="minOrderAlert" class="alert-box warning-box" style="display:none"></div>
 
           <button type="button" id="placeOrderBtn" class="btn btn-primary btn-block btn-lg">
-            Place Order <span class="mr">ऑर्डर द्या</span>
+            <span class="lang-mr">ऑर्डर नोंदवा</span><span class="lang-en">Place Order</span>
           </button>
 
           <p class="summary-foot">
-            <svg class="icon"><use href="/images/icons.svg#lock"></use></svg> Secure Checkout · Delivered fresh from Yesgaon.
+            <svg class="icon"><use href="/images/icons.svg#lock"></use></svg> <span class="lang-mr">सुरक्षित चेकआउट</span><span class="lang-en">Secure Checkout</span>
           </p>
         </div>
       </div>

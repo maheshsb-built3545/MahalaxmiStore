@@ -26,10 +26,15 @@ const ui = (() => {
     if (!wrap) return;
     const div = el('div', 'toast');
     let iconKey = 'info';
-    if (type === 'success' || /जोड|यशस्वी|सुरू|unlocked|added|saved/i.test(msg)) iconKey = 'check';
-    else if (type === 'warning' || type === 'warn' || /बंद|किमान|alert|warning|closed/i.test(msg)) iconKey = 'warning';
+    if (type === 'success' || /जोड|यशस्वी|सुरू|unlocked|added|saved|success/i.test(msg)) iconKey = 'check';
+    else if (type === 'warning' || type === 'warn' || /बंद|किमान|alert|warning|closed|संपल्यामुळे/i.test(msg)) iconKey = 'warning';
     else if (type === 'error' || /चूक|error|failed/i.test(msg)) iconKey = 'close';
-    const cleanMsg = typeof msg === 'string' ? msg.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/ug, '').trim() : msg;
+    let cleanMsg = typeof msg === 'string' ? msg.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/ug, '').replace(/[!！]/g, '').trim() : msg;
+    if (typeof cleanMsg === 'string' && !cleanMsg.includes('<span') && (cleanMsg.includes(' / ') || cleanMsg.includes(' • '))) {
+      const sep = cleanMsg.includes(' / ') ? ' / ' : ' • ';
+      const parts = cleanMsg.split(sep);
+      cleanMsg = `<span class="lang-mr">${parts[0].trim()}</span><span class="lang-en">${parts.slice(1).join(' ').trim()}</span>`;
+    }
     div.innerHTML = `<svg class="icon icon--sm" style="margin-right:6px;"><use href="/images/icons.svg#${iconKey}"></use></svg><span>${cleanMsg}</span>`;
     wrap.appendChild(div);
     requestAnimationFrame(() => div.classList.add('show'));
@@ -316,13 +321,13 @@ const ui = (() => {
       </div>
       <div class="login-sheet-actions">
         <a href="login.html" id="loginPromptLoginBtn" class="btn btn-primary btn-login-action">
-          Log In / लॉगिन करा →
+          <span class="lang-mr">लॉगिन करा</span><span class="lang-en">Log In</span>
         </a>
         <a href="register.html" id="loginPromptRegisterBtn" class="btn btn-outline btn-register-action">
-          Register / नोंदणी करा
+          <span class="lang-mr">नोंदणी करा</span><span class="lang-en">Register</span>
         </a>
         <button type="button" id="loginPromptNotNowBtn" class="btn-not-now">
-          नंतर / Not now
+          <span class="lang-mr">नंतर</span><span class="lang-en">Not now</span>
         </button>
       </div>
     `;
@@ -583,7 +588,7 @@ const ui = (() => {
   function checkout() {
     const items = cart.getAll();
     if (!items.length) {
-      showToast('तुमची कार्ट रिकामी आहे! / Your cart is empty.');
+      showToast('कार्ट रिकामी आहे / Cart is empty', 'warning');
       return;
     }
 
@@ -824,7 +829,7 @@ const ui = (() => {
 
     // Show stale-cart toast if cart.init() dropped items
     if (window._cartDroppedCount > 0) {
-      showToast('Some cart items were removed — they are out of stock.');
+      showToast('काही वस्तू संपल्यामुळे काढल्या / Out of stock items removed', 'warning');
       window._cartDroppedCount = 0;
     }
   }

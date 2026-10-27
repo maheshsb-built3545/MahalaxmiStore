@@ -66,15 +66,16 @@
         <svg class="icon"><use href="/images/icons.svg#store"></use></svg> महालक्ष्मी किराणा
       </a>
       <div style="display:flex;gap:12px;align-items:center;">
-        <a href="index.html" class="btn btn-outline btn-sm" style="text-decoration:none;">मुखपृष्ठ / Home</a>
-        <a href="orders.html" class="btn btn-primary btn-sm" style="text-decoration:none;">माझ्या ऑर्डर्स</a>
+        <button id="langToggleBtn" class="lang-toggle-btn" type="button" aria-label="Toggle Language"><span class="lang-mr">English</span><span class="lang-en">मराठी</span></button>
+        <a href="index.html" class="btn btn-outline btn-sm" style="text-decoration:none;"><span class="lang-mr">मुखपृष्ठ</span><span class="lang-en">Home</span></a>
+        <a href="orders.html" class="btn btn-primary btn-sm" style="text-decoration:none;"><span class="lang-mr">माझ्या ऑर्डर्स</span><span class="lang-en">Orders</span></a>
       </div>
     </div>
   </header>
 
   <main class="privacy-container">
     <div class="privacy-card">
-      <h1><svg class="icon"><use href="/images/icons.svg#lock"></use></svg> गोपनीयता धोरण (Privacy Policy)</h1>
+      <h1><svg class="icon"><use href="/images/icons.svg#lock"></use></svg> <span class="lang-mr">गोपनीयता धोरण</span><span class="lang-en">Privacy Policy</span></h1>
       <p style="color:#64748b;font-size:0.85rem;">शेवटची सुधारणा: ऑक्टोबर २०२६ · महालक्ष्मी किराणा स्टोअर्स, येसगाव, ता. कोपरगाव</p>
 
       <h2>१. आम्ही कोणती माहिती गोळा करतो? (Information We Collect)</h2>
@@ -110,7 +111,7 @@
       </p>
 
       <div class="contact-badge">
-        <h3 style="margin:0 0 0.5rem;color:#166534;font-size:1rem;"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> संपर्क व मदत (Contact Store Owner)</h3>
+        <h3 style="margin:0 0 0.5rem;color:#166534;font-size:1rem;"><svg class="icon"><use href="/images/icons.svg#phone"></use></svg> <span class="lang-mr">संपर्क व मदत</span><span class="lang-en">Contact Store</span></h3>
         <p style="margin:0;font-size:0.9rem;">
           <strong>दुकान:</strong> महालक्ष्मी किराणा स्टोअर्स<br>
           <strong>पत्ता:</strong> मुख्य रस्ता, येसगाव, ता. कोपरगाव, जि. अहमदनगर - ४२३६०२<br>
@@ -122,7 +123,7 @@
 
       <div style="margin-top:2rem;text-align:center;">
         <a href="index.html" class="btn btn-primary" style="text-decoration:none;display:inline-block;padding:0.75rem 1.5rem;">
-          ← खरेदीसाठी मुखपृष्ठावर जा / Back to Shop
+          <span class="lang-mr">← खरेदीसाठी मुखपृष्ठ</span><span class="lang-en">← Back to Shop</span>
         </a>
       </div>
     </div>
@@ -132,6 +133,7 @@
     © 2026 Mahalaxmi Kirana Store, Yesgaon · सर्व हक्क सुरक्षित.
   </footer>
 
+  <script src="js/config.js"></script>
   <script src="js/pwa.js"></script>
   <script src="js/ui.js"></script>
 </body>

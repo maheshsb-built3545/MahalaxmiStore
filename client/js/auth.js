@@ -241,7 +241,7 @@ const auth = (() => {
       const ordersLink = document.createElement('a');
       ordersLink.href = 'orders.html';
       ordersLink.className = 'btn-my-orders';
-      ordersLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#orders"></use></svg> Orders';
+      ordersLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#orders"></use></svg> <span class="lang-mr">ऑर्डर्स</span><span class="lang-en">Orders</span>';
       ordersLink.setAttribute('aria-label', 'View my orders');
       badge.appendChild(ordersLink);
 
@@ -250,7 +250,7 @@ const auth = (() => {
       inboxLink.href = 'inbox.html';
       inboxLink.className = 'btn-my-orders btn-inbox-header';
       inboxLink.id = 'customerInboxHeaderLink';
-      inboxLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#bell"></use></svg> <span class="hide-mobile">Inbox</span><span class="nav-unread-badge" id="customerUnreadBadge" style="display:none;">0</span>';
+      inboxLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#bell"></use></svg> <span class="hide-mobile"><span class="lang-mr">संदेश</span><span class="lang-en">Inbox</span></span><span class="nav-unread-badge" id="customerUnreadBadge" style="display:none;">0</span>';
       inboxLink.setAttribute('aria-label', 'View messages and notifications');
       badge.appendChild(inboxLink);
 
@@ -262,7 +262,7 @@ const auth = (() => {
         adminLink.style.background = '#047857';
         adminLink.style.color = '#ffffff';
         adminLink.style.borderColor = '#059669';
-        adminLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#settings"></use></svg> Admin';
+        adminLink.innerHTML = '<svg class="icon icon--sm" style="margin-right:3px;vertical-align:-1px;"><use href="/images/icons.svg#settings"></use></svg> <span class="lang-mr">प्रशासन</span><span class="lang-en">Admin</span>';
         adminLink.setAttribute('aria-label', 'Go to admin panel');
         badge.appendChild(adminLink);
       }
@@ -270,7 +270,7 @@ const auth = (() => {
       // Logout button
       const logoutBtn = document.createElement('button');
       logoutBtn.className = 'btn-logout';
-      logoutBtn.textContent = 'Logout';
+      logoutBtn.innerHTML = '<span class="lang-mr">लॉगआउट</span><span class="lang-en">Logout</span>';
       logoutBtn.title = 'Log out of your account';
       logoutBtn.addEventListener('click', () => {
         clearSession();
@@ -294,12 +294,7 @@ const auth = (() => {
       loginLink.appendChild(iconSpan);
 
       const textSpan = document.createElement('span');
-      textSpan.textContent = 'Login ';
-
-      const mrSpan = document.createElement('span');
-      mrSpan.className = 'mr';
-      mrSpan.textContent = 'लॉगिन';
-      textSpan.appendChild(mrSpan);
+      textSpan.innerHTML = '<span class="lang-mr">लॉगिन</span><span class="lang-en">Login</span>';
 
       loginLink.appendChild(textSpan);
       area.appendChild(loginLink);

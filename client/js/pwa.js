@@ -67,13 +67,13 @@ window.PWA = {
           <img src="/images/icon-192.svg" alt="App Icon" width="40" height="40">
         </div>
         <div class="pwa-banner-text">
-          <div class="pwa-banner-title">महालक्ष्मी किराणा ॲप • Install App</div>
-          <div class="pwa-banner-sub">Install on your phone for faster 1-tap grocery ordering</div>
+          <div class="pwa-banner-title"><span class="lang-mr">किराणा ॲप जोडा</span><span class="lang-en">Install App</span></div>
+          <div class="pwa-banner-sub"><span class="lang-mr">जलद किराणा ऑर्डरसाठी फोनवर जोडा.</span><span class="lang-en">Install for fast 1-tap grocery ordering.</span></div>
         </div>
       </div>
       <div class="pwa-banner-actions">
-        <button type="button" class="btn-pwa-dismiss" id="pwaDismissBtn">नंतर • Later</button>
-        <button type="button" class="btn-pwa-install" id="pwaInstallBtn">इन्स्टॉल • Install</button>
+        <button type="button" class="btn-pwa-dismiss" id="pwaDismissBtn"><span class="lang-mr">नंतर</span><span class="lang-en">Later</span></button>
+        <button type="button" class="btn-pwa-install" id="pwaInstallBtn"><span class="lang-mr">इन्स्टॉल</span><span class="lang-en">Install</span></button>
       </div>
     `;
 

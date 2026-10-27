@@ -50,8 +50,8 @@
   <div class="auth-card">
     <div class="auth-card-head">
       <span class="auth-icon"><svg class="icon icon--xl"><use href="/images/icons.svg#account"></use></svg></span>
-      <h1>Customer Register <span class="mr">नवीन ग्राहक नोंदणी</span></h1>
-      <p>Create an account to save your delivery addresses and reorder easily.</p>
+      <h1><span class="lang-mr">ग्राहक नोंदणी</span><span class="lang-en">Customer Register</span></h1>
+      <p><span class="lang-mr">पत्ता जतन करण्यासाठी खाते तयार करा.</span><span class="lang-en">Create an account to save addresses.</span></p>
     </div>
 
     <!-- Error Alert Box -->
@@ -60,7 +60,7 @@
     <form id="registerForm" novalidate>
       <div class="form-group">
         <label for="name">
-          Full Name <span class="mr">पूर्ण नाव</span>
+          <span class="lang-mr">पूर्ण नाव</span><span class="lang-en">Full Name</span>
           <span class="req">*</span>
         </label>
         <input 
@@ -77,7 +77,7 @@
 
       <div class="form-group">
         <label for="phone">
-          Mobile Number <span class="mr">मोबाईल नंबर</span>
+          <span class="lang-mr">मोबाईल नंबर</span><span class="lang-en">Mobile Number</span>
           <span class="req">*</span>
         </label>
         <div class="input-with-prefix">
@@ -93,12 +93,12 @@
             aria-describedby="phoneHelp"
           >
         </div>
-        <small id="phoneHelp" class="form-hint">Must be a valid 10-digit Indian mobile number</small>
+        <small id="phoneHelp" class="form-hint">१० अंकी मोबाईल नंबर प्रविष्ट करा</small>
       </div>
 
       <div class="form-group">
         <label for="password">
-          Password <span class="mr">पासवर्ड</span>
+          <span class="lang-mr">पासवर्ड</span><span class="lang-en">Password</span>
           <span class="req">*</span>
         </label>
         <div style="position:relative;display:flex;align-items:center;">
@@ -106,7 +106,7 @@
             type="password" 
             id="password" 
             name="password" 
-            placeholder="Minimum 8 characters" 
+            placeholder="किमान ८ अक्षरे" 
             minlength="8" 
             maxlength="72" 
             required 
@@ -121,7 +121,7 @@
 
       <div class="form-group">
         <label for="confirmPassword">
-          Confirm Password <span class="mr">पासवर्ड पुन्हा टाका</span>
+          <span class="lang-mr">पासवर्ड पुन्हा टाका</span><span class="lang-en">Confirm Password</span>
           <span class="req">*</span>
         </label>
         <div style="position:relative;display:flex;align-items:center;">
@@ -129,7 +129,7 @@
             type="password" 
             id="confirmPassword" 
             name="confirmPassword" 
-            placeholder="Repeat your password" 
+            placeholder="पासवर्ड पुन्हा टाका" 
             minlength="8" 
             maxlength="72" 
             required 
@@ -143,12 +143,12 @@
       </div>
 
       <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
-        Create Account <span class="mr">खाते तयार करा</span>
+        <span class="lang-mr">नोंदणी करा</span><span class="lang-en">Register</span>
       </button>
     </form>
 
     <div class="auth-card-foot">
-      <p>Already have an account? <a id="loginLink" href="login.html">Log in here <span class="mr">येथे लॉगिन करा</span></a></p>
+      <p><span class="lang-mr">खाते आहे? <a id="loginLink" href="login.html">लॉगिन करा</a></span><span class="lang-en">Have account? <a id="loginLinkEn" href="login.html">Log In</a></span></p>
     </div>
   </div>
 </main>
@@ -160,7 +160,11 @@
 <script src="js/pwa.js"></script>
 <script>
   const redirectTarget = auth.getSafeRedirect();
-  document.getElementById('loginLink').href = `login.html?next=${encodeURIComponent(redirectTarget)}&redirect=${encodeURIComponent(redirectTarget)}`;
+  const logHref = `login.html?next=${encodeURIComponent(redirectTarget)}&redirect=${encodeURIComponent(redirectTarget)}`;
+  const logEl = document.getElementById('loginLink');
+  if (logEl) logEl.href = logHref;
+  const logEn = document.getElementById('loginLinkEn');
+  if (logEn) logEn.href = logHref;
 
   if (auth.isLoggedIn()) {
     window.location.href = auth.getRedirectForUser(auth.getUser());

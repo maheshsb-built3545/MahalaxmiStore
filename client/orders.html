@@ -49,13 +49,13 @@
 <main class="orders-main">
   <div class="wrap">
     <div class="orders-header">
-      <h1>My Orders <span class="mr">माझ्या ऑर्डर्स</span></h1>
-      <p>Track your grocery deliveries, cancel pending orders, or reorder items in one click.</p>
+      <h1><span class="lang-mr">माझ्या ऑर्डर्स</span><span class="lang-en">My Orders</span></h1>
+      <p><span class="lang-mr">ऑर्डर ट्रॅकिंग, रद्द करणे व पुन्हा मागवणे.</span><span class="lang-en">Track, cancel, or reorder items.</span></p>
     </div>
 
     <!-- Pull to refresh indicator -->
     <div id="ptrIndicator" class="ptr-indicator">
-      <span><svg class="icon"><use href="/images/icons.svg#refresh"></use></svg> ओढून रिफ्रेश करा • Pull to Refresh</span>
+      <span><svg class="icon"><use href="/images/icons.svg#refresh"></use></svg> <span class="lang-mr">खाली ओढून रिफ्रेश करा</span><span class="lang-en">Pull to refresh</span></span>
     </div>
 
     <!-- R4: Customer Udhar Credit Card (UDH-01, UDH-04) -->
@@ -69,17 +69,17 @@
 <!-- Modal: Reorder Cart Prompt (Rule 14) -->
 <div id="reorderModal" class="modal-overlay" style="display:none" role="dialog" aria-modal="true">
   <div class="modal-card">
-    <h3>Cart Already Has Items <span class="mr">कार्टमध्ये आधीच वस्तू आहेत</span></h3>
-    <p>Your shopping cart already contains items. How would you like to add these reorder items?</p>
+    <h3><span class="lang-mr">कार्टमध्ये आधीच वस्तू आहेत</span><span class="lang-en">Cart Has Items</span></h3>
+    <p><span class="lang-mr">आधीच्या वस्तू बदलायच्या की एकत्र करायच्या?</span><span class="lang-en">Replace existing items or merge?</span></p>
     <div class="modal-actions" style="flex-direction:column;gap:10px;margin-top:20px;">
       <button type="button" id="reorderReplaceBtn" class="btn btn-primary btn-block">
-        Replace Cart / जुनी कार्ट बदला
+        <span class="lang-mr">कार्ट बदला</span><span class="lang-en">Replace Cart</span>
       </button>
       <button type="button" id="reorderMergeBtn" class="btn btn-outline btn-block">
-        Merge with Existing Items / कार्टमध्ये एकत्र करा
+        <span class="lang-mr">एकत्र करा</span><span class="lang-en">Merge Cart</span>
       </button>
       <button type="button" id="reorderCancelBtn" class="btn btn-outline btn-block" style="border-color:#ccc;color:#666;">
-        Cancel / रद्द करा
+        <span class="lang-mr">रद्द करा</span><span class="lang-en">Cancel</span>
       </button>
     </div>
   </div>
