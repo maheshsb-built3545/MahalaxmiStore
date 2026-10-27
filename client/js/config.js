@@ -19,6 +19,13 @@ const CONFIG = {
   AUTH_TOKEN_KEY: 'kirana_token',
   USER_KEY: 'kirana_user',
   CART_KEY: 'kirana_cart',
+
+  // Store coordinates & Google Maps directions (Bug 3)
+  STORE_COORDINATES: {
+    lat: 19.945865348048383,
+    lng: 74.48684734211365,
+  },
+  DIRECTIONS_URL: 'https://www.google.com/maps/dir/?api=1&destination=19.945865348048383,74.48684734211365',
 };
 
 /**

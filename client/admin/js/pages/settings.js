@@ -121,6 +121,11 @@
               <input type="text" id="set-store-whatsapp" class="input" value="${AdminDOM.escape(settings.storeWhatsapp || '919860924504')}" style="height:42px;" />
             </div>
           </div>
+          <div style="margin-top:12px;font-size:0.82rem;">
+            <a href="https://www.google.com/maps/dir/?api=1&destination=19.945865348048383,74.48684734211365" target="_blank" rel="noopener noreferrer" style="color:var(--primary);text-decoration:underline;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+              <svg class="icon icon-sm"><use href="/images/icons.svg#map-pin"></use></svg> दुकानाचे लोकेशन / Store Google Maps Directions →
+            </a>
+          </div>
         </div>
 
         <!-- SECTION 2: Delivery Rules, Pincodes & Slots -->
