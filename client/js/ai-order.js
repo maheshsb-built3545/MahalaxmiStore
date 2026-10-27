@@ -268,7 +268,7 @@ const aiOrderBox = (() => {
   function renderResults(data) {
     const { matched = [], ambiguous = [], unmatched = [], usedFallback = false, logId = null } = data;
     if (logId) _currentLogId = logId;
-    _unmatchedPhrases = unmatched || [];
+    _unmatchedPhrases = (unmatched || []).slice();
 
     _resolvedItems = matched.map((m) => ({
       product: m.product,
@@ -278,15 +278,69 @@ const aiOrderBox = (() => {
       substitutes: m.substitutes || [],
     }));
 
-    _ambiguousItems = ambiguous;
+    _ambiguousItems = (ambiguous || []).slice();
+
+    const inStockMatched = _resolvedItems.filter((i) => i.product && i.product.inStock && (typeof i.product.stockQuantity !== 'number' || i.product.stockQuantity > 0));
+    const oosMatches = _resolvedItems.filter((i) => !i.product || !i.product.inStock || (typeof i.product.stockQuantity === 'number' && i.product.stockQuantity <= 0));
+
+    // Record order channel as ai_box (ORD-08)
+    try {
+      localStorage.setItem('kirana_order_channel', 'ai_box');
+    } catch (_) {}
+
+    // Add matched in-stock items to cart immediately
+    if (inStockMatched.length > 0) {
+      const batch = inStockMatched.map((i) => ({ product: i.product, qty: i.qty }));
+      if (window.cart && window.cart.addBatch) {
+        window.cart.addBatch(batch);
+      } else if (window.cart && window.cart.change) {
+        batch.forEach(({ product, qty }) => window.cart.change(product, qty));
+      }
+      if (window.ui) {
+        if (ui.updateCartBadge) ui.updateCartBadge();
+        if (ui.renderCartDrawer) ui.renderCartDrawer();
+      }
+    }
 
     if ($fallbackBadge) {
       $fallbackBadge.style.display = usedFallback ? 'inline-block' : 'none';
     }
 
+    const isCleanMatch = _ambiguousItems.length === 0 && _unmatchedPhrases.length === 0 && oosMatches.length === 0 && inStockMatched.length > 0;
+    const isLoggedIn = typeof auth !== 'undefined' && auth.isLoggedIn();
+
+    // Bug 1 & 2: If user is not logged in: save matched items to cart, show login prompt (Bug 1),
+    // and after login redirect to checkout.html.
+    if (!isLoggedIn) {
+      if (window.ui && window.ui.showLoginPrompt) {
+        ui.showLoginPrompt({
+          type: 'ai_checkout',
+          alreadyInCart: true,
+          returnUrl: 'checkout.html',
+        });
+      } else {
+        window.location.href = 'login.html?redirect=checkout.html';
+      }
+      if (!isCleanMatch) {
+        renderMatched();
+        renderAmbiguous();
+        renderUnmatched(_unmatchedPhrases);
+        updateTotalPreview();
+        if ($tray) $tray.style.display = 'block';
+      }
+      return;
+    }
+
+    // Bug 2: If logged in and clean match, go straight to checkout.html
+    if (isCleanMatch) {
+      window.location.href = 'checkout.html';
+      return;
+    }
+
+    // Bug 2: Partial match, ambiguous, or OOS: show review sheet first
     renderMatched();
     renderAmbiguous();
-    renderUnmatched(unmatched);
+    renderUnmatched(_unmatchedPhrases);
     updateTotalPreview();
 
     if ($tray) {
@@ -503,18 +557,56 @@ const aiOrderBox = (() => {
     $unmatchedSec.style.display = unmatched.length > 0 ? 'block' : 'none';
     $unmatchedList.innerHTML = '';
 
-    unmatched.forEach((phrase) => {
-      const chip = document.createElement('span');
-      chip.className = 'ai-unmatched-chip';
-      chip.textContent = phrase;
-      $unmatchedList.appendChild(chip);
+    unmatched.forEach((phrase, idx) => {
+      const row = document.createElement('div');
+      row.className = 'ai-unmatched-row';
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--porcelain,#f8fafc);border:1px solid var(--line,#e2e8f0);border-radius:8px;margin-bottom:6px;';
+
+      const text = document.createElement('span');
+      text.className = 'ai-unmatched-text';
+      text.style.cssText = 'flex:1;font-size:0.9rem;color:#334155;';
+      text.textContent = phrase;
+
+      const actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;align-items:center;gap:6px;';
+
+      const searchBtn = document.createElement('button');
+      searchBtn.type = 'button';
+      searchBtn.className = 'btn btn-sm btn-outline';
+      searchBtn.style.cssText = 'padding:4px 8px;font-size:0.75rem;';
+      searchBtn.innerHTML = '<svg class="icon icon--xs" style="margin-right:3px;"><use href="/images/icons.svg#search"></use></svg><span class="lang-mr">शोधा</span><span class="lang-en">Search</span>';
+      searchBtn.addEventListener('click', () => {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.value = phrase;
+          searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+          searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          searchInput.focus();
+        }
+      });
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'ai-item-remove';
+      removeBtn.style.cssText = 'padding:4px;';
+      removeBtn.title = 'काढा / Remove';
+      removeBtn.setAttribute('aria-label', 'Remove unmatched item ' + phrase);
+      removeBtn.innerHTML = '<svg class="icon icon--sm"><use href="/images/icons.svg#close"></use></svg>';
+      removeBtn.addEventListener('click', () => {
+        _unmatchedPhrases.splice(idx, 1);
+        renderUnmatched(_unmatchedPhrases);
+      });
+
+      actions.append(searchBtn, removeBtn);
+      row.append(text, actions);
+      $unmatchedList.appendChild(row);
     });
   }
 
   // ── Total Calculation ────────────────────────────────────────────────────────
   function updateTotalPreview() {
     const total = _resolvedItems.reduce((sum, item) => {
-      if (!item.product.inStock || item.product.stockQuantity <= 0) return sum;
+      if (!item.product.inStock || (typeof item.product.stockQuantity === 'number' && item.product.stockQuantity <= 0)) return sum;
       return sum + (item.product.price * item.qty);
     }, 0);
 
@@ -523,88 +615,60 @@ const aiOrderBox = (() => {
     }
 
     if ($addBtn) {
-      const inStockCount = _resolvedItems.filter((i) => i.product.inStock && i.product.stockQuantity > 0).length;
+      const inStockCount = _resolvedItems.filter((i) => i.product.inStock && (typeof i.product.stockQuantity !== 'number' || i.product.stockQuantity > 0)).length;
       $addBtn.disabled = inStockCount === 0;
-      $addBtn.innerHTML = `<svg class="icon" style="margin-right:5px;"><use href="/images/icons.svg#cart"></use></svg> <span class="lang-mr">कार्टमध्ये जोडा (₹${total.toFixed(0)})</span><span class="lang-en">Add to Cart (₹${total.toFixed(0)})</span>`;
+      $addBtn.innerHTML = `<svg class="icon" style="margin-right:5px;"><use href="/images/icons.svg#cart"></use></svg> <span class="lang-mr">ऑर्डर पूर्ण करा (₹${total.toFixed(0)})</span><span class="lang-en">Proceed to Checkout (₹${total.toFixed(0)})</span> →`;
     }
   }
 
-  // ── Add All to Cart (AI-04, ORD-08, Task 1 & 3) ─────────────────────────────
+  // ── Proceed to Checkout from AI Review (AI-04, ORD-08, Bug 2) ────────────────
   function handleAddToCart() {
-    const inStockItems = _resolvedItems.filter((i) => i.product.inStock && i.product.stockQuantity > 0);
-    const oosItems = _resolvedItems.filter((i) => !i.product.inStock || i.product.stockQuantity <= 0);
+    const inStockItems = _resolvedItems.filter((i) => i.product && i.product.inStock && (typeof i.product.stockQuantity !== 'number' || i.product.stockQuantity > 0));
 
-    if (!inStockItems.length) {
-      if (window.ui && window.ui.showToast) {
-        ui.showToast('कार्टमध्ये जोडण्यासाठी कोणतीही उपलब्ध वस्तू नाही / No in-stock items to add');
-      }
-      return;
-    }
-
-    // Set order channel in localStorage so checkout records channel: 'ai_box' (ORD-08)
+    // Record channel as ai_box
     try {
       localStorage.setItem('kirana_order_channel', 'ai_box');
     } catch (_) {}
 
-    // Add batch to cart in one atomic operation
-    if (window.cart && window.cart.addBatch) {
-      window.cart.addBatch(inStockItems);
-    } else if (window.cart && window.cart.change) {
+    // Sync any quantity adjustments from the review sheet into cart
+    if (inStockItems.length > 0) {
       inStockItems.forEach(({ product, qty }) => {
-        window.cart.change(product, qty);
+        if (window.cart && window.cart.addOrSet) {
+          window.cart.addOrSet(product, qty);
+        } else if (window.cart && window.cart.change) {
+          const cur = window.cart.getQty ? window.cart.getQty(product._id || product.productId) : 0;
+          if (cur !== qty) {
+            window.cart.change(product, qty - cur);
+          }
+        }
       });
+      if (window.ui) {
+        if (ui.updateCartBadge) ui.updateCartBadge();
+        if (ui.renderCartDrawer) ui.renderCartDrawer();
+      }
     }
 
-    // Diagnostic logging for AiLog (Task 3)
-    const rawInput = $input ? $input.value : '';
-    const parsedCount = _resolvedItems.length + _ambiguousItems.length + (_unmatchedPhrases ? _unmatchedPhrases.length : 0);
-    const addedCount = inStockItems.length;
-    const droppedReasons = [];
-    oosItems.forEach((i) => {
-      droppedReasons.push(`OOS: ${i.product.nameEnglish || i.product.name} (${i.rawPhrase || ''})`);
-    });
-    _ambiguousItems.forEach((i) => {
-      droppedReasons.push(`Ambiguous: ${i.rawPhrase || ''}`);
-    });
-    (_unmatchedPhrases || []).forEach((p) => {
-      droppedReasons.push(`Unmatched: ${p}`);
-    });
-    const droppedCount = oosItems.length + _ambiguousItems.length + (_unmatchedPhrases ? _unmatchedPhrases.length : 0);
-
-    try {
-      const headers = { 'Content-Type': 'application/json' };
-      const token = window.auth ? window.auth.getToken() : localStorage.getItem('token');
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      fetch(`${CONFIG.API_BASE}/ai/log-add-result`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          logId: _currentLogId,
-          rawInput,
-          parsedCount,
-          addedCount,
-          droppedCount,
-          droppedReasons,
-          source: _speechActive ? 'voice' : 'typed',
-        }),
-      }).catch(() => {});
-    } catch (_) {}
-
-    // Bilingual feedback summary toast
-    let summaryMsg = `${addedCount} वस्तू कार्टमध्ये जोडल्या / ${addedCount} items added`;
-    if (droppedCount > 0) {
-      summaryMsg += ` • ${droppedCount} तपासणे बाकी / ${droppedCount} need attention`;
-    }
-    if (window.ui && window.ui.showToast) {
-      ui.showToast(summaryMsg, 'success');
+    if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+      if (window.ui && window.ui.showLoginPrompt) {
+        ui.showLoginPrompt({
+          type: 'ai_checkout',
+          alreadyInCart: true,
+          returnUrl: 'checkout.html',
+        });
+      } else {
+        window.location.href = 'login.html?redirect=checkout.html';
+      }
+      return;
     }
 
-    // Open cart drawer so user sees items instantly
-    if (window.ui && window.ui.openCart) {
-      setTimeout(() => {
-        ui.openCart();
-      }, 400);
+    if (window.cart && window.cart.itemCount() === 0) {
+      if (window.ui && window.ui.showToast) {
+        ui.showToast('कार्ट रिकामी आहे / Cart is empty', 'warning');
+      }
+      return;
     }
+
+    window.location.href = 'checkout.html';
   }
 
   return { init, handleParse };
