@@ -196,9 +196,9 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3" style="margin-bottom:14px;">
             <div class="form-group">
               <label style="font-weight:700;font-size:0.82rem;display:block;margin-bottom:4px;">
-                UPI आयडी / VPA (उदा. 9860924504@ybl) *
+                UPI आयडी / VPA (उदा. 9876543210@ybl) *
               </label>
-              <input type="text" id="set-upi-id" class="input" value="${AdminDOM.escape(settings.upiId || '9860924504@ybl')}" required style="height:42px;font-family:monospace;" />
+              <input type="text" id="set-upi-id" class="input" value="${AdminDOM.escape(settings.upiId || '9860924504@ybl')}" placeholder="उदा. 9876543210@ybl" required style="height:42px;font-family:monospace;" />
               <span style="font-size:0.72rem;color:var(--text-muted);">उधारी तगाद्यामध्ये direct UPI link साठी वापरला जाईल</span>
             </div>
 
@@ -206,7 +206,7 @@
               <label style="font-weight:700;font-size:0.82rem;display:block;margin-bottom:4px;">
                 UPI मोबाईल नंबर (१० अंक) *
               </label>
-              <input type="text" id="set-upi-mobile" class="input" value="${AdminDOM.escape(settings.upiMobile || '9860924504')}" maxlength="10" required style="height:42px;" />
+              <input type="text" id="set-upi-mobile" class="input" value="${AdminDOM.escape(settings.upiMobile || '9860924504')}" placeholder="उदा. 9876543210" maxlength="10" required style="height:42px;" />
             </div>
           </div>
 
